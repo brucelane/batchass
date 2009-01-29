@@ -13,6 +13,7 @@
  * Please visit http://www.onyx-vj.com for more information
  *  
  * plug-in for Onyx-VJ 4 by Bruce LANE (http://www.batchass.fr)
+ * version 1.0 last modified Jan 29th 2009
  */
 package 
 {
