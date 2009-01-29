@@ -14,6 +14,8 @@
  *  
  * Based on FireBending code by Edik RUZGA
  * Adapted for Onyx-VJ 4 by Bruce LANE (http://www.batchass.fr)
+ * version 4.0.483 last modified Jan 29th 2009
+ * 
  */
 package 
 {
