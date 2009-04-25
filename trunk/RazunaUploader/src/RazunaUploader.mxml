@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" width="800" height="500">
+<mx:Script>
+	<![CDATA[
+		private function init():void
+		{
+			fileList.dropEnabled = true;
+		}
+		private function onChange():void
+		{
+			trace(fsTree.selectedPath);
+			
+		}
+	]]>
+</mx:Script>
+	<mx:FileSystemTree id="fsTree" x="10" y="101" width="429" height="387" dragEnabled="true" showExtensions="true" allowMultipleSelection="true" change="onChange()"/>
+	<mx:Button x="645" y="71" label="Login" id="loginBtn"/>
+	<mx:Label x="470" y="13" text="Username:"/>
+	<mx:Label x="470" y="39" text="Password:"/>
+	<mx:TextInput x="541" y="37" id="password" displayAsPassword="true"/>
+	<mx:TextInput x="541" y="11" id="username"/>
+	<mx:List x="470" y="101" width="231" height="312" id="fileList"></mx:List>
+	
+</mx:WindowedApplication>
