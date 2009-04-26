@@ -1,24 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" width="800" height="500">
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" width="864" height="632">
 <mx:Script>
 	<![CDATA[
+		import mx.events.DragEvent;
+		import mx.managers.DragManager;
+		import mx.containers.Canvas;
+		import mx.core.DragSource;
+		
+		private var filesDataProvider:XML;
+		[Bindable]
+		private var xList:XMLList;
 		private function init():void
 		{
-			fileList.dropEnabled = true;
+            filesDataProvider = 
+            	<files>
+            	</files>;
 		}
-		private function onChange():void
-		{
-			trace(fsTree.selectedPath);
-			
-		}
+			private function beginDragAndDrop(event:MouseEvent):void
+			{
+				var fstSource:FileSystemTree = FileSystemTree(event.currentTarget);
+				var path:String = fstSource.selectedPath;
+				trace(path);
+				var dragSource:DragSource = new DragSource;
+				dragSource.addData( path, "path");
+				DragManager.doDrag(fstSource, dragSource, event);
+			}
+
+			private function dragEnterHandler(event:DragEvent):void
+			{
+				var target:List = List(event.currentTarget);
+				var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
+				DragManager.acceptDragDrop(target);
+			}
+
+			private function dragDropHandler(event:DragEvent):void
+			{
+				var target:List = List(event.currentTarget);
+				var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
+				var pathToFile:String;
+				//var myPattern:RegExp = /\\/g;  
+				//OK pathToFile = initiator.selectedPath.toString().replace( myPattern, '\\\\') ;
+				pathToFile = initiator.selectedPath.toString();//.replace( myPattern, '\\\\') ;
+				trace("pathToFile" + pathToFile);
+ 				DragManager.acceptDragDrop(target);
+				filesDataProvider.appendChild(
+					<file>
+            			<path>{pathToFile}</path>
+            		</file>
+            	);
+				xList = filesDataProvider..path;
+				trace(xList.toString());
+				trace(xList.length());
+				initiator.selectedItem = null;
+			}
+            private function onChange():void
+			{
+				trace(fsTree.selectedPath);
+			}
 	]]>
 </mx:Script>
-	<mx:FileSystemTree id="fsTree" x="10" y="101" width="429" height="387" dragEnabled="true" showExtensions="true" allowMultipleSelection="true" change="onChange()"/>
-	<mx:Button x="645" y="71" label="Login" id="loginBtn"/>
-	<mx:Label x="470" y="13" text="Username:"/>
-	<mx:Label x="470" y="39" text="Password:"/>
-	<mx:TextInput x="541" y="37" id="password" displayAsPassword="true"/>
-	<mx:TextInput x="541" y="11" id="username"/>
-	<mx:List x="470" y="101" width="231" height="312" id="fileList"></mx:List>
+<mx:HBox width="852" height="483">
+	<mx:VBox height="100%" verticalAlign="top">
+		<mx:Label text="Files on your local system:"  fontSize="18" fontWeight="bold"/>
+		<mx:FileSystemTree id="fsTree" width="501" height="437" mouseDown="beginDragAndDrop(event)" 
+			dragEnabled="true" showExtensions="true" allowMultipleSelection="true" change="onChange()"/>
+	</mx:VBox>
+	<mx:VBox height="471" width="331">
+		<mx:Label text="Razuna server" fontWeight="bold" fontSize="18"/>
+		<mx:Canvas width="249" height="115">
+			<mx:Button x="183" y="87" label="Login" id="loginBtn"/>
+			<mx:Label x="0" y="33" text="Username:"/>
+			<mx:Label x="0" y="59" text="Password:"/>
+			<mx:TextInput x="71" y="57" id="password" displayAsPassword="true"/>
+			<mx:TextInput x="71" y="31" id="username"/>
+			
+		</mx:Canvas>
+		<mx:Label text="Drag files here:"/>
+		<mx:List width="303" height="290" id="fileList" dropEnabled="true" 
+			dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)" dataProvider="{xList}"></mx:List>
+		
+	</mx:VBox>
+</mx:HBox>
 	
 </mx:WindowedApplication>
