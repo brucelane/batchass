@@ -81,5 +81,6 @@
 		
 	</mx:VBox>
 </mx:HBox>
+	<mx:Label x="10" y="491" text="Last modification on april 26th 2009"/>
 	
 </mx:WindowedApplication>
