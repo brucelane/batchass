@@ -77,7 +77,7 @@ package com.razuna
 				internal_schema.schemas[i].targetNamespace=internal_schema.targetNamespaces[i];
 				schemaMgr.addSchema(internal_schema.schemas[i]);
 			}
-BaseauthenticationServiceService = new WSDLService("BaseauthenticationServiceService");
+			BaseauthenticationServiceService = new WSDLService("BaseauthenticationServiceService");
 			BaseauthenticationServicePort = new WSDLPort("BaseauthenticationServicePort",BaseauthenticationServiceService);
         	BaseauthenticationServiceBinding = new WSDLBinding("BaseauthenticationServiceBinding");
 	        BaseauthenticationServicePortType = new WSDLPortType("BaseauthenticationServicePortType");
