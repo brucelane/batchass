@@ -11,6 +11,8 @@
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" width="864" height="632">
 <mx:Script>
 	<![CDATA[
+		import com.razuna.LoginResultEvent;
+		import com.razuna.AuthenticationService;
 		import mx.rpc.events.ResultEvent;
 		import mx.events.DragEvent;
 		import mx.managers.DragManager;
@@ -25,6 +27,7 @@
             filesDataProvider = 
             	<files>
             	</files>;
+            	
 		}
 		private function beginDragAndDrop(event:MouseEvent):void
 		{
@@ -68,29 +71,22 @@
 			trace(fsTree.selectedPath);
 		}
 		[Bindable]
-		private var xData:XML;
+		private var xData:XML = new XML();
 		private function logon():void
 		{
-			var params:Object = {};
-			params["method"] = "login";
-			params["hostid"] = 7;
-			params["user"] = "batchass";
-			params["pass"] = "";
-			xmlService.send(params);	
-
+			var myService:AuthenticationService= new AuthenticationService();
+			myService.addloginEventListener(resultHandler);
+			myService.login(7,"batchass","");
 		}
-		private function resultHandler(event:ResultEvent):void
+		private function resultHandler(event:LoginResultEvent):void
 		{
 			statusText.text = event.result as String;
-			xData = event.result as XML;
+/* 			xData = event.result as XML;
 			trace(xData..sessiontoken);
-		}
+ */		}
 	]]>
 </mx:Script>
-<mx:HTTPService id="xmlService" 
-	result="resultHandler(event)"
-	url="http://batchass.razuna.com/global/api/authentication.cfc"
-	resultFormat="e4x"/>
+
 <mx:HBox width="852" height="483">
 	<mx:VBox height="100%" verticalAlign="top">
 		<mx:Label text="Files on your local system:"  fontSize="18" fontWeight="bold"/>
