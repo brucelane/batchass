@@ -75,7 +75,7 @@
 		private var xData:XML;
 		private function logon():void
 		{
-			var myService:AuthenticationService= new AuthenticationService(null, urltext.text);
+			var myService:AuthenticationService= new AuthenticationService();
 			myService.addloginEventListener(resultHandler);
 			myService.login(int(hostid.text), username.text, password.text);
 		}
@@ -94,7 +94,7 @@
 	]]>
 </mx:Script>
 
-<mx:HBox width="852" height="483">
+<mx:HBox width="862" height="483">
 	<mx:VBox height="100%" verticalAlign="top">
 		<mx:Label text="Files on your local system:"  fontSize="18" fontWeight="bold"/>
 		<mx:FileSystemTree id="fsTree" width="501" height="437" mouseDown="beginDragAndDrop(event)" 
@@ -102,7 +102,7 @@
 	</mx:VBox>
 	<mx:VBox height="471" width="331">
 		<mx:Label text="Razuna server" fontWeight="bold" fontSize="18"/>
-		<mx:Canvas width="319" height="127">
+		<mx:Canvas width="329" height="135">
 			<mx:Button x="253" y="83" label="Login" id="loginBtn" click="logon()"/>
 			<mx:Label x="0" y="59" text="Username:"/>
 			<mx:Label x="0" y="85" text="Password:"/>
@@ -116,7 +116,7 @@
 			
 		</mx:Canvas>
 		<mx:Label text="Drag files here:"/>
-		<mx:List width="303" height="280" id="fileList" dropEnabled="true" 
+		<mx:List width="303" height="267" id="fileList" dropEnabled="true" 
 			dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)" dataProvider="{xList}"></mx:List>
 		
 	</mx:VBox>
