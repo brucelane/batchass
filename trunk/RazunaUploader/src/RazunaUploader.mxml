@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+////////////////////////////////////////////////////////////////////////////////
+//
+// Written by Bruce LANE http://www.batchass.fr
+// April 27th 2009
+//
+// http://batchass.razuna.com/global/api/authentication.cfc?method=login&hostid=7&user=batchass&pass=
+////////////////////////////////////////////////////////////////////////////////
+-->
 <mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" width="864" height="632">
 <mx:Script>
 	<![CDATA[
+		import mx.rpc.events.ResultEvent;
 		import mx.events.DragEvent;
 		import mx.managers.DragManager;
 		import mx.containers.Canvas;
@@ -16,49 +26,71 @@
             	<files>
             	</files>;
 		}
-			private function beginDragAndDrop(event:MouseEvent):void
-			{
-				var fstSource:FileSystemTree = FileSystemTree(event.currentTarget);
-				var path:String = fstSource.selectedPath;
-				trace(path);
-				var dragSource:DragSource = new DragSource;
-				dragSource.addData( path, "path");
-				DragManager.doDrag(fstSource, dragSource, event);
-			}
+		private function beginDragAndDrop(event:MouseEvent):void
+		{
+			var fstSource:FileSystemTree = FileSystemTree(event.currentTarget);
+			var path:String = fstSource.selectedPath;
+			trace(path);
+			var dragSource:DragSource = new DragSource;
+			dragSource.addData( path, "path");
+			DragManager.doDrag(fstSource, dragSource, event);
+		}
 
-			private function dragEnterHandler(event:DragEvent):void
-			{
-				var target:List = List(event.currentTarget);
-				var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
-				DragManager.acceptDragDrop(target);
-			}
+		private function dragEnterHandler(event:DragEvent):void
+		{
+			var target:List = List(event.currentTarget);
+			var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
+			DragManager.acceptDragDrop(target);
+		}
 
-			private function dragDropHandler(event:DragEvent):void
-			{
-				var target:List = List(event.currentTarget);
-				var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
-				var pathToFile:String;
-				//var myPattern:RegExp = /\\/g;  
-				//OK pathToFile = initiator.selectedPath.toString().replace( myPattern, '\\\\') ;
-				pathToFile = initiator.selectedPath.toString();//.replace( myPattern, '\\\\') ;
-				trace("pathToFile" + pathToFile);
- 				DragManager.acceptDragDrop(target);
-				filesDataProvider.appendChild(
-					<file>
-            			<path>{pathToFile}</path>
-            		</file>
-            	);
-				xList = filesDataProvider..path;
-				trace(xList.toString());
-				trace(xList.length());
-				initiator.selectedItem = null;
-			}
-            private function onChange():void
-			{
-				trace(fsTree.selectedPath);
-			}
+		private function dragDropHandler(event:DragEvent):void
+		{
+			var target:List = List(event.currentTarget);
+			var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
+			var pathToFile:String;
+			//var myPattern:RegExp = /\\/g;  
+			//OK pathToFile = initiator.selectedPath.toString().replace( myPattern, '\\\\') ;
+			pathToFile = initiator.selectedPath.toString();//.replace( myPattern, '\\\\') ;
+			trace("pathToFile" + pathToFile);
+ 			DragManager.acceptDragDrop(target);
+			filesDataProvider.appendChild(
+				<file>
+        			<path>{pathToFile}</path>
+        		</file>
+        	);
+			xList = filesDataProvider..path;
+			trace(xList.toString());
+			trace(xList.length());
+			initiator.selectedItem = null;
+		}
+        private function onChange():void
+		{
+			trace(fsTree.selectedPath);
+		}
+		[Bindable]
+		private var xData:XML;
+		private function logon():void
+		{
+			var params:Object = {};
+			params["method"] = "login";
+			params["hostid"] = 7;
+			params["user"] = "batchass";
+			params["pass"] = "";
+			xmlService.send(params);	
+
+		}
+		private function resultHandler(event:ResultEvent):void
+		{
+			statusText.text = event.result as String;
+			xData = event.result as XML;
+			trace(xData..sessiontoken);
+		}
 	]]>
 </mx:Script>
+<mx:HTTPService id="xmlService" 
+	result="resultHandler(event)"
+	url="http://batchass.razuna.com/global/api/authentication.cfc"
+	resultFormat="e4x"/>
 <mx:HBox width="852" height="483">
 	<mx:VBox height="100%" verticalAlign="top">
 		<mx:Label text="Files on your local system:"  fontSize="18" fontWeight="bold"/>
@@ -68,7 +100,7 @@
 	<mx:VBox height="471" width="331">
 		<mx:Label text="Razuna server" fontWeight="bold" fontSize="18"/>
 		<mx:Canvas width="249" height="115">
-			<mx:Button x="183" y="87" label="Login" id="loginBtn"/>
+			<mx:Button x="183" y="87" label="Login" id="loginBtn" click="logon()"/>
 			<mx:Label x="0" y="33" text="Username:"/>
 			<mx:Label x="0" y="59" text="Password:"/>
 			<mx:TextInput x="71" y="57" id="password" displayAsPassword="true"/>
@@ -81,6 +113,6 @@
 		
 	</mx:VBox>
 </mx:HBox>
-	<mx:Label x="10" y="491" text="Last modification on april 26th 2009"/>
+	<mx:TextArea x="10" y="491" text="Last modification on april 26th 2009" id="statusText" width="804" height="129"/>
 	
 </mx:WindowedApplication>
