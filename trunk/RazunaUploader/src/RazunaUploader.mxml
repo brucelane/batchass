@@ -19,6 +19,7 @@
 		import mx.containers.Canvas;
 		import mx.core.DragSource;
 		
+		private var sessiontoken:String;
 		private var filesDataProvider:XML;
 		[Bindable]
 		private var xList:XMLList;
@@ -71,19 +72,25 @@
 			trace(fsTree.selectedPath);
 		}
 		[Bindable]
-		private var xData:XML = new XML();
+		private var xData:XML;
 		private function logon():void
 		{
-			var myService:AuthenticationService= new AuthenticationService();
+			var myService:AuthenticationService= new AuthenticationService(null, urltext.text);
 			myService.addloginEventListener(resultHandler);
-			myService.login(7,"batchass","");
+			myService.login(int(hostid.text), username.text, password.text);
 		}
 		private function resultHandler(event:LoginResultEvent):void
 		{
-			statusText.text = event.result as String;
-/* 			xData = event.result as XML;
-			trace(xData..sessiontoken);
- */		}
+			var result:String =	event.result
+			statusText.text = result;
+			xData = XML(result);
+			sessiontoken = xData..sessiontoken;
+			trace(sessiontoken);
+			if (sessiontoken.length<30) 
+				loginInfo.text = sessiontoken //Access denied
+			else
+				loginInfo.text = "You are successfully logged in.";
+ 	}
 	]]>
 </mx:Script>
 
@@ -95,16 +102,21 @@
 	</mx:VBox>
 	<mx:VBox height="471" width="331">
 		<mx:Label text="Razuna server" fontWeight="bold" fontSize="18"/>
-		<mx:Canvas width="249" height="115">
-			<mx:Button x="183" y="87" label="Login" id="loginBtn" click="logon()"/>
-			<mx:Label x="0" y="33" text="Username:"/>
-			<mx:Label x="0" y="59" text="Password:"/>
-			<mx:TextInput x="71" y="57" id="password" displayAsPassword="true"/>
-			<mx:TextInput x="71" y="31" id="username"/>
+		<mx:Canvas width="319" height="127">
+			<mx:Button x="253" y="83" label="Login" id="loginBtn" click="logon()"/>
+			<mx:Label x="0" y="59" text="Username:"/>
+			<mx:Label x="0" y="85" text="Password:"/>
+			<mx:TextInput x="71" y="83" id="password" displayAsPassword="true"/>
+			<mx:TextInput x="71" y="57" id="username"/>
+			<mx:Label x="0" y="7" text="Url:"/>
+			<mx:TextInput x="71" y="5" id="urltext" text="http://yourname.razuna.com" width="238"/>
+			<mx:TextInput x="71" y="31" id="hostid" width="30" text="1"/>
+			<mx:Label x="0" y="34" text="HostID:"/>
+			<mx:Label x="10" y="111" text="Please login to your Digital Asset Management" id="loginInfo"/>
 			
 		</mx:Canvas>
 		<mx:Label text="Drag files here:"/>
-		<mx:List width="303" height="290" id="fileList" dropEnabled="true" 
+		<mx:List width="303" height="280" id="fileList" dropEnabled="true" 
 			dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)" dataProvider="{xList}"></mx:List>
 		
 	</mx:VBox>
