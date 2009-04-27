@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectRoot>
+<url value="http://batchass.razuna.com/global/api/authentication.cfc?WSDL">
+<service name="authenticationService">
+<port name="authentication.cfc">
+<operations>
+<operation name="login(hostid: double, user: string, pass: string): string"/>
+</operations>
+</port>
+</service>
+<asPackage absPath="E:\Projects\onyx\RazunaUploader\src\com\razuna" name="com.razuna">
+<mainAsClass name="AuthenticationService.as"/>
+<otherAsClass name="BaseauthenticationServiceSchema.as"/>
+<otherAsClass name="IauthenticationService.as"/>
+<otherAsClass name="Login_request.as"/>
+<otherAsClass name="BaseauthenticationService.as"/>
+<otherAsClass name="LoginResultEvent.as"/>
+</asPackage>
+</url>
+</projectRoot>
