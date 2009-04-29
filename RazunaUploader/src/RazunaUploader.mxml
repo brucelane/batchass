@@ -3,12 +3,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Written by Bruce LANE http://www.batchass.fr
-// April 27th 2009
-//
+// April 29th 2009
+// TODO: tab orders
+// TODO: dynamin webservice url
 // http://batchass.razuna.com/global/api/authentication.cfc?method=login&hostid=7&user=batchass&pass=
 ////////////////////////////////////////////////////////////////////////////////
 -->
-<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" creationComplete="init()" width="864" height="632">
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" 
+	layout="vertical" creationComplete="init()" 
+    nativeDragEnter="dragEnterHandler( event )"
+    nativeDragDrop="dragDropHandler( event )"
+	width="864" height="632">
 <mx:Script>
 	<![CDATA[
 		import com.razuna.LoginResultEvent;
@@ -18,6 +23,8 @@
 		import mx.managers.DragManager;
 		import mx.containers.Canvas;
 		import mx.core.DragSource;
+		import flash.desktop.ClipboardTransferMode;
+		import flash.filesystem.File;
 		
 		private var sessiontoken:String;
 		private var filesDataProvider:XML;
@@ -28,35 +35,40 @@
             filesDataProvider = 
             	<files>
             	</files>;
-            	
+            //loadCredentials();
 		}
-		private function beginDragAndDrop(event:MouseEvent):void
+		
+		private function saveCredentials():void
 		{
-			var fstSource:FileSystemTree = FileSystemTree(event.currentTarget);
-			var path:String = fstSource.selectedPath;
-			trace(path);
-			var dragSource:DragSource = new DragSource;
-			dragSource.addData( path, "path");
-			DragManager.doDrag(fstSource, dragSource, event);
+			var bytes:ByteArray = new ByteArray();
+			bytes.writeUTFBytes( username.text );
+			EncryptedLocalStore.setItem( "username", bytes );
+		}
+		private function loadCredentials():void
+		{
+			var bytes:ByteArray = EncryptedLocalStore.getItem( "username" );
+			username.text = bytes.readUTFBytes( bytes.length );
+		}
+		// called when something is dragged onto the component
+		private function dragEnterHandler(event:NativeDragEvent):void
+		{
+ 			if ( event.clipboard.hasFormat( ClipboardFormats.FILE_LIST_FORMAT ) )
+			{
+				NativeDragManager.acceptDragDrop( this );
+			}
 		}
 
-		private function dragEnterHandler(event:DragEvent):void
+		private function dragDropHandler(event:NativeDragEvent):void
 		{
-			var target:List = List(event.currentTarget);
-			var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
-			DragManager.acceptDragDrop(target);
-		}
-
-		private function dragDropHandler(event:DragEvent):void
-		{
-			var target:List = List(event.currentTarget);
-			var initiator:FileSystemTree = FileSystemTree(event.dragInitiator);
-			var pathToFile:String;
-			//var myPattern:RegExp = /\\/g;  
-			//OK pathToFile = initiator.selectedPath.toString().replace( myPattern, '\\\\') ;
-			pathToFile = initiator.selectedPath.toString();//.replace( myPattern, '\\\\') ;
+			var a:Array = event.clipboard.getData( ClipboardFormats.FILE_LIST_FORMAT, ClipboardTransferMode.CLONE_ONLY ) as Array;
+			
+			var file:File = a[0] as File;
+			
+			var pathToFile:String = file.nativePath;
+			/*var myPattern:RegExp = /\\/g;  
+			pathToFile = initiator.selectedPath.toString().replace( myPattern, '\\\\') ;*/
+			//pathToFile = initiator.selectedPath.toString();//.replace( myPattern, '\\\\') ;
 			trace("pathToFile" + pathToFile);
- 			DragManager.acceptDragDrop(target);
 			filesDataProvider.appendChild(
 				<file>
         			<path>{pathToFile}</path>
@@ -65,11 +77,6 @@
 			xList = filesDataProvider..path;
 			trace(xList.toString());
 			trace(xList.length());
-			initiator.selectedItem = null;
-		}
-        private function onChange():void
-		{
-			trace(fsTree.selectedPath);
 		}
 		[Bindable]
 		private var xData:XML;
@@ -93,34 +100,33 @@
  	}
 	]]>
 </mx:Script>
-
-<mx:HBox width="862" height="483">
-	<mx:VBox height="100%" verticalAlign="top">
-		<mx:Label text="Files on your local system:"  fontSize="18" fontWeight="bold"/>
-		<mx:FileSystemTree id="fsTree" width="501" height="437" mouseDown="beginDragAndDrop(event)" 
-			dragEnabled="true" showExtensions="true" allowMultipleSelection="true" change="onChange()"/>
-	</mx:VBox>
-	<mx:VBox height="471" width="331">
-		<mx:Label text="Razuna server" fontWeight="bold" fontSize="18"/>
-		<mx:Canvas width="329" height="135">
-			<mx:Button x="253" y="83" label="Login" id="loginBtn" click="logon()"/>
-			<mx:Label x="0" y="59" text="Username:"/>
-			<mx:Label x="0" y="85" text="Password:"/>
-			<mx:TextInput x="71" y="83" id="password" displayAsPassword="true"/>
-			<mx:TextInput x="71" y="57" id="username"/>
-			<mx:Label x="0" y="7" text="Url:"/>
-			<mx:TextInput x="71" y="5" id="urltext" text="http://yourname.razuna.com" width="238"/>
-			<mx:TextInput x="71" y="31" id="hostid" width="30" text="1"/>
-			<mx:Label x="0" y="34" text="HostID:"/>
+<mx:VBox>
+	<mx:Panel title="Razuna server" width="331" height="214">
+		<mx:Form>
+			<mx:FormItem label="Url:">
+				<mx:TextInput id="urltext" text="http://yourname.razuna.com"/>
+			</mx:FormItem>
+			<mx:FormItem label="HostID:">
+				<mx:TextInput id="hostid"/>
+			</mx:FormItem>
+			<mx:FormItem label="Username:">
+				<mx:TextInput id="username"/>
+			</mx:FormItem>
+			<mx:FormItem label="Password:">
+				<mx:TextInput id="password" displayAsPassword="true"/>
+			</mx:FormItem>
 			<mx:Label x="10" y="111" text="Please login to your Digital Asset Management" id="loginInfo"/>
-			
-		</mx:Canvas>
-		<mx:Label text="Drag files here:"/>
-		<mx:List width="303" height="267" id="fileList" dropEnabled="true" 
-			dragEnter="dragEnterHandler(event)" dragDrop="dragDropHandler(event)" dataProvider="{xList}"></mx:List>
-		
-	</mx:VBox>
-</mx:HBox>
-	<mx:TextArea x="10" y="491" text="Last modification on april 26th 2009" id="statusText" width="804" height="129"/>
+		</mx:Form>
+		<mx:ControlBar>
+			<mx:Button label="Sauver" click="saveCredentials()" />
+			<mx:Button label="Charger" click="loadCredentials()" />
+		</mx:ControlBar>	
+	</mx:Panel>
+	<mx:Label text="Files to be uploaded, please drag files here:"/>
+	<mx:List width="776" height="267" id="fileList" dataProvider="{xList}"></mx:List>
+	
+	<mx:TextArea  text="Last modification on april 26th 2009" id="statusText" width="804" height="129"/>
+	
+</mx:VBox>
 	
 </mx:WindowedApplication>
