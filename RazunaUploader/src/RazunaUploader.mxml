@@ -3,9 +3,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Written by Bruce LANE http://www.batchass.fr
-// April 29th 2009
+// April 30 2009
 // TODO: tab orders
-// TODO: dynamin webservice url
+// TODO: dynamic webservice url
 // http://batchass.razuna.com/global/api/authentication.cfc?method=login&hostid=7&user=batchass&pass=
 ////////////////////////////////////////////////////////////////////////////////
 -->
@@ -13,7 +13,7 @@
 	layout="vertical" creationComplete="init()" 
     nativeDragEnter="dragEnterHandler( event )"
     nativeDragDrop="dragDropHandler( event )"
-	width="864" height="632">
+	width="864" height="650">
 <mx:Script>
 	<![CDATA[
 		import com.razuna.LoginResultEvent;
@@ -30,24 +30,56 @@
 		private var filesDataProvider:XML;
 		[Bindable]
 		private var xList:XMLList;
+		[Embed(source="../images/razuna_logo-200.png")]
+		[Bindable]
+        public var imgCls:Class;
+        
 		private function init():void
 		{
             filesDataProvider = 
             	<files>
             	</files>;
-            //loadCredentials();
+            loadCredentials();
 		}
 		
+		private function clearCredentials():void
+		{
+			EncryptedLocalStore.removeItem( "username" );
+			EncryptedLocalStore.removeItem( "password" );
+			EncryptedLocalStore.removeItem( "hostid" );
+			EncryptedLocalStore.removeItem( "url" );
+			EncryptedLocalStore.removeItem( "remember" );
+		}
 		private function saveCredentials():void
 		{
-			var bytes:ByteArray = new ByteArray();
-			bytes.writeUTFBytes( username.text );
-			EncryptedLocalStore.setItem( "username", bytes );
+			var uBytes:ByteArray = new ByteArray();
+			uBytes.writeUTFBytes( username.text );
+			EncryptedLocalStore.setItem( "username", uBytes );
+			var pBytes:ByteArray = new ByteArray();
+			pBytes.writeUTFBytes( password.text );
+			EncryptedLocalStore.setItem( "password", pBytes );
+			var hBytes:ByteArray = new ByteArray();
+			hBytes.writeUTFBytes( hostid.text );
+			EncryptedLocalStore.setItem( "hostid", hBytes );
+			var lBytes:ByteArray = new ByteArray();
+			lBytes.writeUTFBytes( urltext.text );
+			EncryptedLocalStore.setItem( "url", lBytes );
+			var sBytes:ByteArray = new ByteArray();
+			sBytes.writeUTFBytes( 'true' );
+			EncryptedLocalStore.setItem( "remember", sBytes );
 		}
 		private function loadCredentials():void
 		{
-			var bytes:ByteArray = EncryptedLocalStore.getItem( "username" );
-			username.text = bytes.readUTFBytes( bytes.length );
+			var uBytes:ByteArray = EncryptedLocalStore.getItem( "username" );
+			if (uBytes) username.text = uBytes.readUTFBytes( uBytes.length );
+			var pBytes:ByteArray = EncryptedLocalStore.getItem( "password" );
+			if (pBytes) password.text = pBytes.readUTFBytes( pBytes.length );
+			var hBytes:ByteArray = EncryptedLocalStore.getItem( "hostid" );
+			if (hBytes) hostid.text = hBytes.readUTFBytes( hBytes.length );
+			var lBytes:ByteArray = EncryptedLocalStore.getItem( "url" );
+			if (lBytes) urltext.text = lBytes.readUTFBytes( lBytes.length );
+			var sBytes:ByteArray = EncryptedLocalStore.getItem( "remember" );
+			if (sBytes) saveCB.selected = true else saveCB.selected = false;
 		}
 		// called when something is dragged onto the component
 		private function dragEnterHandler(event:NativeDragEvent):void
@@ -82,6 +114,7 @@
 		private var xData:XML;
 		private function logon():void
 		{
+			if (saveCB.selected) saveCredentials();
 			var myService:AuthenticationService= new AuthenticationService();
 			myService.addloginEventListener(resultHandler);
 			myService.login(int(hostid.text), username.text, password.text);
@@ -100,8 +133,10 @@
  	}
 	]]>
 </mx:Script>
+
 <mx:VBox>
-	<mx:Panel title="Razuna server" width="331" height="214">
+	<mx:Image source="{imgCls}" />
+	<mx:Panel title="Razuna server" width="331" height="241">
 		<mx:Form>
 			<mx:FormItem label="Url:">
 				<mx:TextInput id="urltext" text="http://yourname.razuna.com"/>
@@ -118,14 +153,14 @@
 			<mx:Label x="10" y="111" text="Please login to your Digital Asset Management" id="loginInfo"/>
 		</mx:Form>
 		<mx:ControlBar>
-			<mx:Button label="Sauver" click="saveCredentials()" />
-			<mx:Button label="Charger" click="loadCredentials()" />
+			<mx:CheckBox label="Remember" id="saveCB" click="if (!saveCB.selected) clearCredentials()"/>
+			<mx:Button label="Login" click="logon()" />
 		</mx:ControlBar>	
 	</mx:Panel>
 	<mx:Label text="Files to be uploaded, please drag files here:"/>
-	<mx:List width="776" height="267" id="fileList" dataProvider="{xList}"></mx:List>
+	<mx:List width="776" height="178" id="fileList" dataProvider="{xList}"></mx:List>
 	
-	<mx:TextArea  text="Last modification on april 26th 2009" id="statusText" width="804" height="129"/>
+	<mx:TextArea  text="Last modification on april 30 2009" id="statusText" width="777" height="90"/>
 	
 </mx:VBox>
 	
