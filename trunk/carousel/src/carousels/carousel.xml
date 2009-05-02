@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<carousels>
+	<rubrique id="1" nom="06 en Scène 2009" fichier="06enscene.xml" />
+	<rubrique id="2" nom="Pantiero 2009" fichier="pantiero.xml" />
+</carousels>
