@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<main>
+	<config>
+		<rotate rad="400" dark="88" />      	<!-- rad:rayon du cercle(en pixel), dark:coeff de luminosite vers le fond(0 a 255) -->
+		<thumb wMax="192" hMax="192" />	    	<!-- wMax:largeur de la miniature, hMax:hauteur de la miniature -->
+		<view type="reduce" thumb="reScale"/> 	<!-- type: "noResize","reduce","fullView" - thumb: "noScale","reScale"","fullScale"-->
+	</config>
+	<images path="images/06enscene/david640/">
+		<img id="0" url="ablanc91.jpg" />
+		<img id="1" url="ax01.jpg" />
+		<img id="2" url="anoir88.jpg" />
+		<img id="3" url="ax66.jpg" />
+		<img id="4" url="x72.jpg" />
+		<img id="5" url="xtop81.jpg" />
+		<img id="6" url="ax71.jpg" />
+		<img id="7" url="ax04.jpg" />
+		<img id="8" url="bruce36.jpg" />
+		<img id="9" url="xtop85.jpg" />
+		<img id="10" url="x49.jpg" />
+		<img id="11" url="x46.jpg" />
+	</images>
+</main>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"     
+	xmlns:flashcomps="flashcomps.*" 
+	preloader="libs.Chargement"
+    preinitialize="preInit()"
+    creationComplete="init()"
+    backgroundColor="#000000"
+	layout="absolute">
+	<mx:Script>
+		<![CDATA[
+			import mx.core.UIComponent;
+			import mx.states.AddChild;
+			import flashcomps.Carousel;
+			private var carousels:XML;
+			private var cr:flashcomps.Carousel;
+			private var loader:Loader;
+			private	var urlImage:String;
+			private var _bmpFond:Bitmap; //le bitmap affiché
+			private var spr:Sprite;
+			private var fpsUIComponent:UIComponent;
+
+			private function preInit():void
+			{
+				var urlCar:String;
+	  			loader = new Loader ( ) ;
+				loader.contentLoaderInfo.addEventListener ( Event.COMPLETE, onImageLoaded ) ;
+				loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler ) ; 
+				urlCar = "carousels/carousel.xml?t=" + new Date().getMilliseconds();
+				var ldrCaroXML:URLLoader = new URLLoader( new URLRequest(urlCar) );
+				ldrCaroXML.addEventListener(Event.COMPLETE, carXML);
+				ldrCaroXML.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );  
+ 			}
+			private function init():void
+			{
+ 	          	cr = new flashcomps.Carousel(); 
+            	panelCarousel.addChild(cr);
+            	cr.addEventListener( "imageSelect", selectionImage);
+				cr.loadXML("06enscene.xml");
+				spr = new Sprite();
+				fpsUIComponent = new UIComponent();
+				panelCarousel.addChild(fpsUIComponent);		
+				fpsUIComponent.addChild( spr );
+			}
+			private function carXML(e:Event):void
+			{
+	            trace("11>> carXML");
+				carousels = new XML(e.target.data);
+				catalogue.dataProvider = carousels.rubrique;
+            	super.initialized = true;
+			} 
+			private function ioErrorHandler( evt:IOErrorEvent ):void 
+			{
+	            trace("Erreur chargement..." + evt.text);
+	        }
+			private function onImageLoaded( evt:Event ):void
+			{
+				if (evt) 
+				{
+					//this.addChild(spr);
+					//_bmpFond = null;
+					var _bData:Bitmap = evt.target.content as Bitmap;
+					//_bmpFond = new Bitmap(_bData);
+					spr.graphics.clear();
+					spr.graphics.beginBitmapFill(_bData.bitmapData);
+					spr.graphics.drawRect(0, 0, _bData.width, _bData.height);
+            		spr.graphics.endFill();
+					if (evt.target.content is BitmapData) trace("BitmapData");
+					if (evt.target.content is Bitmap) trace("Bitmap");
+					panelCarousel.addChild(fpsUIComponent);	
+					fpsUIComponent.y = 300;	
+				}
+			}
+			private function carouselCloseHandler(event:Event):void 
+			{ 
+            	//panelCarousel.removeAllChildren();
+            	cr = null;
+            	cr = new flashcomps.Carousel(); 
+            	panelCarousel.addChild(cr);
+            	cr.addEventListener( "imageSelect", selectionImage);
+				cr.loadXML(ComboBox(event.target).selectedItem.@fichier);
+	        }   
+	        private function selectionImage(event:TextEvent):void
+	        {
+	        	urlImage = event.text;
+				loader.load( new URLRequest(event.text) ) ;
+	            //panelCarousel.removeAllChildren();
+				//cr = null;
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox  >
+		<mx:ComboBox id="catalogue" labelField="@nom" close="carouselCloseHandler(event)"  width="141" x="155" y="6" />
+		
+		<mx:Canvas id="panelCarousel" width="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
+			<!--<mx:Image x="54" y="10" width="900" height="400" id="carImage"/>-->
+		
+		
+	</mx:VBox>
+		
+</mx:Application>
