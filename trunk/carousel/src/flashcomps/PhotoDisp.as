@@ -110,15 +110,15 @@ package flashcomps {
 		
 		//Fonction d�clench�e lors du clic sur la miniature
 		private function mouseThumb(evt:MouseEvent):void {
-			photo.removeEventListener(MouseEvent.CLICK, mouseThumb);	//Retire l'�v�nement de souris
-			photo.buttonMode = false;									//Retire le comportement de Bouton
+			//photo.removeEventListener(MouseEvent.CLICK, mouseThumb);	//Retire l'�v�nement de souris
+			//photo.buttonMode = false;									//Retire le comportement de Bouton
 			dispatchEvent(new Event("MouseThumb"));						//Lance l'�v�nement vers la base
 			depMtx = this.transform.matrix3D;							//stocke les infos de 3D de la photo pour l'y remettre plus tard
 			/* tween = new Tween(prop, "tween", Regular.easeInOut, 0, 1, .5, true);	//Tween d'animation pour le passage en plein �cran de la photo
 			tween.addEventListener(TweenEvent.MOTION_CHANGE, viewImg);				//Ev�nement en cours d'animation
 			tween.addEventListener(TweenEvent.MOTION_FINISH, viewEnd); */				//Ev�nement en fin d'animation
-			photo = null;
-			graphics.clear();
+			//photo = null;
+			//graphics.clear();
 		}
 		
 		//Fonction d�clench�e lors du clic sur la photo pleine page
