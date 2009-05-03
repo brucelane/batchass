@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectRoot>
+<url value="http://api.razuna.com/global/api/authentication.cfc?WSDL">
+<service name="authenticationService">
+<port name="authentication.cfc">
+<operations>
+<operation name="login(hostid: double, user: string, pass: string): string"/>
+</operations>
+</port>
+</service>
+<asPackage absPath="E:\Projects\onyx\carousel\src\com\razuna" name="com.razuna">
+<mainAsClass name="AuthenticationService.as"/>
+<otherAsClass name="BaseauthenticationServiceSchema.as"/>
+<otherAsClass name="IauthenticationService.as"/>
+<otherAsClass name="Login_request.as"/>
+<otherAsClass name="BaseauthenticationService.as"/>
+<otherAsClass name="LoginResultEvent.as"/>
+</asPackage>
+</url>
+<url value="http://api.razuna.com/global/api/folder.cfc?WSDL">
+<service name="folderService">
+<port name="folder.cfc">
+<operations>
+<operation name="getassets(folderid: double, sessiontoken: string, maxrows: double, showsubfolders: double, show: string, offset: double): string"/>
+<operation name="getfolders(folderid: double, sessiontoken: string): string"/>
+</operations>
+</port>
+</service>
+<asPackage absPath="E:\Projects\onyx\carousel\src\com\razuna" name="com.razuna">
+<mainAsClass name="FolderService.as"/>
+<otherAsClass name="Getassets_request.as"/>
+<otherAsClass name="BasefolderService.as"/>
+<otherAsClass name="GetfoldersResultEvent.as"/>
+<otherAsClass name="GetassetsResultEvent.as"/>
+<otherAsClass name="Getfolders_request.as"/>
+<otherAsClass name="IfolderService.as"/>
+<otherAsClass name="BasefolderServiceSchema.as"/>
+</asPackage>
+</url>
+</projectRoot>
