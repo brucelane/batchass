@@ -5,7 +5,7 @@
     preinitialize="preInit()"
     creationComplete="init()"
     backgroundColor="#000000"
-	layout="absolute">
+	layout="vertical">
 	<mx:Script>
 		<![CDATA[
 			import mx.core.UIComponent;
@@ -18,6 +18,7 @@
 			private var _bmpFond:Bitmap; //le bitmap affiché
 			private var spr:Sprite;
 			private var fpsUIComponent:UIComponent;
+			private var currentXmlFile:String;
 
 			private function preInit():void
 			{
@@ -35,7 +36,8 @@
  	          	cr = new flashcomps.Carousel(); 
             	panelCarousel.addChild(cr);
             	cr.addEventListener( "imageSelect", selectionImage);
-				cr.loadXML("06enscene.xml");
+            	currentXmlFile = "06enscene.xml";
+				cr.loadXML(currentXmlFile);
 				spr = new Sprite();
 				fpsUIComponent = new UIComponent();
 				panelCarousel.addChild(fpsUIComponent);		
@@ -64,20 +66,25 @@
 					spr.graphics.beginBitmapFill(_bData.bitmapData);
 					spr.graphics.drawRect(0, 0, _bData.width, _bData.height);
             		spr.graphics.endFill();
-					if (evt.target.content is BitmapData) trace("BitmapData");
-					if (evt.target.content is Bitmap) trace("Bitmap");
+					/* if (evt.target.content is BitmapData) trace("BitmapData");
+					if (evt.target.content is Bitmap) trace("Bitmap"); */
 					panelCarousel.addChild(fpsUIComponent);	
-					fpsUIComponent.y = 300;	
+					fpsUIComponent.x = 710/2 - _bData.width/2;
+					fpsUIComponent.y = 350;	
 				}
 			}
 			private function carouselCloseHandler(event:Event):void 
 			{ 
-            	//panelCarousel.removeAllChildren();
-            	cr = null;
-            	cr = new flashcomps.Carousel(); 
-            	panelCarousel.addChild(cr);
-            	cr.addEventListener( "imageSelect", selectionImage);
-				cr.loadXML(ComboBox(event.target).selectedItem.@fichier);
+				if ( ComboBox(event.target).selectedItem.@fichier != currentXmlFile )
+				{
+					currentXmlFile = ComboBox(event.target).selectedItem.@fichier;
+	            	panelCarousel.removeAllChildren();
+	            	cr = null;
+	            	cr = new flashcomps.Carousel(); 
+	            	panelCarousel.addChild(cr);
+	            	cr.addEventListener( "imageSelect", selectionImage);
+					cr.loadXML(currentXmlFile);
+				}
 	        }   
 	        private function selectionImage(event:TextEvent):void
 	        {
@@ -89,8 +96,10 @@
 		]]>
 	</mx:Script>
 	<mx:VBox  >
-		<mx:ComboBox id="catalogue" labelField="@nom" close="carouselCloseHandler(event)"  width="141" x="155" y="6" />
-		
+		<mx:HBox width="100%">
+			<mx:Label text="Photos David Vincendeau et Vincent Bernardin, sélectionner un album:" color="#AFBEC1" fontWeight="bold"/>
+			<mx:ComboBox id="catalogue" labelField="@nom" close="carouselCloseHandler(event)"  width="141"/>
+		</mx:HBox>
 		<mx:Canvas id="panelCarousel" width="100%" horizontalScrollPolicy="off" verticalScrollPolicy="off" />
 			<!--<mx:Image x="54" y="10" width="900" height="400" id="carImage"/>-->
 		

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<main>
+	<config>
+		<rotate rad="400" dark="88" />      	<!-- rad:rayon du cercle(en pixel), dark:coeff de luminosite vers le fond(0 a 255) -->
+		<thumb wMax="192" hMax="192" />	    	<!-- wMax:largeur de la miniature, hMax:hauteur de la miniature -->
+		<view type="reduce" thumb="reScale"/> 	<!-- type: "noResize","reduce","fullView" - thumb: "noScale","reScale"","fullScale"-->
+	</config>
+	<images path="images/06enscene/vincent640/">
+		<img id="0" url="IMGP1252.jpg" />
+		<img id="1" url="IMGP1249.jpg" />
+		<img id="2" url="IMGP1260.jpg" />
+		<img id="3" url="IMGP1272.jpg" />
+		<img id="4" url="IMGP1285.jpg" />
+		<img id="5" url="IMGP6385_filtered.jpg" />
+		<img id="6" url="IMGP6393-NB2.jpg" />
+		<img id="7" url="IMGP6391-NB_filtered.jpg" />
+		<img id="8" url="IMGP6388-NB_filtered.jpg" />
+		<img id="9" url="IMGP1262.jpg" />
+		<img id="10" url="IMGP6386.jpg" />
+		<img id="11" url="IMGP1279.jpg" />
+	</images>
+</main>
