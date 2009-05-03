@@ -1,4 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+////////////////////////////////////////////////////////////////////////////////
+//
+// Written by Bruce LANE http://www.batchass.fr
+// May 3rd 2009
+// 1. Authenticate
+// 2. Get the folder id
+// 3. Load images from folder
+// You can also search and show images
+// Or videos and documents
+// http://api.razuna.com/global/api/authentication.cfc?method=login&hostid=7&user=batchass&pass=
+////////////////////////////////////////////////////////////////////////////////
+-->
+
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"     
 	xmlns:flashcomps="flashcomps.*" 
 	preloader="libs.Chargement"
@@ -8,9 +22,16 @@
 	layout="vertical">
 	<mx:Script>
 		<![CDATA[
+			import com.razuna.GetfoldersResultEvent;
+			import com.razuna.FolderService;
 			import mx.core.UIComponent;
 			import mx.states.AddChild;
 			import flashcomps.Carousel;
+			import com.razuna.LoginResultEvent;
+			import com.razuna.AuthenticationService;
+
+			private var sessiontoken:String;
+			private	var myService:AuthenticationService;
 			private var carousels:XML;
 			private var cr:flashcomps.Carousel;
 			private var loader:Loader;
@@ -33,6 +54,7 @@
  			}
 			private function init():void
 			{
+				logon();
  	          	cr = new flashcomps.Carousel(); 
             	panelCarousel.addChild(cr);
             	cr.addEventListener( "imageSelect", selectionImage);
@@ -93,9 +115,45 @@
 	            //panelCarousel.removeAllChildren();
 				//cr = null;
 			}
+			[Bindable]
+			private var xData:XML;
+			private function logon():void
+			{
+				myService = new AuthenticationService();
+				myService.addloginEventListener( loginListener );
+				myService.login(7, 'batchass', 'sunsix');
+			}
+			private function loginListener(event:LoginResultEvent):void
+			{
+				var result:String =	event.result;
+				statusText.text = result;
+				xData = XML(result);
+				sessiontoken = xData..sessiontoken;
+				trace(sessiontoken);
+				if (sessiontoken.length<30) 
+					statusText.text = sessiontoken //Access denied
+				else
+				{
+					statusText.text = "You are successfully logged in.";
+					var folderService:FolderService = new FolderService();
+					//folderService.getassets( sessiontoken, 1, 0, 0, 20, 'img');
+					folderService.addgetfoldersEventListener( folderListener );
+					folderService.getfolders( sessiontoken, 0 );
+					
+				}
+	 		}
+			private function folderListener(event:GetfoldersResultEvent):void
+			{
+				var result:String =	event.result;
+				statusText.text = result;
+				/*xData = XML(result);
+				sessiontoken = xData..sessiontoken;
+				trace(sessiontoken);*/
+	 		}
 		]]>
 	</mx:Script>
 	<mx:VBox  >
+		<mx:TextArea  text="Last modification on april 26th 2009" id="statusText" width="804" height="129"/>
 		<mx:HBox width="100%">
 			<mx:Label text="Photos David Vincendeau et Vincent Bernardin, sélectionner un album:" color="#AFBEC1" fontWeight="bold"/>
 			<mx:ComboBox id="catalogue" labelField="@nom" close="carouselCloseHandler(event)"  width="141"/>
