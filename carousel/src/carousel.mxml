@@ -3,7 +3,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 // Written by Bruce LANE http://www.batchass.fr
-// May 3rd 2009
+// May 4 2009
 // 1. Authenticate
 // 2. Get the folder id
 // 3. Load images from folder
@@ -121,7 +121,7 @@
 			{
 				myService = new AuthenticationService();
 				myService.addloginEventListener( loginListener );
-				myService.login(7, 'batchass', 'sunsix');
+				myService.login(7, 'batchass', '');
 			}
 			private function loginListener(event:LoginResultEvent):void
 			{
