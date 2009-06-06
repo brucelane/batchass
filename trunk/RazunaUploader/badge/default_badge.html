@@ -56,11 +56,11 @@ if (hasReqestedVersion) {
 		'name','badge',
 		'allowscriptaccess','all',
 		'pluginspage','http://www.macromedia.com/go/getflashplayer',
-		'flashvars','appname=Razuna%20Uploader&appurl=http://www.batchass.fr/razuna/RazunaUploader.air&airversion=1.5&imageurl=razunair.jpg',
+		'flashvars','appname=Razuna%20Desktop&appurl=http://www.batchass.fr/razuna/RazunaDesktop.air&airversion=1.5&imageurl=razunair.jpg',
 		'movie','badge' ); //end AC code
 
 } else {  // Flash Player is too old or we can't detect the plugin
-	document.write('<table id="AIRDownloadMessageTable"><tr><td>Download <a href="myapp.air">My Application</a> now.<br /><br /><span id="AIRDownloadMessageRuntime">This application requires the <a href="');
+	document.write('<table id="AIRDownloadMessageTable"><tr><td>Download <a href="RazunaDesktop.air">Razuna Desktop</a> now.<br /><br /><span id="AIRDownloadMessageRuntime">This application requires the <a href="');
 	
 	var platform = 'unknown';
 	if (typeof(window.navigator.platform) != undefined)
