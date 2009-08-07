@@ -41,7 +41,7 @@
 		private const filter:BlurFilter		=  new BlurFilter(0, 0);
 		
 
-		public var preblur:Number			= 0;
+		public var preblur:Number			= .4;
 		/**
 		 * 	@constructor
 		 */
@@ -94,12 +94,9 @@
 			removeEventListener(MouseEvent.MOUSE_UP, _mouseUp); */
 		}
 		override public function render(info:RenderInfo):void {
-			for each (var branch:Branch in branches) {
-				branch.render(source);
-			}
 			_currentBlur	+= preblur;
 			
-			if (_currentBlur >= 2) {
+			/* if (_currentBlur >= 2) {
 				var factor:int = _currentBlur - 2;
 				
 				_currentBlur = 0;
@@ -108,6 +105,13 @@
 				filter.blurY = factor + 2;
 				
 				source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
+			} */
+			var factor:int = _currentBlur - 2;
+			filter.blurX = factor + 2;
+			filter.blurY = factor + 2;
+			source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
+			for each (var branch:Branch in branches) {
+				branch.render(source);
 			}
 			// copy to the layer
 			info.source.copyPixels(source, DISPLAY_RECT, ONYX_POINT_IDENTITY);
@@ -151,6 +155,7 @@ import flash.display.*;
 import onyx.core.*;
 import onyx.plugin.*;
 import flash.geom.Matrix;
+import flash.media.Microphone;
 final class Branch extends Sprite implements IDisposable {
 	
 	private var power:Number;
@@ -202,8 +207,9 @@ final class Branch extends Sprite implements IDisposable {
 		line=new Sprite();
 		line.graphics.moveTo(0,0);
 		addChild(line);
-		addEventListener(Event.ENTER_FRAME, onframe);
+		//addEventListener(Event.ENTER_FRAME, onframe);
 	}
+	
 
 	public function render(source:BitmapData):void {
 		matrix.a = 1;//Scale
@@ -212,11 +218,12 @@ final class Branch extends Sprite implements IDisposable {
 		matrix.d = 1;//Scale
 		matrix.tx = xSrc;
 		matrix.ty = ySrc;
+		for(var i:uint=0; i<3; i++) grow();
 		source.draw(line, matrix, null, null, null, true);
 	}
-	public function onframe(event:Event):void {
+	/* public function onframe(event:Event):void {
 		for(var i:uint=0; i<3; i++) grow();
-	}
+	} */
 	public function grow():void {
 		power*=decay;
 		r=power;
@@ -243,7 +250,7 @@ final class Branch extends Sprite implements IDisposable {
 	}
 	
 	public function stopThis():void {
-		removeEventListener(Event.ENTER_FRAME, onframe);
+		//removeEventListener(Event.ENTER_FRAME, onframe);
 		dispatchEvent(new Event(Event.COMPLETE));
 	}
 	public function dispose():void {
