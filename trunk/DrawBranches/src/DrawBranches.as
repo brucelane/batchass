@@ -37,6 +37,11 @@
 		//private var _amount:int = 40;
 		private var last:Point = new Point(0, 0);
 		public var lineColor:uint			= 0x5533FF;
+		private var _currentBlur:Number		= 0;
+		private const filter:BlurFilter		=  new BlurFilter(0, 0);
+		
+
+		public var preblur:Number			= 0;
 		/**
 		 * 	@constructor
 		 */
@@ -46,7 +51,9 @@
 			Console.output('Credits to Pierluigi PESENTI');
 			Console.output('Adapted by Bruce LANE (http://www.batchass.fr)');
 			parameters.addParameters( 
-				new ParameterColor('lineColor', 'lineColor')
+				new ParameterColor('lineColor', 'lineColor'),
+				new ParameterNumber('preblur',	'preblur', 0, 30, 0, 10)
+
 			);
 			//buildBranches();
 			addEventListener(InteractionEvent.MOUSE_DOWN, mouseDown);
@@ -59,6 +66,7 @@
 			last.x = event.localX;
 			last.y = event.localY;
 			Console.output('mouseDown' + last.x);
+			lineColor++;
 			buildBranches();
 			_mouseMove(event);
 		}
@@ -79,6 +87,7 @@
 
 			last.x = event.localX;
 			last.y = event.localY;
+			buildBranches();
 		}
 		private function _mouseUp(event:MouseEvent):void {
 			/* removeEventListener(MouseEvent.MOUSE_MOVE, _mouseMove);
@@ -87,6 +96,18 @@
 		override public function render(info:RenderInfo):void {
 			for each (var branch:Branch in branches) {
 				branch.render(source);
+			}
+			_currentBlur	+= preblur;
+			
+			if (_currentBlur >= 2) {
+				var factor:int = _currentBlur - 2;
+				
+				_currentBlur = 0;
+				
+				filter.blurX = factor + 2;
+				filter.blurY = factor + 2;
+				
+				source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
 			}
 			// copy to the layer
 			info.source.copyPixels(source, DISPLAY_RECT, ONYX_POINT_IDENTITY);
