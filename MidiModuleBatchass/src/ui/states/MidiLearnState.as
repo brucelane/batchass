@@ -211,7 +211,7 @@ package ui.states {
 				var color:ColorTransform	= _storeTransform[control];
 				if (color) {
 					var transform:Transform		= control.transform;
-					//transform.colorTransform	= DEFAULT;
+					transform.colorTransform	= new ColorTransform(.1,1,1,.3);;
 					delete _storeTransform[control];
 				}
 			} 

@@ -74,8 +74,8 @@ package ui.states {
 			if (event.type === Event.SELECT) {
 				var file:File = event.currentTarget as File;
 				
-				if (file.type !== '.mid') {
-					file = new File(file.nativePath + '.mid');
+				if (file.type !== '.txt') {
+					file = new File(file.nativePath + '.txt');
 				}
 				
 				var xml:XML = <midi/>;
@@ -85,31 +85,31 @@ package ui.states {
 				xml.appendChild(meta);
 				
 				// add windows xml
-				/*var windows:XML = <windows />;
+				/* var windows:XML = <windows />;
 			
 				for each(var registration:WindowRegistration in WindowRegistration.registrations) {
 					if(	registration.name!='KEY MAPPING' && registration.name!='PERFORMANCE') {	
 					    var win:Window = WindowRegistration.getWindow(registration.name);
-						//windows.appendChild(win.toXML(Midi));
+						windows.appendChild(win.toXML(Midi));
 					}
 				}
-				xml.appendChild(windows);*/
+				xml.appendChild(windows); */
 				
 				var x:XML;
 				for (var p:String in Parameters.getGlobalRegisteredParameters()) {
-					/* x = new XML( Parameters.getRegisteredParameter(p).toXML() );
-					x.nodeValue = Parameters.getRegisteredParameter(p).getMetaData('midi');
+					 x = new XML( Parameters.getRegisteredParameter(p).toXML() );
+					//x.nodeValue = Parameters.getRegisteredParameter(p).getMetaData('midi');
 					x.@paramspace = p;
-					xml.appendChild(x); */
+					xml.appendChild(x); 
 					var x1:XML = <parameters/>
 					x1.@paramspace = p;
 					for (var par:String in Parameters.getRegisteredParameter(p) ) {
 						Console.output(par);
-					//	x = new XML( Parameters.getRegisteredParameter(par).toXML() );
-					//	x.appendChild( (Parameters.getRegisteredParameter(par) as Parameter).getMetaData('midi'));
-					//	x1.appendChild(x);
+						/* x = new XML( Parameters.getRegisteredParameter(par).toXML() );
+						x.appendChild( (Parameters.getRegisteredParameter(par) as Parameter).getMetaData('midi'));
+						x1.appendChild(x); */
 					}
-					//xml.appendChild(x1);
+					xml.appendChild(x1);
 				}
 								
 				writeTextFile(file, xml);
