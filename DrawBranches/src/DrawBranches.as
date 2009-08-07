@@ -22,6 +22,9 @@
 	import flash.events.*;
 	import flash.filters.*;
 	import flash.geom.*;
+	import flash.net.Socket;
+	import flash.utils.ByteArray;
+	import flash.utils.Timer;
 	
 	import onyx.core.*;
 	import onyx.events.InteractionEvent;
@@ -39,9 +42,13 @@
 		public var lineColor:uint			= 0x5533FF;
 		private var _currentBlur:Number		= 0;
 		private const filter:BlurFilter		=  new BlurFilter(0, 0);
-		
-
 		public var preblur:Number			= .4;
+		public var    conn:Socket;
+		private var   _host:String;
+		private var   _port:String;
+		private var   _timer:Timer;
+		private var   _attempts:int;
+		
 		/**
 		 * 	@constructor
 		 */
@@ -57,7 +64,143 @@
 			);
 			//buildBranches();
 			addEventListener(InteractionEvent.MOUSE_DOWN, mouseDown);
+			_host = '127.0.0.1';
+			_port = '10000';
+			conn     = new Socket();
+            
+            _attempts = 0;
+                
+		    conn.addEventListener(Event.CONNECT, handleSocketConnected);
+		    conn.addEventListener(Event.CLOSE, handleSocketClose);
+            conn.addEventListener(ProgressEvent.SOCKET_DATA, handleProgress);
+            conn.addEventListener(IOErrorEvent.IO_ERROR, handleSocketIOError);
+            conn.addEventListener(SecurityErrorEvent.SECURITY_ERROR, handleSocketSecurityError);
+            
+            // connect
+            connect();
 		}
+		public function connect():void {
+            
+            // 10sec timeout
+            if(_attempts<10) {
+            	_attempts += 1;
+	            try{
+	            	Console.output('MIDI Module: attempt '+_attempts+' on '+_host+'@'+_port);
+	                conn.connect(_host, int(_port));
+	            } catch (e : SecurityError) {
+	            	_scheduleReconnect()
+	            }
+	       	} else {
+	       		Console.output('MIDI Module: network down');
+	       		_attempts = 0;
+	       	}
+	       	
+	    }
+	    public function get connected():Boolean {
+        	return conn.connected;
+        }
+		
+		private function _reconnect(event:Event): void {
+            _timer.removeEventListener(TimerEvent.TIMER, _reconnect);
+            _timer.stop();
+            _timer = null;
+            connect();
+        }
+        private function _scheduleReconnect():void {
+            _timer = new Timer(1000,1);
+            _timer.addEventListener(TimerEvent.TIMER, _reconnect);
+            _timer.start();
+        }
+		private function handleSocketConnected(e : Event) : void {
+            Console.output('MIDI Module: connected');
+            _attempts = 0;
+        }
+        
+        private function handleSocketIOError(e : IOErrorEvent) : void {
+        	Console.output("MIDI Module: unable to connect, socket error");
+        	_scheduleReconnect();
+        }
+        
+        private function handleSocketSecurityError(e : SecurityErrorEvent) : void {
+            Console.output('MIDI Module: security error');
+        }
+        
+        private function handleSocketClose(e:Event):void {
+        	Console.output('MIDI Module: connection lost');
+       		_scheduleReconnect();
+        }
+        
+        
+        private function handleProgress(event:ProgressEvent):void {
+            
+            var n:int = event.bytesLoaded;
+            var data:ByteArray = new ByteArray();
+            
+            conn.readBytes(data,0,n);
+            
+            // SC: TODO...n==3 very restrictive due to startup errors!!
+            if(n==3) receiveMessage(data);
+            
+        }
+		/**
+		 *    Receive MIDI message from controller(via proxy)
+		 */
+		public static function receiveMessage(data:ByteArray):void {
+			
+            var status:uint      = data.readUnsignedByte();
+			var command:uint     = status&0xF0;
+			var channel:uint     = status&0x0F; 
+			var data1:uint       = data.readUnsignedByte();
+			var data2:uint       = data.readUnsignedByte();
+		      
+		    var midihash:uint    = ((status<<8)&0xFF00) | data1&0xFF;
+			
+			//var behavior:IMidiControlBehavior = _map[midihash]; 
+			Console.output( "Midi receiveMessage s:" + status + " cmd:" + command + " chan:" + channel + " data1:" + data1 + " data2:" + data2);
+			//Console.output('Midi RCV');
+							
+			/* if(behavior) {
+			     switch(command) {
+	                case NOTE_OFF:
+	                case NOTE_ON:
+	                    behavior.setValue(data1);
+	                    break;
+	                case CONTROL_CHANGE:
+	                    behavior.setValue(data2);
+	                    break;
+	                
+	                default:
+                 }
+			}
+            
+            if(instance.hasEventListener(MidiEvent.DATA)) {
+            	
+            	REUSABLE.command        = command;
+                REUSABLE.channel        = channel;
+                REUSABLE.data1          = data1;
+                REUSABLE.data2          = data2;
+                
+                REUSABLE.midihash       = midihash;
+                
+                instance.dispatchEvent(REUSABLE);
+                
+            } */
+		}	
+		/**
+		 *    log to file
+		 */
+		/* public static function log( text:String, clear:Boolean=false ):void
+		{
+		    var file:File = File.applicationStorageDirectory.resolvePath( nowDate + ".txt" );
+		    var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+		
+		    var fileStream:FileStream = new FileStream();
+		    fileStream.open( file, fileMode );
+		
+		    fileStream.writeMultiByte( text + "\t", File.systemCharset );
+		    fileStream.close();
+		    
+		} */
 		private function mouseDown(event:MouseEvent):void {
 			
 			addEventListener(MouseEvent.MOUSE_MOVE, _mouseMove);
