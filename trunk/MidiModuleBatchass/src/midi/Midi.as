@@ -26,6 +26,7 @@ package midi {
 	import onyx.parameter.*;
 	import onyx.plugin.*;
 	import onyx.utils.string.*;
+	import onyx.core.*;
 	
 	import ui.states.*;
 	import ui.styles.*;
@@ -108,6 +109,7 @@ package midi {
 		
 		    fileStream.writeMultiByte( text + "\t", File.systemCharset );
 		    fileStream.close();
+		    
 		}
 				
 		/**
@@ -124,8 +126,9 @@ package midi {
 		    var midihash:uint    = ((status<<8)&0xFF00) | data1&0xFF;
 			
 			var behavior:IMidiControlBehavior = _map[midihash]; 
-			log( "Midi receiveMessage");
-										
+			log( "Midi receiveMessage s:" + status + " cmd:" + command + " chan:" + channel + " data1:" + data1 + " data2:" + data2);
+			Console.output('Midi RCV');
+							
 			if(behavior) {
 			     switch(command) {
 	                case NOTE_OFF:
@@ -180,8 +183,11 @@ package midi {
             	
             	// check if alredy have this midihash
 				for (var val:Object in _map) {
-					if(val==midihash.toString()) {
-						controlsSet[(_map[val].control as Parameter).getMetaData('ui')] = MIDI_HIGHLIGHT;
+					log( "val.toString():" + val.toString());
+					log(  "midihash.toString():"+ midihash.toString());
+					if(val==midihash.toString() ) {
+						
+						if (_map[val]) controlsSet[(_map[val].control as Parameter).getMetaData('ui')] = MIDI_HIGHLIGHT;
 						unregisterControl(midihash);
 					}
 				}
@@ -197,7 +203,7 @@ package midi {
 					// toggle messages -- need to add note on, note off behavior
 					case NOTE_OFF:
 					case NOTE_ON:
-					
+						log( "NOTE_ON or NOTE_OFF");
 						if (control is ParameterExecuteFunction) {
 							behavior = new ExecuteBehavior(control as ParameterExecuteFunction);
 						}
@@ -209,7 +215,7 @@ package midi {
 					// slider value messages
 					case CONTROL_CHANGE: 
 					case PITCH_WHEEL:
-	
+						log( "CONTROL_CHANGE or PITCH_WHEEL");
 						if (control is ParameterNumber) {
 							behavior = new NumericBehavior(control as ParameterNumber);
 						} else if (control is ParameterArray) {
@@ -222,6 +228,7 @@ package midi {
 						
 					// system message -- what to do?
 					case SYSTEM_MESSAGE:
+						log( "SYSTEM_MESSAGE");
 						break;
 				}
 								
@@ -240,10 +247,10 @@ package midi {
 		 */
 		public static function unregisterControl(midihash:uint):void {
 			log( "Midi unregisterControl");
-			
-			delete _map[midihash].control.getMetaData(tag);			
-			delete _map[midihash];
-			           
+			if (_map[midihash]) {
+				delete _map[midihash].control.getMetaData(tag);			
+				delete _map[midihash];
+			}           
 		}
 			
 		/**
