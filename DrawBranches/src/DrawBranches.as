@@ -14,8 +14,29 @@
  *  
  * Based on Branches code by Pierluigi PESENTI (http://blog.oaxoa.com/)
  * Adapted for Onyx-VJ 4 by Bruce LANE (http://www.batchass.fr)
- * version 4.0.510 last modified August 7, 2009
+ * version 4.0.510 last modified August 10, 2009
  * 
+ * un zoom arriere partant de quarks qui s'entrechoquent 
+ * et forment un noyau puis des electrons qui viennent tourner autour, 
+ * ensuite les atomes s'assemblent en molecules, 
+ * puis ca devient des blobs de cellules 
+ * qui forment un tissus puis une graine 
+ * et une plante qui pousse et les branches 
+ * qui se developpent et la foret qui grandit...
+ * des atomes qui se repoussent et s'attirent 
+ * et qui forment un chat qui le chat se fritte avec un autre chat 
+ * et un humain jette une godasse sur le chat, 
+ * puis l'humain se frite avec sa femme 
+ * et les voisins tapent contre le mur et dans le quartier, 
+ * ya des voyous qui s'embrouillent et les keufs s'en melent 
+ * et pendant ce temps, dans un pays a cote, 
+ * ya une guerre et sur toute la planete ca se chamaille 
+ * avec les animaux qui bouffent les autres et 
+ * les humains qui se bouffent puis la cam 
+ * recule encore jusqu'a l'espace et la..... silence..... rien.... 
+ * la terre tourne lentement autour du soleil..... et la..... 
+ * une meteorite qui fait un carreau sur la terre 
+ * et qui la bazarde a l'autre bout du cosmos sur un autre orbite.
  */
  package {
 	import flash.display.*;
@@ -209,7 +230,8 @@
 			last.x = event.localX;
 			last.y = event.localY;
 			Console.output('mouseDown' + last.x);
-			lineColor++;
+        	Console.output('MIDI Module: ' + conn.connected);
+			lineColor+=30;
 			buildBranches();
 			_mouseMove(event);
 		}
