@@ -37,7 +37,7 @@
 	{
 		private const source:BitmapData	= createDefaultBitmap(); 
 		private const branches:Array = [];
-		//private var _amount:int = 40;
+		private var _amount:int = 4;
 		private var last:Point = new Point(0, 0);
 		public var lineColor:uint			= 0x5533FF;
 		private var _currentBlur:Number		= 0;
@@ -239,7 +239,7 @@
 		override public function render(info:RenderInfo):void {
 			_currentBlur	+= preblur;
 			
-			/* if (_currentBlur >= 2) {
+			 /* if (_currentBlur >= 2) {
 				var factor:int = _currentBlur - 2;
 				
 				_currentBlur = 0;
@@ -248,13 +248,14 @@
 				filter.blurY = factor + 2;
 				
 				source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
-			} */
+			}  */
 			var factor:int = _currentBlur - 2;
+			if (_currentBlur >= 2) _currentBlur = 0;
 			filter.blurX = factor + 2;
 			filter.blurY = factor + 2;
 			source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
 			for each (var branch:Branch in branches) {
-				branch.render(source);
+				if ( !branch.ended ) branch.render(source);
 			}
 			// copy to the layer
 			info.source.copyPixels(source, DISPLAY_RECT, ONYX_POINT_IDENTITY);
@@ -268,14 +269,14 @@
 				newBranch.ySrc = last.y;
 				newBranch.lineColor = lineColor;
 				branches.push(newBranch);
-				
+				_amount++;
 			//}
 			
-			/* while (branches.length > _amount) {
+			while (branches.length > _amount) {
 				var branch:Branch = branches.pop();
-				
 				branch.dispose();
-			}  */
+				_amount--;
+			}  
 		}
 		
 		override public function dispose():void {
@@ -329,6 +330,7 @@ final class Branch extends Sprite implements IDisposable {
 	public var lineColor:uint = 0xFF0000;
 	public var xSrc:int = 160;
 	public var ySrc:int = 120;
+	public var ended:Boolean = false;
 		
 	private const matrix:Matrix	= new Matrix();
 
@@ -394,9 +396,13 @@ final class Branch extends Sprite implements IDisposable {
 	
 	public function stopThis():void {
 		//removeEventListener(Event.ENTER_FRAME, onframe);
+		//this.dispose();
+		//line.graphics.clear;
+		ended = true;
 		dispatchEvent(new Event(Event.COMPLETE));
 	}
 	public function dispose():void {
+		line = null;
 		graphics.clear();
 	}
 }
