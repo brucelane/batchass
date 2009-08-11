@@ -58,7 +58,7 @@
 	{
 		private const source:BitmapData	= createDefaultBitmap(); 
 		private const branches:Array = [];
-		private var _amount:int = 4;
+		public var  amount:int = 10;
 		private var last:Point = new Point(0, 0);
 		public var lineColor:uint			= 0x5533FF;
 		private var _currentBlur:Number		= 0;
@@ -80,8 +80,8 @@
 			Console.output('Adapted by Bruce LANE (http://www.batchass.fr)');
 			parameters.addParameters( 
 				new ParameterColor('lineColor', 'lineColor'),
-				new ParameterNumber('preblur',	'preblur', 0, 30, 0, 10)
-
+				new ParameterNumber('preblur', 'preblur', 0, 30, 0, 10),
+				new ParameterNumber('amount', 'max branches', 0, 30, 0, 1)
 			);
 			//buildBranches();
 			addEventListener(InteractionEvent.MOUSE_DOWN, mouseDown);
@@ -229,27 +229,13 @@
 			
 			last.x = event.localX;
 			last.y = event.localY;
-			Console.output('mouseDown' + last.x);
+			//Console.output('mouseDown' + last.x);
         	Console.output('MIDI Module: ' + conn.connected);
 			lineColor+=30;
 			buildBranches();
 			_mouseMove(event);
 		}
 		private function _mouseMove(event:MouseEvent):void {
-			
-			/* switch (type) {
-				case 'circle':
-					graphics.drawCircle(event.localX, event.localY, size);
-					break;
-				case 'square':
-					graphics.drawRect(event.localX - size / 2, event.localY - size / 2, size, size);
-					break;
-				case 'line':
-					graphics.moveTo(last.x, last.y);
-					graphics.lineTo(event.localX, event.localY);
-					break;
-			} */
-
 			last.x = event.localX;
 			last.y = event.localY;
 			buildBranches();
@@ -260,24 +246,15 @@
 		}
 		override public function render(info:RenderInfo):void {
 			_currentBlur	+= preblur;
-			
-			 /* if (_currentBlur >= 2) {
-				var factor:int = _currentBlur - 2;
-				
-				_currentBlur = 0;
-				
-				filter.blurX = factor + 2;
-				filter.blurY = factor + 2;
-				
-				source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
-			}  */
 			var factor:int = _currentBlur - 2;
 			if (_currentBlur >= 2) _currentBlur = 0;
 			filter.blurX = factor + 2;
 			filter.blurY = factor + 2;
 			source.applyFilter(source, DISPLAY_RECT, ONYX_POINT_IDENTITY, filter);
+			//Console.output("branches:" + branches.length.toString());
 			for each (var branch:Branch in branches) {
-				if ( !branch.ended ) branch.render(source);
+				if ( !branch.ended ) branch.render(source);// else branch.dispose();//branches.pop();}
+				
 			}
 			// copy to the layer
 			info.source.copyPixels(source, DISPLAY_RECT, ONYX_POINT_IDENTITY);
@@ -291,13 +268,11 @@
 				newBranch.ySrc = last.y;
 				newBranch.lineColor = lineColor;
 				branches.push(newBranch);
-				_amount++;
 			//}
 			
-			while (branches.length > _amount) {
-				var branch:Branch = branches.pop();
+			while (branches.length > amount) {
+				var branch:Branch = branches.shift();
 				branch.dispose();
-				_amount--;
 			}  
 		}
 		
