@@ -101,13 +101,13 @@ package midi {
 		 */
 		public static function log( text:String, clear:Boolean=false ):void
 		{
-		    var file:File = File.applicationStorageDirectory.resolvePath( nowDate + ".txt" );
+		    var file:File = File.applicationStorageDirectory.resolvePath( nowDate + ".log" );
 		    var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
 		
 		    var fileStream:FileStream = new FileStream();
 		    fileStream.open( file, fileMode );
-		
-		    fileStream.writeMultiByte( text + "\t", File.systemCharset );
+			fileStream.writeUTFBytes(text + "\n");
+		    //fileStream.writeMultiByte( text + "\t", File.systemCharset );
 		    fileStream.close();
 		    
 		}
