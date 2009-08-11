@@ -3,6 +3,7 @@
  *
  * Daniel Hai
  * Stefano Cottafavi
+ * Bruce Lane
  *
  * All rights reserved.
  *
@@ -23,6 +24,7 @@
  * qui forment un tissus puis une graine 
  * et une plante qui pousse et les branches 
  * qui se developpent et la foret qui grandit...
+ * 
  * des atomes qui se repoussent et s'attirent 
  * et qui forment un chat qui le chat se fritte avec un autre chat 
  * et un humain jette une godasse sur le chat, 
