@@ -188,6 +188,7 @@ package module {
             
             conn.readBytes(data,0,n);
             
+       		Console.output('MIDI Module: handleProgress n bytes loaded:' + n.toString());
             // SC: TODO...n==3 very restrictive due to startup errors!!
             if(n==3) Midi.receiveMessage(data);
             
@@ -195,6 +196,7 @@ package module {
         
 		public function sendData(bytes:ByteArray):void {
 			conn.writeBytes(bytes);
+       		Console.output('MIDI Module: sendData bytes:' + bytes.toString());
 			conn.flush();
 		}
 		

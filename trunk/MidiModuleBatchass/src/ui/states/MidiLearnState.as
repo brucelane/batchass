@@ -15,12 +15,17 @@
  */
 package ui.states {
 	
+	import events.*;
+	
 	import flash.display.*;
 	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
+	import flash.filesystem.*;
 	import flash.geom.*;
 	import flash.utils.Dictionary;
-			
+	
+	import midi.*;
+	
 	import onyx.core.*;
 	import onyx.events.*;
 	import onyx.parameter.*;
@@ -28,8 +33,6 @@ package ui.states {
 	import onyx.ui.*;
 	
 	import ui.styles.*;
-	import events.*;
-	import midi.*;
 	
 	public final class MidiLearnState extends ApplicationState {
 		
@@ -89,12 +92,16 @@ package ui.states {
 				transform.colorTransform	= MIDI_HIGHLIGHT;
 			}		
 			// Highlight already set
+				var st:String;
 			for (i in Midi.controlsSet) {
 				control						= i as UserInterfaceControl;
 				transform					= control.transform;
 				_storeTransform[control]	= Midi.controlsSet[control];
 				transform.colorTransform	= _storeTransform[control];//MIDI_HIGHLIGHT_SET;
+
+					st +=  i.toString() + ' ' + transform.colorTransform.greenOffset.toString();
 			}
+				log('control:' + st);
 						
 			DISPLAY_STAGE.addEventListener(MouseEvent.MOUSE_DOWN, _onControlSelect, true, 9999);
 		}
@@ -205,16 +212,28 @@ package ui.states {
 		private function _unHighlight():void {
 			
 			var controls:Dictionary = UserInterface.getAllControls();
-			
 			for (var i:Object in controls) {
 				var control:UserInterfaceControl	= i as UserInterfaceControl;
 				var color:ColorTransform	= _storeTransform[control];
 				if (color) {
 					var transform:Transform		= control.transform;
-					transform.colorTransform	= new ColorTransform(.1,1,1,.3);;
+					transform.colorTransform	= new ColorTransform(.1,1,1,.3);
 					delete _storeTransform[control];
 				}
 			} 
+			
+		}
+		public static function log( text:String, clear:Boolean=false ):void
+		{
+		    var file:File = File.applicationStorageDirectory.resolvePath( "midilearnstate.log" );
+		    var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+		
+		    var fileStream:FileStream = new FileStream();
+		    fileStream.open( file, fileMode );
+		
+		    fileStream.writeUTFBytes( text + "\n" );
+		    fileStream.close();
+		    
 		}
 		
 	}
