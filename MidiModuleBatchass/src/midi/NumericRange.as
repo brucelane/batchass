@@ -16,6 +16,8 @@
 package midi {
 	
 	import onyx.parameter.ParameterArray;
+	import flash.filesystem.File;
+ 	import onyx.utils.file.*;
 	
 	internal final class NumericRange implements IMidiControlBehavior {
 		
@@ -28,6 +30,7 @@ package midi {
 		 * 
 		 */
 		public function NumericRange(control:ParameterArray):void {
+			writeTextFile(new File('logs/NumericRange.log'), "NumericRange:"+control.toXML().toString());
 			this.control = control;			
 		}
 		
@@ -35,6 +38,7 @@ package midi {
 		 * 
 		 */
 		public function setValue(value:int):void {
+			writeTextFile(new File('logs/NumericRange.log'), "setValue:"+value.toString());
 			var data:Array	= control.data;
 			
 			control.value = data[int((value / 127) * (data.length - 1))];

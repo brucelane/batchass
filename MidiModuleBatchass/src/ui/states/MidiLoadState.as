@@ -15,12 +15,12 @@
  */
 package ui.states {
 	
-	import flash.filesystem.*;
 	import flash.display.BitmapData;
 	import flash.events.Event;
-	import flash.utils.*;
+	import flash.filesystem.*;
 	import flash.geom.*;
-		
+	import flash.utils.*;
+	
 	import midi.Midi;
 	
 	import onyx.asset.*;
@@ -29,10 +29,9 @@ package ui.states {
 	import onyx.utils.file.*;
 	import onyx.utils.string.*;
 	
-	import ui.states.*;	
-	import ui.window.*;
-	import ui.controls.*;
+	//import ui.controls.*;
 	import ui.styles.*;
+	//import ui.window.*;
 	
 	/**
 	 * 
@@ -78,7 +77,7 @@ package ui.states {
 			StateManager.pauseStates(ApplicationState.KEYBOARD);
 			
 			// choose a directory
-			var file:File = AIR_ROOT.resolvePath(ONYX_LIBRARY_PATH);
+			var file:File = new File('library');
 			file.browseForOpen('Select the name and location of the MIDI file to load.');
 			file.addEventListener(Event.SELECT, action);
 			file.addEventListener(Event.CANCEL, action);
@@ -106,12 +105,12 @@ package ui.states {
 				} */
 				
 				// highlights
-				for (var i:Object in UIControl.parameters) {
+				/* for (var i:Object in UIControl.parameters) {
 					var control:UIControl = i as UIControl;
 					if(control.getParameter().getMetaData(Midi.tag)) {
 						Midi.controlsSet[control] = MIDI_HIGHLIGHT_SET;
 					}
-				}
+				} */
 						
 			}
 			

@@ -1,18 +1,20 @@
 package module {
 	
 	import flash.events.*;
+	import flash.geom.ColorTransform;
 	import flash.net.*;
 	import flash.utils.*;
 	
-	import onyx.core.*;
+	import midi.*;
+	
 	import onyx.asset.*;
+	import onyx.core.*;
 	import onyx.parameter.*;
 	import onyx.plugin.*;
 	import onyx.ui.*;
 	
-	import midi.*;
-	
 	import ui.states.MidiLearnState;
+	import ui.states.MidiLoadState;
 	import ui.states.MidiSaveState;
 	
 	/**
@@ -139,15 +141,15 @@ package module {
             StateManager.loadState(new MidiLearnState());
         }
         public function load():void {
-            //StateManager.loadState(new MidiLoadState());
+            StateManager.loadState(new MidiLoadState());
             
-            //for (var i:Object in UserInterface.getAllControls()) {
-			//	Console.output((i as UserInterfaceControl).getParameter());
-			//}
+            for (var i:Object in UserInterface.getAllControls()) {
+				Console.output((i as UserInterfaceControl).getParameter());
+			}
 			
-			/*for (var i:Object in UserInterface.getAllControls()) {
-				(i as UserInterfaceControl).addEventListener(MouseEvent.MOUSE_DOWN, handler);
-			}*/
+			for (var j:Object in UserInterface.getAllControls()) {
+				(j as UserInterfaceControl).addEventListener(MouseEvent.MOUSE_DOWN, handler);
+			}
             
         }
 		public function save():void {
@@ -200,14 +202,14 @@ package module {
 			conn.flush();
 		}
 		
-		/*private function handler(event:MouseEvent):void {
+		private function handler(event:MouseEvent):void {
 			trace(event.currentTarget);
 		}	
 		public function highlight2():void {
 			for (var i:Object in UserInterface.getAllControls()) {
 				(i as UserInterfaceControl).transform.colorTransform = new ColorTransform(2,2,2,1);
 			}
-		}*/
+		}
 		
 		
 	}

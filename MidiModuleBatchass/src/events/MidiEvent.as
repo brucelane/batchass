@@ -16,8 +16,10 @@
  package events {
  	
  	import flash.events.Event;
- 	import flash.utils.ByteArray;
- 	
+
+ 	import flash.filesystem.File;
+ 	import onyx.utils.file.*;
+			//writeTextFile(new File('logs/midi.log'), "MidiEvent:"+type);
 	/**
 	 * 	Midi event
 	 */
@@ -37,6 +39,7 @@
 		 * 
 		 */
 		public function MidiEvent(type:String):void {
+			writeTextFile(new File('MidiEvent.log'), "MidiEvent:"+type);
 			super(type);
 		}
 		

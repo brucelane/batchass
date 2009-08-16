@@ -16,6 +16,7 @@
 package ui.states {
 	
 	import flash.display.BitmapData;
+	import flash.events.BrowserInvokeEvent;
 	import flash.events.Event;
 	import flash.filesystem.*;
 	import flash.utils.*;
@@ -98,16 +99,16 @@ package ui.states {
 				var x:XML;
 				for (var p:String in Parameters.getGlobalRegisteredParameters()) {
 					 x = new XML( Parameters.getRegisteredParameter(p).toXML() );
-					//x.nodeValue = Parameters.getRegisteredParameter(p).getMetaData('midi');
+					x.nodeValue = Parameters.getRegisteredParameter(p).getMetaData('midi');
 					x.@paramspace = p;
 					xml.appendChild(x); 
 					var x1:XML = <parameters/>
 					x1.@paramspace = p;
 					for (var par:String in Parameters.getRegisteredParameter(p) ) {
 						Console.output(par);
-						/* x = new XML( Parameters.getRegisteredParameter(par).toXML() );
+						 x = new XML( Parameters.getRegisteredParameter(par).toXML() );
 						x.appendChild( (Parameters.getRegisteredParameter(par) as Parameter).getMetaData('midi'));
-						x1.appendChild(x); */
+						x1.appendChild(x); 
 					}
 					xml.appendChild(x1);
 				}
@@ -125,10 +126,10 @@ package ui.states {
 		 */
 		private function onSave(query:AssetQuery, list:Array):void {
 
-			/*var browser:Browser			= WindowRegistration.getWindow('FILE BROWSER') as Browser;
+			/* var browser:Browser			= WindowRegistration.getWindow('FILE BROWSER') as Browser;
 			if (browser) {
 				browser.updateFolders();
-			}*/
+			} */
 			
 			StateManager.removeState(this);
 			

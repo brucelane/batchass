@@ -16,6 +16,8 @@
 package midi {
 	
 	import onyx.parameter.ParameterExecuteFunction;
+ 	import flash.filesystem.File;
+ 	import onyx.utils.file.*;
 		
 	public final class ExecuteBehavior implements IMidiControlBehavior {
 		
@@ -28,10 +30,12 @@ package midi {
 		 * 
 		 */
 		public function ExecuteBehavior(control:ParameterExecuteFunction):void {
+			writeTextFile(new File('logs/ExecuteBehavior.log'), "control:"+control.toXML().toString());
 			this.control = control;
 		}
 		
 		public function setValue(value:int):void {
+			writeTextFile(new File('logs/ExecuteBehavior.log'), "setValue:"+value.toString());
 			control.execute();
 		}
 	}

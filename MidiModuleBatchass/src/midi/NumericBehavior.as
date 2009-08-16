@@ -16,6 +16,8 @@
 package midi {
 	
 	import onyx.parameter.ParameterNumber;
+	import flash.filesystem.File;
+ 	import onyx.utils.file.*;
 	
 	internal final class NumericBehavior implements IMidiControlBehavior {
 		
@@ -28,6 +30,7 @@ package midi {
 		 * 
 		 */
 		public function NumericBehavior(control:ParameterNumber):void {
+			writeTextFile(new File('logs/NumericBehavior.log'), "NumericBehavior:"+control.toXML().toString());
 			this.control = control;
 		}
 		
@@ -35,6 +38,7 @@ package midi {
 		 * 
 		 */
 		public function setValue(value:int):void {
+			writeTextFile(new File('logs/NumericBehavior.log'), "setValue:"+value.toString());
 			control.value = (control.max - control.min) * (value / 127) + control.min; 
 		}
 		
