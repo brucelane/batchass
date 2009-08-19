@@ -45,9 +45,6 @@
 	import flash.events.*;
 	import flash.filters.*;
 	import flash.geom.*;
-	import flash.net.Socket;
-	import flash.utils.ByteArray;
-	import flash.utils.Timer;
 	
 	import onyx.core.*;
 	import onyx.events.InteractionEvent;
@@ -78,12 +75,19 @@
 			parameters.addParameters( 
 				new ParameterColor('lineColor', 'lineColor'),
 				new ParameterNumber('preblur', 'preblur', 0, 30, 0, 10),
+				new ParameterExecuteFunction('clear', 'clear'),
 				new ParameterNumber('amount', 'max branches', 0, 99, 0, 1)
 			);
 			//buildBranches();
 			addEventListener(InteractionEvent.MOUSE_DOWN, mouseDown);
 		}
-
+		public function clear():void {
+			Console.output('DrawBranches Clear');
+			for each (var branch:Branch in branches) {
+				branch.ended = true;
+				
+			}
+		}
 
 
 		private function mouseDown(event:MouseEvent):void {
