@@ -40,6 +40,7 @@ package ui.states {
 		 * 	@private
 		 */
 		private var _control:UserInterfaceControl;
+		private static var nowDate:String;
 		
 		/**
 		 * 	@private
@@ -56,7 +57,14 @@ package ui.states {
 		 * 	@constructor
 		 */
 		public function MidiLearnState():void {
-			
+			var now:Date = new Date();
+			var m:String = now.getHours().toString();
+			var month:String = ( m.length == 1 ? "0" + m : m );
+			var d:String = now.getMinutes().toString();
+			var date:String = ( d.length == 1 ? "0" + d : d );
+			nowDate = month + date;
+
+			log('MidiLearnState constructor');
 			super('MidiLearnState');
 								
 		}
@@ -65,7 +73,7 @@ package ui.states {
 		 * 	initialize
 		 */
 		override public function initialize():void {
-			
+			log('MidiLearnState initialize');
 			// check for state registered, reload
 			if(!StateManager.getStates('MidiLearnState')) {
 				Console.output('reloaded');
@@ -81,8 +89,11 @@ package ui.states {
 			_storeTransform = new Dictionary(true);
 			
 			if(!Midi.controlsSet) {
-				Midi.controlsSet = new Dictionary(true);	
-			} 
+				Midi.controlsSet = new Dictionary(true);
+							log('Midi.controlsSet creat');
+	
+			} else 	log('Midi.controlsSet exists');
+
 			
 			// Highlight all the controls
 			for (i in controls) {
@@ -92,16 +103,19 @@ package ui.states {
 				transform.colorTransform	= MIDI_HIGHLIGHT;
 			}		
 			// Highlight already set
-				var st:String;
+			var st:String;
 			for (i in Midi.controlsSet) {
-				control						= i as UserInterfaceControl;
-				transform					= control.transform;
-				_storeTransform[control]	= Midi.controlsSet[control];
-				transform.colorTransform	= _storeTransform[control];//MIDI_HIGHLIGHT_SET;
-
-					st +=  i.toString() + ' ' + transform.colorTransform.greenOffset.toString();
+				if (i!='null') {
+					control						= i as UserInterfaceControl;
+					log('Midi.controlsSet i:' + i);
+					transform					= control.transform;
+					_storeTransform[control]	= Midi.controlsSet[control];
+					transform.colorTransform	= _storeTransform[control];//MIDI_HIGHLIGHT_SET;
+				}
+				else log('Midi.controlsSet i null');
+				st +=  i.toString() + ' ' + transform.colorTransform.greenOffset.toString();
 			}
-				log('control:' + st);
+			log('control:' + st);
 						
 			DISPLAY_STAGE.addEventListener(MouseEvent.MOUSE_DOWN, _onControlSelect, true, 9999);
 		}
@@ -111,7 +125,7 @@ package ui.states {
 		 * 	@private
 		 */
 		private function _onControlSelect(event:MouseEvent):void {
-			
+			log('_onControlSelect event tgt:' + event.target.toString());
 			var clicked:DisplayObject = event.target as DisplayObject;
 
 			_control = null;
@@ -119,8 +133,10 @@ package ui.states {
 
 			while (clicked !== DISPLAY_STAGE) {
 				
+				log('clicked' + clicked.toString());
 				if (clicked is UserInterfaceControl) {
 					_control = clicked as UserInterfaceControl;
+					log('clicked is UserInterfaceControl' );
 					break;
 				}
 				
@@ -130,7 +146,7 @@ package ui.states {
 			
 			// success, start the next process
 			if (_control) {
-				
+				log('_control not null' );
 				Midi.instance.addEventListener(MidiEvent.DATA, _onMidi);
 				_control.addEventListener(KeyboardEvent.KEY_DOWN, _onKey);
 				
@@ -143,14 +159,26 @@ package ui.states {
 				transform.colorTransform	= MIDI_HIGHLIGHT;
 							
 			} else {
-
 				// Clicked outside any control - abort learning
 				StateManager.removeState(this);
-				
 			}
-			
 			// stop propagation
 			event.stopPropagation();
+		}
+		private function _onMidi(event:MidiEvent):void {
+				log('_onMidi:'+event.command+' data1:'+event.data1+' data2:'+event.data2 );
+				// new register
+				Midi.controlsSet[_control] = 
+					Midi.registerControl(_control.getParameter(), event.midihash);
+				log('_onMidi _control:'+_control+' event.midihash:'+event.midihash+' Midi.controlsSet[_control]:'+Midi.controlsSet[_control] );
+					
+				_control.transform.colorTransform = Midi.controlsSet[_control];
+				
+				// reset and wait for another midi control
+				_control.removeEventListener(KeyboardEvent.KEY_DOWN, _onKey);
+				StateManager.removeState(this);
+				initialize();
+						
 		}
 				
 		/**
@@ -189,22 +217,6 @@ package ui.states {
 			}
 			
 		}
-		/**
-		 * 	@private
-		 */
-		private function _onMidi(event:MidiEvent):void {
-			
-				// new register
-				Midi.controlsSet[_control] = 
-					Midi.registerControl(_control.getParameter(), event.midihash);
-				_control.transform.colorTransform = Midi.controlsSet[_control];
-				
-				// reset and wait for another midi control
-				_control.removeEventListener(KeyboardEvent.KEY_DOWN, _onKey);
-				StateManager.removeState(this);
-				initialize();
-						
-		}
 
     	/**
     	 * 	@private
@@ -225,13 +237,13 @@ package ui.states {
 		}
 		public static function log( text:String, clear:Boolean=false ):void
 		{
-		    var file:File = File.applicationStorageDirectory.resolvePath( "midilearnstate.log" );
+		    var file:File = File.applicationStorageDirectory.resolvePath( nowDate +  "midi.log" );
 		    var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
 		
 		    var fileStream:FileStream = new FileStream();
 		    fileStream.open( file, fileMode );
 		
-		    fileStream.writeUTFBytes( text + "\n" );
+		    fileStream.writeUTFBytes( "MidiLearnState: " + text + "\n" );
 		    fileStream.close();
 		    
 		}
