@@ -21,12 +21,12 @@ package midi {
 	import flash.geom.*;
 	import flash.utils.*;
 	
+	import onyx.core.*;
 	import onyx.display.*;
 	import onyx.events.LayerEvent;
 	import onyx.parameter.*;
 	import onyx.plugin.*;
 	import onyx.utils.string.*;
-	import onyx.core.*;
 	
 	import ui.states.*;
 	import ui.styles.*;
@@ -34,13 +34,13 @@ package midi {
 					
 	final public class Midi extends Module {
 		
-		public static const NOTE_OFF:int                  = 0x80;
-		public static const NOTE_ON:int                   = 0x90;
-        public static const POLYPHONIC_KEY_PRESSURE:int   = 0xa0;
-        public static const CONTROL_CHANGE:int            = 0xb0; 
-        public static const PROGRAM_CHANGE:int            = 0xc0; 
-        public static const KEY_PRESSURE:int              = 0xd0; 
-        public static const PITCH_WHEEL:int               = 0xe0;
+		public static const NOTE_OFF:int                  = 0x80;//128
+		public static const NOTE_ON:int                   = 0x90;//144
+        public static const POLYPHONIC_KEY_PRESSURE:int   = 0xa0;//160
+        public static const CONTROL_CHANGE:int            = 0xb0;//176
+        public static const PROGRAM_CHANGE:int            = 0xc0;//192 
+        public static const KEY_PRESSURE:int              = 0xd0;//208
+        public static const PITCH_WHEEL:int               = 0xe0;//224
         public static const SYSTEM_MESSAGE:int            = 0xe0;
                            
 		/**
@@ -80,11 +80,11 @@ package midi {
 				throw new Error('');
 			}
 			var now:Date = new Date();
-			var m:String = now.getMonth().toString();
+			var m:String = now.getHours().toString();
 			var month:String = ( m.length == 1 ? "0" + m : m );
-			var d:String = now.getDate().toString();
+			var d:String = now.getMinutes().toString();
 			var date:String = ( d.length == 1 ? "0" + d : d );
-			nowDate = now.getFullYear().toString() + month + date;
+			nowDate = month + date;
 			log( "Midi start");
 			
 			_map = new Dictionary(false);
@@ -101,12 +101,12 @@ package midi {
 		 */
 		public static function log( text:String, clear:Boolean=false ):void
 		{
-		    var file:File = File.applicationStorageDirectory.resolvePath( nowDate + ".log" );
+		    var file:File = File.applicationStorageDirectory.resolvePath( nowDate + "midi.log" );
 		    var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
 		
 		    var fileStream:FileStream = new FileStream();
 		    fileStream.open( file, fileMode );
-			fileStream.writeUTFBytes(text + "\n");
+			fileStream.writeUTFBytes("Midi: " + text + "\n");
 		    //fileStream.writeMultiByte( text + "\t", File.systemCharset );
 		    fileStream.close();
 		    
@@ -123,27 +123,49 @@ package midi {
 			var data1:uint       = data.readUnsignedByte();
 			var data2:uint       = data.readUnsignedByte();
 		      
-		    var midihash:uint    = ((status<<8)&0xFF00) | data1&0xFF;
+		    var midihash:uint    = ((status<<8)&0xFF00);//((status<<8)&0xFF00) | data1&0xFF;
+		    var s8:uint = (status<<8);
+		    var s8et:uint = ((status<<8)&0xFF00);
+		    var dt:uint = data1&0xFF;
+			log( "Midi receiveMessage s:" + status + " cmd:" + command + " chan:" + channel + " data1:" + data1 + " data2:" + data2);
+			log( "status<<8:" + s8.toString() + " (status<<8)&0xFF00):" + s8et.toString() + " data1&0xFF:" + dt.toString() );
 			
 			var behavior:IMidiControlBehavior = _map[midihash]; 
-			log( "Midi receiveMessage s:" + status + " cmd:" + command + " chan:" + channel + " data1:" + data1 + " data2:" + data2);
+			log( "behavior:" + behavior + " midihash:" + midihash + " _map[midihash]:" + _map[midihash]);
 			Console.output('Midi RCV');
 							
 			if(behavior) {
 			     switch(command) {
 	                case NOTE_OFF:
+						log( " if behavior true:" + behavior + " NOTE_OFF:" + command);
+						Console.output('NOTE_OFF behavior');
+	                    break;
 	                case NOTE_ON:
+						log( " if behavior true:" + behavior + " NOTE_ON:" + command + " DATA1:" + data1  );
+						Console.output('NOTE_ON behavior');
+	                    behavior.setValue(data1);
+	                    break;
+	                case PITCH_WHEEL:
+						log( " if behavior true:" + behavior + " PITCH_WHEEL:" + command + " DATA1:" + data1 );
+						Console.output('NOTE_ON NOTE_OFF behavior');
 	                    behavior.setValue(data1);
 	                    break;
 	                case CONTROL_CHANGE:
+						log( " if behavior true:" + behavior + " CONTROL_CHANGE:" + command );
+						Console.output('CONTROL_CHANGE behavior');
 	                    behavior.setValue(data2);
 	                    break;
 	                
 	                default:
+						log( " if behavior true:" + behavior + " default:" + command );
+	                    behavior.setValue(data1);
+						Console.output('default(other) behavior');
                  }
 			}
             
             if(instance.hasEventListener(MidiEvent.DATA)) {
+				log( " instance.hasEventListener(MidiEvent.DATA)" + MidiEvent.DATA );
+				Console.output('instance.hasEventListener(MidiEvent.DATA)');
             	
             	REUSABLE.command        = command;
                 REUSABLE.channel        = channel;
@@ -177,7 +199,7 @@ package midi {
 		 * 
 		 */
 		public static function registerControl(control:Parameter, midihash:uint):ColorTransform {
-			log( "Midi registerControl");
+			log( "Midi registerControl:" + control + " midihash:"+ midihash);
 						
 			if(control && midihash) {
             	
@@ -186,7 +208,7 @@ package midi {
 					log( "val.toString():" + val.toString());
 					log(  "midihash.toString():"+ midihash.toString());
 					if(val==midihash.toString() ) {
-						
+						log( "val==midihash.toString()" );
 						if (_map[val]) controlsSet[(_map[val].control as Parameter).getMetaData('ui')] = MIDI_HIGHLIGHT;
 						unregisterControl(midihash);
 					}
@@ -202,14 +224,21 @@ package midi {
 					
 					// toggle messages -- need to add note on, note off behavior
 					case NOTE_OFF:
+						log( "NOTE_OFF");
+						break;
 					case NOTE_ON:
-						log( "NOTE_ON or NOTE_OFF");
+						log( "NOTE_ON");
 						if (control is ParameterExecuteFunction) {
 							behavior = new ExecuteBehavior(control as ParameterExecuteFunction);
+							//log(  "new ExecuteBehavior:"+ control.toString());
+						} else if (control is ParameterNumber) {
+							behavior = new NumericBehavior(control as ParameterNumber);
+						} else if (control is ParameterArray) {
+							behavior = new NumericRange(control as ParameterArray);
 						}
-	
+						//log(  "behavior:"+ behavior);
 						_map[midihash] = behavior;
-	
+						//log(  "_map[midihash]:"+ _map[midihash].toString());
 						break;
 						
 					// slider value messages
@@ -221,7 +250,7 @@ package midi {
 						} else if (control is ParameterArray) {
 							behavior = new NumericRange(control as ParameterArray);
 						}
-					
+						log(  "behavior:"+ behavior);
 						_map[midihash] = behavior;
 				
 						break;
