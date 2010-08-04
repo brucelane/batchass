@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<project name="Wacom Bamboo Mini" default="restart">
+	
+	<target name="restart">
+		<java classname="com.wacom.bamboo.mini.ant.task.RestartNativeCore" 						
+    		classpath="${basedir}/ant-lib/bambooMiniAnt.jar">
+			
+			<sysproperty key="DEBUG" value="true"/>	
+    	</java>
+	</target>
+	
+	<target name="stop">
+		<java classname="com.wacom.bamboo.mini.ant.task.StopNativeCore" 						
+    		classpath="${basedir}/ant-lib/bambooMiniAnt.jar">
+			
+			<sysproperty key="DEBUG" value="true"/>	
+    	</java>
+	</target>
+	
+</project>

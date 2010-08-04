@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<project name="Wacom Bamboo Mini Build Script" default="cleanBuild" >
+
+	<property file="build.properties"/>
+	
+	<!-- Include ant-contrib tasks -->
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+	  <classpath>
+	    <pathelement location="${basedir}/ant-lib/ant-contrib-0.6.jar"/>
+	  </classpath>
+	</taskdef>
+	
+	<target name="cleanBuild">
+		<antcall target="clean"></antcall>
+		<antcall target="build"></antcall>
+	</target>
+
+	<target name="init">
+		<!-- Setup debug args -->
+		<if>
+			<equals arg1="${debug}" arg2="false" />
+			<then>
+				<property name="output.dir" value="${output.release.dir}"/>	
+				<property name="debug.args" value=""/>
+			</then>
+			<else>
+				<property name="output.dir" value="${output.debug.dir}"/>
+				<property name="debug.args" value="-debug=true"/>
+			</else>			
+		</if>
+		
+		<!-- Mini ID is created using the main.file.path. It is the name of the file without the extension -->
+		<pathconvert property="miniID">
+			<path path="${main.file.path}"></path>
+			<chainedmapper>
+				<flattenmapper />
+				<regexpmapper from="^(.*)\.(.*)" to="\1"/>
+			</chainedmapper>
+		</pathconvert>
+		
+		<!-- All sub-folders of the locales.dir will be included as locales in the compilation -->
+		<pathconvert property="localesList" pathsep=",">
+			<dirset dir="${locales.dir}" includes="*/**" />
+			<flattenmapper />
+		</pathconvert>
+		
+		<property name="swfFileName" value="${miniID}.swf"/>
+		
+		<pathconvert property="iconFileName">
+			<path path="${icon.path}"></path>
+			<chainedmapper>
+				<flattenmapper />
+				<regexpmapper from="^(.*)\.(.*)" to="${miniID}.\2"/>				
+			</chainedmapper>
+		</pathconvert>
+		
+		<property name="wcmFileName" value="${miniID}.wcm"/>
+		<property name="descriptorFileName" value="${miniID}.xml"/>
+	</target>
+	
+	<target name="clean" depends="init">
+		<delete file="${output.dir}/${swfFileName}"></delete>
+		<delete file="${output.dir}/${iconFileName}"></delete>
+	</target>
+	
+	<!-- This task uses copylocale.exe to create locales which are going to be bundled but are missing in the flex sdk. It copies the default en_US locale. -->
+	<target name="copyFlexLocales">
+		<for list="${localesList}" param="current.locale">
+			<sequential>				
+				<available file="${application.home}/frameworks/locale/@{current.locale}" property="flex.locale.@{current.locale}.available"></available>
+				<!--<echo>flex.locale.@{current.locale}.available = ${flex.locale.@{current.locale}.available}</echo> -->
+				<if>
+					<equals arg1="${flex.locale.@{current.locale}.available}" arg2="true"/>
+					<else>
+						<echo>Copying locale 'en_US' to '@{current.locale}' ...</echo>
+						<exec executable="${application.home}/bin/copylocale.exe">
+				    		<arg line="en_US @{current.locale}"/>
+				    	</exec>
+					</else>
+				</if>
+			</sequential>
+		</for>
+	</target>
+	
+	<target name="build" depends="init">
+		<antcall target="copyFlexLocales"></antcall>
+				
+		<echo>Building ${swfFileName} ...</echo>
+		<exec executable="${application.home}/bin/amxmlc.bat">
+			<arg value='-source-path'/> 
+			<arg value='${source.dir}'/>
+			<arg value='${locales.dir}/{locale}'/>
+			
+			<arg value='-library-path'/>
+			<arg value='${library.dir}' />
+			<arg value='${application.home}/frameworks/libs'/>
+			<arg value='${application.home}/frameworks/libs/air' />
+			<arg value='${application.home}/frameworks/locale/{locale}' />
+						
+			<arg value='-external-library-path' />
+			<arg value='${application.home}/frameworks/libs/air/airglobal.swc' />
+			
+			<arg line='-strict=true' />
+			<arg line='-use-network' />
+			<arg line='+configname=air' />
+			
+			<arg line="${debug.args}"/>
+			
+			<arg line='-locale=${localesList} -allow-source-path-overlap=true'/>
+			
+			<arg line='"${main.file.path}"' />
+			
+			<arg value='-output'/>
+			<arg value='${output.dir}/${swfFileName}'/>
+		</exec>				
+		
+		<antcall target="copyIcon"></antcall>
+	</target>
+	
+	<target name="copyIcon" depends="init">
+		<echo>Copying ${iconFileName} ...</echo>
+		<copy file="${icon.path}" tofile="${output.dir}/${iconFileName}"/>
+	</target>
+
+</project>

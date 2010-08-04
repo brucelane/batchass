@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<project name="Wacom Bamboo Mini Packaging Script" default="package">
+
+	<property name="debug" value="false"/>
+	<property file="${source.dir}/mini_configuration.properties"/>	
+	
+	<import file="${basedir}/build.xml"/>
+
+	<target name="package" depends="init">
+		<antcall target="clean"></antcall>
+		<antcall target="build"></antcall>
+		<antcall target="rename"></antcall>
+		<antcall target="createXMLDescriptor" ></antcall>
+	</target>
+	
+	<target name="clean" depends="init">
+		<delete file="${output.dir}/${wcmFileName}"></delete>
+		<delete file="${output.dir}/${iconFileName}"></delete>
+		<delete file="${output.dir}/${iconFileName}"></delete>
+		<delete file="${output.dir}/${descriptorFileName}"></delete>
+	</target>
+	
+	<target name="rename" depends="init">
+		<echo>Renaming ${swfFileName} to ${wcmFileName} ...</echo>
+		<move file="${output.dir}/${swfFileName}" tofile="${output.dir}/${wcmFileName}"></move>
+	</target>
+
+	<target name="createXMLDescriptor" depends="init">
+		<echo>Creating ${descriptorFileName} ...</echo>
+		
+		<java classname="com.wacom.bamboo.mini.ant.task.CreateMiniXMLDescriptor" 						
+    		classpath="${basedir}/ant-lib/bambooMiniAnt.jar">
+			
+			<sysproperty key="DEBUG" value="true"/>
+			
+			<arg value='${output.dir}/${wcmFileName}'/>
+			<arg value='${locales.dir}'/>
+			<arg value='${output.dir}/${descriptorFileName}'/>
+			<arg value='${miniID}'/>
+			<arg value='${defaultLanguage}'/>
+			<arg value='${iconFileName}'/>
+			<arg value='${version}'/>
+			<arg value='${developerLink}'/>
+			<arg value='${category}'/>
+			<arg value='${inputDevice}'/>
+			<arg value='${license}'/>			
+    	</java>
+	</target>
+
+</project>
