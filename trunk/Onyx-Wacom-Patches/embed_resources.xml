@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<project name="Wacom Bamboo Mini" default="buildEmbededResources">
+	<target name="buildEmbededResources">
+
+		<!-- Holds the path from src folder to the assets folder -->
+		<property name="assetsFolderName" value="assets"/>
+
+		<!-- Holds the path to src folder -->
+		<property name="sourceFolder" value="${basedir}${file.separator}src"/>
+		
+		<property name="assetsFolder" value="${sourceFolder}${file.separator}${assetsFolderName}"/>
+		
+		<pathconvert property="variables" pathsep="," dirsep="_">
+			<fileset dir="${assetsFolder}">
+				<include name="**${file.separator}*.*"/>
+			</fileset>
+			<chainedmapper>
+				<globmapper from="${sourceFolder}${file.separator}*" to="*" />
+				<regexpmapper from="^(.*)\.(.*)" to="\1_\2"/>
+				<globmapper from="*" to="public static var * : Class;" /> <!-- Variable name template -->
+			</chainedmapper>
+		</pathconvert>
+
+		<pathconvert property="embedtags" pathsep="," dirsep="/">
+			<fileset dir="${assetsFolder}">
+				<include name="**${file.separator}*.*"/>
+			</fileset>
+			<chainedmapper>
+				<globmapper from="${sourceFolder}*" to="*" />
+				<globmapper from="*" to='[Embed(source="*")]' /> <!-- Embed metadata template -->
+			</chainedmapper>
+		</pathconvert>
+		
+		<java classname="com.wacom.bamboo.mini.ant.task.ListMerge" classpath="${basedir}${file.separator}ant-lib${file.separator}bambooMiniAnt.jar" outputproperty="classBody">
+		   <sysproperty key="DEBUG" value="true"/>
+		   
+		   <arg value="${embedtags}"/>
+		   <arg value="${variables}"/>  
+	    </java>
+		
+		<!-- Embeded Resources file template -->
+		<echo file="${basedir}${file.separator}src${file.separator}EmbededResources.as">
+			package
+			{
+				public class EmbededResources
+				{
+					${classBody}
+				}
+			}
+		</echo>
+	</target>
+</project>
