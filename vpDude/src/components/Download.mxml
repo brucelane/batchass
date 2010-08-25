@@ -11,6 +11,7 @@
 			<s:VerticalLayout paddingTop="8" paddingLeft="8" paddingRight="8" paddingBottom="8"/>
 		</s:layout>
 		<s:VGroup width="100%">
+			<mx:HTML location="http://www.videopong.net/" id="browser" width="95%" height="98%"/>
 			
 		</s:VGroup>
 		

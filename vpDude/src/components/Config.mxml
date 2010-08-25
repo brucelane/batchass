@@ -4,13 +4,33 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="config" 
 					>
-	
-	
+	<fx:Script source="TabConfig.as" />
+
 	<s:Panel width="95%" height="98%" horizontalCenter="0" title="config" >
 		<s:layout>
-			<s:VerticalLayout paddingTop="8" paddingLeft="8" paddingRight="8" paddingBottom="8"/>
+			<s:VerticalLayout paddingTop="8" paddingLeft="8" paddingRight="8" paddingBottom="8">
+			</s:VerticalLayout>
+			
 		</s:layout>
 		<s:VGroup width="100%">
+			<s:HGroup>
+				<s:Label text="Configuration files path:" verticalAlign="middle"/>
+				<s:TextInput text="videopong/config" id="configPath"/>
+				<s:Button label="..." id="browseConfigPathBtn" width="30"/>			
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="Downloaded files path:" verticalAlign="bottom"/>
+				<s:TextInput text="videopong/cache" id="cachePath"/>
+				<s:Button label="..." id="browseCachePathBtn" width="30"/>			
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="User name:" verticalAlign="bottom"/>
+				<s:TextInput text="guest" id="username"/>
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label text="Password:" verticalAlign="bottom"/>
+				<s:TextInput text="" id="pwd" displayAsPassword="true" change="pwd_changeHandler(event)"/>
+			</s:HGroup>
 			
 		</s:VGroup>
 		
