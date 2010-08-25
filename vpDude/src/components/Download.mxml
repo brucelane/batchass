@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					label="download" 
+					>
+	
+	
+	<s:Panel width="95%" height="98%" horizontalCenter="0" title="download" >
+		<s:layout>
+			<s:VerticalLayout paddingTop="8" paddingLeft="8" paddingRight="8" paddingBottom="8"/>
+		</s:layout>
+		<s:VGroup width="100%">
+			
+		</s:VGroup>
+		
+		
+	</s:Panel>
+	
+</s:NavigatorContent>
