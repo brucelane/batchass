@@ -9,12 +9,14 @@ import fr.batchass.AIRUpdater;
 import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
 
-public var password:String = "none";
+private var gb:Singleton = Singleton.getInstance();
+
+
+	
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
 	AIRUpdater.checkForUpdate();
-	
 }
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void

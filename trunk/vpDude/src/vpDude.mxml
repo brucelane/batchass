@@ -18,7 +18,7 @@
 	
 		<mx:TabNavigator id="tabNav" width="900" height="500" change="tabNav_changeHandler(event)" >
 			<components:Search/>
-			<components:Download/>
+			<components:Download id="browserTab"/>
 			<components:Config/>
 			<components:Upload/>
 			<components:Quit/>
