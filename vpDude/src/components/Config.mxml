@@ -4,14 +4,14 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="config" 
 					>
-	<fx:Script source="TabConfig.as" />
 
-	<s:Panel width="95%" height="98%" horizontalCenter="0" title="config" >
-		<s:layout>
-			<s:VerticalLayout paddingTop="8" paddingLeft="8" paddingRight="8" paddingBottom="8">
-			</s:VerticalLayout>
+	<fx:Script>
+		<![CDATA[
 			
-		</s:layout>
+		]]>
+	</fx:Script>
+
+	<fx:Script source="TabConfig.as" />
 		<s:VGroup width="100%">
 			<s:HGroup>
 				<s:Label text="Configuration files path:" verticalAlign="middle"/>
@@ -29,12 +29,10 @@
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label text="Password:" verticalAlign="bottom"/>
-				<s:TextInput text="" id="pwd" displayAsPassword="true" change="pwd_changeHandler(event)"/>
+				<s:TextInput text="" id="pwd" />
 			</s:HGroup>
+			<s:Button label="Button" id="applyBtn" click="applyBtn_clickHandler(event)"/>
 			
 		</s:VGroup>
-		
-		
-	</s:Panel>
-	
+
 </s:NavigatorContent>
