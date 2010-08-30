@@ -4,17 +4,22 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="search" 
 					>
+	<fx:Script>
+		<![CDATA[
+			import spark.events.TextOperationEvent;
+
+			protected function searchTerm_changeHandler(event:TextOperationEvent):void
+			{
+				// search arrayCollection of tags, titles, usernames
+			}
+
+		]]>
+	</fx:Script>
 
 	
-	<s:Panel width="95%" height="98%" horizontalCenter="0" title="search" >
-		<s:layout>
-			<s:VerticalLayout paddingTop="8" paddingLeft="8" paddingRight="8" paddingBottom="8"/>
-		</s:layout>
-		<s:VGroup width="100%">
-
+		<s:VGroup width="95%">
+			<s:TextInput id="searchTerm" text="..." change="searchTerm_changeHandler(event)" />
 		</s:VGroup>
-		
-		
-	</s:Panel>
+
 	
 </s:NavigatorContent>
