@@ -7,13 +7,6 @@
 					   width="890" height="600"
 					   xmlns:components="components.*">
 
-	<fx:Script>
-		<![CDATA[
-			
-		]]>
-	</fx:Script>
-
-
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -22,13 +15,12 @@
 		<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
 		
 		<mx:TabNavigator id="tabNav" width="870" height="500" change="tabNav_changeHandler(event)" >
-			<components:Search/>
-			<components:Download id="browserTab" />
-			<components:Config/>
-			<components:Upload/>
+			<!--<components:Search id="searchTab" visible="false" />
+			<components:Download id="browserTab" visible="false" />-->
+			<components:Config />
+			<!--<components:Upload id="uploadTab" visible="false" />-->
 			<components:Quit/>
 		</mx:TabNavigator>
-		<s:Label id="location" text="{vpUrl}" />
-		<s:Label id="lblInfo" text="label" />
+		<!--<s:Label id="location" text="{vpUrl}" />-->
 	</s:VGroup>
 </s:WindowedApplication>
