@@ -3,19 +3,23 @@
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="download" 
-					 width="850" height="461">
+					creationComplete="init()"
+					width="850" height="461">
 	<fx:Script source="TabBrowser.as" />
 	
-	<s:Panel width="840" height="455" horizontalCenter="0" title="download" >
-		<s:layout>
-			<s:VerticalLayout paddingTop="3" paddingLeft="3" paddingRight="3" paddingBottom="3"/>
-		</s:layout>
-		<s:VGroup width="830">
-			<mx:HTML id="htmlBrowser" width="820" height="400" location="{vpUrl}" />
+	
+		<s:VGroup width="845" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
+			<s:HGroup>
+				<s:Button label="&lt;" width="30" toolTip="back" click="htmlBrowser.historyBack()"/>
+				<s:Button label="&gt;" width="30" toolTip="forward" click="htmlBrowser.historyForward()"/>
+				<s:TextInput id="loc" width="500" enter="htmlBrowser.location = loc.text" text="{htmlBrowser.location}"/>
+				<s:Button label="Go" click="htmlBrowser.location = loc.text"/>
+				<s:Button label="Reload" click="htmlBrowser.reload()"/>
+				
+			</s:HGroup>
+			<mx:HTML id="htmlBrowser" width="840" height="400" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
 			
 		</s:VGroup>
-		
-		
-	</s:Panel>
+	
 	
 </s:NavigatorContent>

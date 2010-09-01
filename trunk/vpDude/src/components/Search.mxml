@@ -17,7 +17,7 @@
 	</fx:Script>
 
 	
-		<s:VGroup width="95%">
+		<s:VGroup width="95%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:TextInput id="searchTerm" text="..." change="searchTerm_changeHandler(event)" />
 		</s:VGroup>
 
