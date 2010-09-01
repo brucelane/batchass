@@ -7,7 +7,7 @@
 	
 	
 	
-		<s:VGroup width="100%">
+		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			
 		</s:VGroup>
 

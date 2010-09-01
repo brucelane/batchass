@@ -3,7 +3,7 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
-					   width="960" height="600"
+					   width="890" height="600"
 					   xmlns:components="components.*">
 
 	<fx:Declarations>
@@ -12,14 +12,14 @@
 	<fx:Script source="Main.as" />
 	<s:VGroup paddingLeft="10" paddingBottom="10" paddingRight="10" paddingTop="10">
 		<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
-	
-		<mx:TabNavigator id="tabNav" width="900" height="500" change="tabNav_changeHandler(event)" >
+		
+		<mx:TabNavigator id="tabNav" width="870" height="500" change="tabNav_changeHandler(event)" >
 			<components:Search/>
-			<components:Download id="browserTab"/>
+			<components:Download id="browserTab" />
 			<components:Config/>
 			<components:Upload/>
 			<components:Quit/>
 		</mx:TabNavigator>
-		
+		<s:Label id="lblInfo" text="label" />
 	</s:VGroup>
 </s:WindowedApplication>

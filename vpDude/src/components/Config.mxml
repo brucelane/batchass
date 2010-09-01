@@ -4,34 +4,28 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="config" 
 					>
-
-	<fx:Script>
-		<![CDATA[
-			
-		]]>
-	</fx:Script>
-
+	
 	<fx:Script source="TabConfig.as" />
-		<s:VGroup width="100%">
+		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:HGroup>
-				<s:Label text="Configuration files path:" verticalAlign="middle"/>
-				<s:TextInput text="videopong/config" id="configPath"/>
+				<s:Label width="{lblWidth}" text="Configuration files path:" verticalAlign="middle"/>
+				<s:TextInput width="{tiWidth}" text="videopong/config" id="configPath"/>
 				<s:Button label="..." id="browseConfigPathBtn" width="30"/>			
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="Downloaded files path:" verticalAlign="bottom"/>
-				<s:TextInput text="videopong/cache" id="cachePath"/>
+				<s:Label width="{lblWidth}" text="Downloaded files path:" verticalAlign="bottom"/>
+				<s:TextInput width="{tiWidth}" text="videopong/cache" id="cachePath"/>
 				<s:Button label="..." id="browseCachePathBtn" width="30"/>			
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="User name:" verticalAlign="bottom"/>
-				<s:TextInput text="guest" id="username"/>
+				<s:Label width="{lblWidth}" text="User name:" verticalAlign="bottom"/>
+				<s:TextInput width="{tiWidth}" text="guest" id="username"/>
 			</s:HGroup>
 			<s:HGroup>
-				<s:Label text="Password:" verticalAlign="bottom"/>
-				<s:TextInput text="" id="pwd" />
+				<s:Label width="{lblWidth}" text="Password:" verticalAlign="bottom"/>
+				<s:TextInput width="{tiWidth}" text="" id="pwd" />
 			</s:HGroup>
-			<s:Button label="Button" id="applyBtn" click="applyBtn_clickHandler(event)"/>
+			<s:Button label="Apply" id="applyBtn" click="applyBtn_clickHandler(event)"/>
 			
 		</s:VGroup>
 

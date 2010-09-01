@@ -21,6 +21,7 @@ package
 		private static var _vpDudeApp:Object;
 		private static var _username:String = "guest";
 		private static var _password:String = "none";
+		[Bindable]
 		public var vpUrl:String = "http://www.videopong.net/vpdude/";
 
 		
