@@ -17,9 +17,9 @@
 		<mx:TabNavigator id="tabNav" width="870" height="500" change="tabNav_changeHandler(event)" >
 			<!--<components:Search id="searchTab" visible="false" />
 			<components:Download id="browserTab" visible="false" />-->
-			<components:Config />
+			<!--<components:Config  />-->
 			<!--<components:Upload id="uploadTab" visible="false" />-->
-			<components:Quit/>
+			<!--<components:Quit/>-->
 		</mx:TabNavigator>
 		<!--<s:Label id="location" text="{vpUrl}" />-->
 	</s:VGroup>
