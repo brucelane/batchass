@@ -2,9 +2,17 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   preinitialize="vpDude_preinitializeHandler(event)"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
 					   width="890" height="600"
 					   xmlns:components="components.*">
+
+	<fx:Script>
+		<![CDATA[
+			
+		]]>
+	</fx:Script>
+
 
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -20,6 +28,7 @@
 			<components:Upload/>
 			<components:Quit/>
 		</mx:TabNavigator>
+		<s:Label id="location" text="{vpUrl}" />
 		<s:Label id="lblInfo" text="label" />
 	</s:VGroup>
 </s:WindowedApplication>

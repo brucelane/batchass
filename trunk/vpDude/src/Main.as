@@ -7,7 +7,7 @@ import flash.display.InteractiveObject;
 import flash.events.NativeWindowDisplayStateEvent;
 import flash.globalization.CurrencyFormatter;
 
-import fr.batchass.AIRUpdater;
+import fr.batchass.*;
 
 import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
@@ -17,7 +17,42 @@ private var gb:Singleton = Singleton.getInstance();
 //monitor the website url
 private var monitor:URLMonitor;
 
-	
+private var defaultConfigXmlPath:String = 'videopong' + File.separator + 'config.xml';
+[Bindable]
+public var vpUrl:String="";
+
+public static var CONFIG_XML:XML;
+
+protected function vpDude_preinitializeHandler(event:FlexEvent):void
+{
+	try
+	{
+		var configFile:File = File.documentsDirectory.resolvePath( defaultConfigXmlPath );
+		
+		if ( !configFile.exists )
+		{
+			gb.log( "config.xml does not exist" );
+			CONFIG_XML = <config />;
+		}
+		else
+		{
+			gb.log( "config.xml exists, load the file xml" );
+			CONFIG_XML = new XML( readTextFile( configFile ) );
+		}
+	}
+	catch ( e:Error )
+	{	
+		CONFIG_XML = <config />;
+		statusText.text = 'Error loading config.xml file: ' + e.message;
+		gb.log( statusText.text );
+	}
+}
+private function writeFolderXmlFile():void
+{
+	var folderFile:File = File.documentsDirectory.resolvePath( defaultConfigXmlPath );
+	// write the text file
+	writeTextFile(folderFile, CONFIG_XML);					
+}
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
@@ -72,14 +107,8 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		if(monitor.available) 
-		{
-			gb.log( "monitor, available: " + gb.vpUrl );
-		} 
-		else 
-		{
-			gb.log( "monitor, down: " + gb.vpUrl );
-		}
+		statusText.text = gb.vpUrl + " is " + ( monitor.available ? "available" : "down" );
+		gb.log( statusText.text );
 		//monitor.stop();
 		//monitor = null;
 	}

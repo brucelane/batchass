@@ -17,9 +17,10 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	if ( isChanged ) 
 	{
 		trace ( "changed" );
-		parentDocument.browserTab.setLocation( gb.vpUrl + "?login=" + gb.username + "&password=" + gb.password );
+		//parentDocument.browserTab.setLocation( gb.vpUrl + "?login=" + gb.username + "&password=" + gb.password );
 		//parentDocument.browserTab.createComponentsFromDescriptors();
-		parentDocument.lblInfo.text = "apply";
-		
 	}
+	//parentDocument.lblInfo.text = "apply";
+	parentDocument.statusText.text = "apply";
+	parentDocument.vpUrl = gb.vpUrl + "?login=" + gb.username + "&password=" + gb.password;
 }
