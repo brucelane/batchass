@@ -2,6 +2,7 @@
 import air.net.URLMonitor;
 
 import components.Quit;
+import components.Search;
 
 import flash.display.InteractiveObject;
 import flash.events.NativeWindowDisplayStateEvent;
@@ -64,8 +65,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void
 {
-	//quit = tab4
-	if ( event.newIndex == 4 )
+	if( event.relatedObject is Quit) 
 	{
 		for each (var window:NativeWindow in NativeApplication.nativeApplication.openedWindows) {
 			window.close();

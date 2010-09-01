@@ -29,8 +29,13 @@ private function onHTMLComplete() : void
 	htmlBrowser.domWindow.airApp = airApp;
 }
 
-//THIS HAS TO BE A VAR TO BE RECOGNIZED IN JAVASCRIPT
+// JAVASCRIPT functions
 public var launchURL:Function = function( url : String ) : void
 {
 	navigateToURL( new URLRequest( url ) );
+}
+
+public var launchE4X:Function = function( e4xResult : String ) : void
+{
+	trace( e4xResult );
 }
