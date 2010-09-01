@@ -10,17 +10,8 @@ private var airApp : Object = this;
 private function init():void
 {
 	trace ( "init" );
-	//setLocation( gb.vpUrl + "?login=" + gb.username + "&password=" + gb.password );
 }
-/*public function setLocation( url:String ):void
-{
-	if ( !htmlBrowser )
-	{
-		trace( "htmlBrowser null" );
-		htmlBrowser = new HTML();
-	}
-	htmlBrowser.location = url;
-}*/
+
 
 //inject a reference to "this" into the HTML dom
 private function onHTMLComplete() : void

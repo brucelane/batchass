@@ -19,10 +19,9 @@ package
 		private static var _nowDate:String;
 
 		private static var _vpDudeApp:Object;
-		private static var _username:String = "guest";
-		private static var _password:String = "none";
-		[Bindable]
-		public var vpUrl:String = "http://www.videopong.net/vpdude/";
+		/*private static var _username:String = "guest";
+		private static var _password:String = "none";*/
+		
 
 		
 		public function Singleton()
@@ -65,7 +64,7 @@ package
 			_vpDudeApp = value;
 		}
 
-		public function get username():String
+		/*public function get username():String
 		{
 			return _username;
 		}
@@ -83,7 +82,7 @@ package
 		public function set password(value:String):void
 		{
 			_password = value;
-		}
+		}*/
 
 
 	}

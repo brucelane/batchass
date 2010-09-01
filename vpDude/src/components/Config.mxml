@@ -19,11 +19,11 @@
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="User name:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="guest" id="username"/>
+				<s:TextInput width="{tiWidth}" text="{parentDocument.userName}" id="username"/>
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Password:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="" id="pwd" />
+				<s:TextInput width="{tiWidth}" text="{parentDocument.password}" id="pwd" />
 			</s:HGroup>
 			<s:Button label="Apply" id="applyBtn" click="applyBtn_clickHandler(event)"/>
 			
