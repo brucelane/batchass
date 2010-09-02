@@ -4,20 +4,20 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="download" 
 					creationComplete="init()"
-					width="850" height="461">
+					width="824" height="461">
 	<fx:Script source="TabBrowser.as" />
 	
 	
-		<s:VGroup width="845" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
-			<s:HGroup>
-				<s:Button label="&lt;" width="30" toolTip="back" click="htmlBrowser.historyBack()"/>
-				<s:Button label="&gt;" width="30" toolTip="forward" click="htmlBrowser.historyForward()"/>
-				<s:TextInput id="loc" width="500" enter="htmlBrowser.location = loc.text" text="{htmlBrowser.location}"/>
-				<s:Button label="Go" click="htmlBrowser.location = loc.text"/>
-				<s:Button label="Reload" click="htmlBrowser.reload()"/>
+		<s:VGroup width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+			<s:HGroup paddingLeft="5">
+				<s:Button label="&lt;" width="30" height="18" toolTip="back" click="htmlBrowser.historyBack()"/>
+				<s:Button label="&gt;" width="30" height="18" toolTip="forward" click="htmlBrowser.historyForward()"/>
+				<!--<s:TextInput id="loc" width="500" enter="htmlBrowser.location = loc.text" text="{htmlBrowser.location}"/>-->
+				<!--<s:Button label="Go" click="htmlBrowser.location = loc.text"/>-->
+				<s:Button label="Reload" height="18" click="htmlBrowser.reload()"/>
 				
 			</s:HGroup>
-			<mx:HTML id="htmlBrowser" width="840" height="400" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
+			<mx:HTML id="htmlBrowser" width="815" height="440" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
 			
 		</s:VGroup>
 	
