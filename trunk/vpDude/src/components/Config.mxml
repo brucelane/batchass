@@ -16,13 +16,17 @@
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Database files path:" verticalAlign="middle"/>
-				<s:TextInput width="{tiWidth}" text="{dbFolderPath}" id="dbPath"/>
-				<s:Button label="..." id="browseConfigPathBtn" width="30"/>			
+				<s:TextInput width="{tiWidth}" text="{dbFolderPath}" id="dbTextInput"/>
+				<s:Button label="..." id="browseConfigPathBtn" width="30" click="browseConfigPathBtn_clickHandler(event)"/>			
 			</s:HGroup>
-			<s:HGroup>
+			<!--<s:HGroup>
 				<s:Label width="{lblWidth}" text="Downloaded files path:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="{dldFolderPath}" id="dldPath"/>
-				<s:Button label="..." id="browseCachePathBtn" width="30"/>			
+				<s:TextInput width="{tiWidth}" text="{dldFolderPath}" id="dldTextInput"/>
+				<s:Button label="..." id="browseCachePathBtn" width="30" click="browseCachePathBtn_clickHandler(event)"/>			
+			</s:HGroup>-->
+			<s:HGroup>
+				<mx:Label text="If you have already a videopong.net account please fill in, otherwise please create one first on" />
+				<mx:LinkButton label="videopong.net" click="navigateToURL(new URLRequest('http://videopong.net'))" />
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="User name:" verticalAlign="bottom"/>
