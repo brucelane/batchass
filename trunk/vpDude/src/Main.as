@@ -17,14 +17,11 @@ private var gb:Singleton = Singleton.getInstance();
 //monitor the website url
 private var monitor:URLMonitor;
 
-private var vpUrl:String = "http://www.videopong.net/vpdude/";
+public var vpUrl:String = "http://www.videopong.net/vpdude/";
+
 
 [Bindable]
-public var userName:String = "guest";
-[Bindable]
-public var password:String = "none";
-[Bindable]
-public var vpFullUrl:String = vpUrl + "?login=" + userName + "&password=" + password;
+public var vpFullUrl:String = vpUrl;// + "?login=" + userName + "&password=" + password;
 
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
@@ -46,10 +43,14 @@ public function addTabs():void
 {
 	if ( tabNav.numChildren == 2 )
 	{
-		//tabNav.removeChildAt( 1 );//Quit
-		//tabNav.removeChildAt( 0 );
-		tabNav.addChildAt( new Search(), 0 );
-		tabNav.addChildAt( new Download(), 1 );
+		tabNav.removeChildAt( 1 );//Quit
+		tabNav.removeChildAt( 0 );
+		tabNav.addChild( new Search() );
+		tabNav.addChild( new Download() );
+		tabNav.addChild( new Config() );	
+		tabNav.addChild( new Quit() );	
+		//tabNav.addChildAt( new Search(), 0 );
+		//tabNav.addChildAt( new Download(), 1 );
 		//tabNav.addChildAt( new Upload(), 3 );	
 	}
 }
