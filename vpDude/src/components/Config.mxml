@@ -3,11 +3,11 @@
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					preinitialize="config_preinitializeHandler(event)"
+					creationComplete="config_creationCompleteHandler(event)"
 					label="config" 
 					>
 	<fx:Script>
 		<![CDATA[
-			
 
 		]]>
 	</fx:Script>
@@ -15,22 +15,22 @@
 	<fx:Script source="TabConfig.as" />
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:HGroup>
-				<s:Label width="{lblWidth}" text="Configuration files path:" verticalAlign="middle"/>
-				<s:TextInput width="{tiWidth}" text="videopong/config" id="configPath"/>
+				<s:Label width="{lblWidth}" text="Database files path:" verticalAlign="middle"/>
+				<s:TextInput width="{tiWidth}" text="{dbFolderPath}" id="dbPath"/>
 				<s:Button label="..." id="browseConfigPathBtn" width="30"/>			
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Downloaded files path:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="videopong/cache" id="cachePath"/>
+				<s:TextInput width="{tiWidth}" text="{dldFolderPath}" id="dldPath"/>
 				<s:Button label="..." id="browseCachePathBtn" width="30"/>			
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="User name:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="{parentDocument.userName}" id="username"/>
+				<s:TextInput width="{tiWidth}" text="{userName}" id="userTextInput"/>
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Password:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="{parentDocument.password}" id="pwd" />
+				<s:TextInput width="{tiWidth}" text="{password}" id="pwdTextInput" />
 			</s:HGroup>
 			<s:Button label="Apply" id="applyBtn" click="applyBtn_clickHandler(event)"/>
 			
