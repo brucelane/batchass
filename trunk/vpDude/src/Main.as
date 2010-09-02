@@ -17,7 +17,6 @@ private var gb:Singleton = Singleton.getInstance();
 //monitor the website url
 private var monitor:URLMonitor;
 
-private var defaultConfigXmlPath:String = 'videopong' + File.separator + 'config.xml';
 private var vpUrl:String = "http://www.videopong.net/vpdude/";
 
 [Bindable]
@@ -27,68 +26,32 @@ public var password:String = "none";
 [Bindable]
 public var vpFullUrl:String = vpUrl + "?login=" + userName + "&password=" + password;
 
-private var isConfigured:Boolean = false;
-
-public static var CONFIG_XML:XML;
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
 {
-	try
-	{
-		var configFile:File = File.documentsDirectory.resolvePath( defaultConfigXmlPath );
-		
-		if ( !configFile.exists )
-		{
-			gb.log( "config.xml does not exist" );
-			CONFIG_XML = <config />;
-		}
-		else
-		{
-			gb.log( "config.xml exists, load the file xml" );
-			CONFIG_XML = new XML( readTextFile( configFile ) );
-			isConfigured = true;
-		}
-	}
-	catch ( e:Error )
-	{	
-		CONFIG_XML = <config />;
-		statusText.text = 'Error loading config.xml file: ' + e.message;
-		gb.log( statusText.text );
-	}
+	
 }
-public function addTabs():void 
-{
-	tabNav.addChild( new Search() );
-	tabNav.addChild( new Download() );
-	tabNav.addChild( new Config() );
-	tabNav.addChild( new Upload() );
-	tabNav.addChild( new Quit() );
-	parentDocument.tabNav.removeChildAt( 1 );
-	parentDocument.tabNav.removeChildAt( 0 );
-}
-private function writeFolderXmlFile():void
-{
-	var folderFile:File = File.documentsDirectory.resolvePath( defaultConfigXmlPath );
-	// write the text file
-	writeTextFile(folderFile, CONFIG_XML);					
-}
+
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
 	AIRUpdater.checkForUpdate();
-	if ( isConfigured )
-	{
-		addTabs();
-	}
-	else
-	{
-		tabNav.addChild( new Config() );
-		//tabNav.removeChildAt( 0 );
-		tabNav.addChild( new Quit() );
-	}
+
+	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize);
 	urlMonitor( vpUrl );
+}
+public function addTabs():void 
+{
+	if ( tabNav.numChildren == 2 )
+	{
+		//tabNav.removeChildAt( 1 );//Quit
+		//tabNav.removeChildAt( 0 );
+		tabNav.addChildAt( new Search(), 0 );
+		tabNav.addChildAt( new Download(), 1 );
+		//tabNav.addChildAt( new Upload(), 3 );	
+	}
 }
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void
