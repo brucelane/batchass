@@ -101,7 +101,7 @@ private function onMonitor(event:StatusEvent):void
 	if ( monitor )
 	{
 		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "down" );
-		gb.log( statusText.text );
+		Util.log( statusText.text );
 		//monitor.stop();
 		//monitor = null;
 	}

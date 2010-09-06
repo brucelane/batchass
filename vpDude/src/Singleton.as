@@ -19,15 +19,9 @@ package
 		private static var _nowDate:String;
 
 		private static var _vpDudeApp:Object;
-		/*private static var _username:String = "guest";
-		private static var _password:String = "none";*/
-		
-
 		
 		public function Singleton()
 		{
-			
-			
 			if ( instance == null ) 
 			{
 				dateFormatter = new DateFormatter();
@@ -40,7 +34,7 @@ package
 		{
 			return instance;
 		}
-		public function log( text:String, clear:Boolean=false ):void
+		/*public function log( text:String, clear:Boolean=false ):void
 		{
 			var file:File = File.applicationStorageDirectory.resolvePath( _nowDate + ".log" );
 			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
@@ -52,9 +46,9 @@ package
 			fileStream.close();
 			trace( text );
 
-		} 
+		} */
 
-		public function get vpDudeApp():Object
+		/*public function get vpDudeApp():Object
 		{
 			return _vpDudeApp;
 		}
@@ -62,28 +56,7 @@ package
 		public function set vpDudeApp(value:Object):void
 		{
 			_vpDudeApp = value;
-		}
-
-		/*public function get username():String
-		{
-			return _username;
-		}
-
-		public function set username(value:String):void
-		{
-			_username = value;
-		}
-
-		public function get password():String
-		{
-			return _password;
-		}
-
-		public function set password(value:String):void
-		{
-			_password = value;
 		}*/
-
 
 	}
 }
