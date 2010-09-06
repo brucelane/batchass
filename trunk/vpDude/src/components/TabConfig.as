@@ -23,8 +23,6 @@ private var isConfigured:Boolean = false;
 private var userName:String = "";
 [Bindable]
 private var password:String = "";
-[Bindable]
-private var vpFolderPath:String;
 
 public static var CONFIG_XML:XML;
 public static const DEFAULT_CONFIG_XML:XML;
@@ -46,7 +44,7 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			
 			userName = CONFIG_XML..username[0].toString();
 			password = CONFIG_XML..pwd[0].toString();
-			vpFolderPath = CONFIG_XML..db[0].toString();
+			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
 			isConfigured = true;
 		}
 	}
@@ -67,22 +65,22 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	}
 	else
 	{
-		vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
+		parentDocument.vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
 	}
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	var isChanged:Boolean = false;
-	if ( userName != userTextInput.text || password != pwdTextInput.text  || vpFolderPath != dbTextInput.text ) 
+	if ( userName != userTextInput.text || password != pwdTextInput.text  || parentDocument.vpFolderPath != dbTextInput.text ) 
 	{
 		isChanged = true;
 		userName = userTextInput.text;
 		password = pwdTextInput.text;
-		vpFolderPath = dbTextInput.text;
+		parentDocument.vpFolderPath = dbTextInput.text;
 		trace ( "changed" );
 		parentDocument.statusText.text = "Configuration saved";
 
-		checkFolder( vpFolderPath );
+		checkFolder( parentDocument.vpFolderPath );
 	}
 	writeFolderXmlFile();
 
@@ -101,7 +99,7 @@ private function writeFolderXmlFile():void
 	CONFIG_XML = <config> 
 					<username>{userName}</username>
 					<pwd>{password}</pwd>
-					<db>{vpFolderPath}</db>
+					<db>{parentDocument.vpFolderPath}</db>
 				 </config>;
 	var folderFile:File = File.applicationStorageDirectory.resolvePath( defaultConfigXmlPath );
 	// write the text file
@@ -125,7 +123,7 @@ private function dbFolderSelection(event:Event):void
 	
 	if (event.type === Event.SELECT) 
 	{
-		vpFolderPath = file.nativePath;
+		parentDocument.vpFolderPath = file.nativePath;
 	}		
 }
 
@@ -149,11 +147,11 @@ private function checkFolder( folderPath:String ):void
 	else
 	{
 		//create subfolder structure
-		parentDocument.dldFolderPath = folderPath + File.separator + "dld";
+		//parentDocument.dldFolderPath = folderPath + File.separator + "dld";
 		var dldFolder:File = new File( parentDocument.dldFolderPath );
 		dldFolder.createDirectory();
 		Util.log('Created: ' + parentDocument.dldFolderPath);
-		parentDocument.dbFolderPath = folderPath + File.separator + "db";
+		//parentDocument.dbFolderPath = folderPath + File.separator + "db";
 		var dbFolder:File = new File( parentDocument.dbFolderPath );
 		dbFolder.createDirectory();
 		Util.log('Created: ' + parentDocument.dbFolderPath);
