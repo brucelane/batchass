@@ -18,22 +18,14 @@ private var tiWidth:int = 350;
 private var isConfigured:Boolean = false;
 
 [Bindable]
-private var userName:String = "guest";
+private var userName:String = "";
 [Bindable]
-private var password:String = "none";
+private var password:String = "";
 [Bindable]
 private var dbFolderPath:String;
-/*[Bindable]
-private var dldFolderPath:String;*/
 
 public static var CONFIG_XML:XML;
 public static const DEFAULT_CONFIG_XML:XML;
-/*= <config> 
-												<username>{userName}</username>
-												<pwd>None</pwd>
-												<db>{defaultDbFolder.nativePath}</db>
-												<dld>{defaultDldFolder.nativePath}</dld>
-											 </config>;*/
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -53,7 +45,6 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			userName = CONFIG_XML..username[0].toString();
 			password = CONFIG_XML..pwd[0].toString();
 			dbFolderPath = CONFIG_XML..db[0].toString();
-			//dldFolderPath = CONFIG_XML..dld[0].toString();
 			isConfigured = true;
 		}
 	}
@@ -75,14 +66,6 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	else
 	{
 		dbFolderPath = File.documentsDirectory.resolvePath( "videopong/db/" ).nativePath;
-		//dldFolderPath = File.documentsDirectory.resolvePath( "videopong/dld/" ).nativePath;
-/*		CONFIG_XML = <config> 
-						<username>{userName}</username>
-						<pwd>None</pwd>
-						<db>{dbFolderPath}</db>
-						<dld>{dldFolderPath}</dld>
-					 </config>;
-		trace(CONFIG_XML.toString());*/
 	}
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
@@ -94,12 +77,10 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 		userName = userTextInput.text;
 		password = pwdTextInput.text;
 		dbFolderPath != dbTextInput.text;
-		//dldFolderPath != dldTextInput.text;
 		trace ( "changed" );
 		parentDocument.statusText.text = "Configuration saved";
 
 		checkFolder( File.documentsDirectory.resolvePath( dbFolderPath ) );
-		//checkFolder( File.documentsDirectory.resolvePath( dldFolderPath ) );
 	}
 	writeFolderXmlFile();
 
@@ -133,15 +114,7 @@ protected function browseConfigPathBtn_clickHandler(event:MouseEvent):void
 	
 	file.browseForDirectory( "Select a location to store the database files." ); 
 }
-/*protected function browseCachePathBtn_clickHandler(event:MouseEvent):void
-{
-	var file:File = File.documentsDirectory;
-	file.addEventListener(Event.SELECT, dldFolderSelection);
-	file.addEventListener(Event.CANCEL, dldFolderSelection);
-	parentDocument.statusText.text = "Choose where the downloaded files will be stored";
-	
-	file.browseForDirectory( "Select a location to store the downloaded files." ); 
-}*/
+
 private function dbFolderSelection(event:Event):void 
 {
 	var file:File = event.currentTarget as File;
@@ -153,25 +126,20 @@ private function dbFolderSelection(event:Event):void
 		dbFolderPath = file.nativePath;
 	}		
 }
-/*private function dldFolderSelection(event:Event):void 
-{
-	var file:File = event.currentTarget as File;
-	file.removeEventListener(Event.SELECT, dldFolderSelection);
-	file.removeEventListener(Event.CANCEL, dldFolderSelection);
-	
-	if (event.type === Event.SELECT) 
-	{
-		dldFolderPath = file.nativePath;
-	}		
-}*/
 
 private function checkFolder(folder:File):void 
 {
 	// creates folder if it does not exists
 	if (!folder.exists) 
 	{
-		parentDocument.statusText.text('Creating: ', folder.name);
+		parentDocument.statusText.text('Creating: ' + folder.name);
 		// create the directory
 		folder.createDirectory();
 	}
+	if (!folder.exists) 
+	{
+		parentDocument.statusText.text('Could not create: ' + folder.name);
+		gb.log('Could not create: ' + folder.name);
+	}
+
 }
