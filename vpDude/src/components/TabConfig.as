@@ -136,10 +136,10 @@ private function checkFolder( folderPath:String ):void
 	// creates folder if it does not exists
 	if (!folder.exists) 
 	{
+		parentDocument.statusText.text = 'Creating folder structure in ' + folderPath;
+		Util.log('Creating folder structure in ' + folderPath);
 		// create the directory
 		folder.createDirectory();
-		parentDocument.statusText.text = 'Creating: ' + folderPath;
-		Util.log('Created: ' + folderPath);
 	}
 	if (!folder.exists) 
 	{
