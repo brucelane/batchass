@@ -18,10 +18,11 @@ private var gb:Singleton = Singleton.getInstance();
 private var monitor:URLMonitor;
 
 public var vpUrl:String = "http://www.videopong.net/vpdude/";
+public var vpRootUrl:String = "http://www.videopong.net/";
 
 
 [Bindable]
-public var vpFullUrl:String = vpUrl;// + "?login=" + userName + "&password=" + password;
+public var vpFullUrl:String = vpUrl;
 
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
@@ -37,7 +38,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize);
-	urlMonitor( vpUrl );
+	urlMonitor( vpRootUrl );
 }
 public function addTabs():void 
 {
@@ -99,7 +100,7 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		statusText.text = vpUrl + " is " + ( monitor.available ? "available" : "down" );
+		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "down" );
 		gb.log( statusText.text );
 		//monitor.stop();
 		//monitor = null;
