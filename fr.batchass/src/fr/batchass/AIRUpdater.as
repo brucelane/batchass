@@ -18,7 +18,7 @@ package fr.batchass
 		 */
 		public static function checkForUpdate():void 
 		{ 
-			// set the URL for the update.xml file
+			// set the URL for the xml file
 			appUpdater.updateURL = "http://www.batchass.fr/update/" + getApplicationName() + ".xml"; // Server-side XML file describing update  
 			appUpdater.addEventListener(UpdateEvent.INITIALIZED, onUpdate);
 			appUpdater.addEventListener(ErrorEvent.ERROR, onUpdaterError);
