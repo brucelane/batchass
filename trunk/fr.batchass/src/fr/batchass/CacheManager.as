@@ -43,15 +43,15 @@ package fr.batchass
 			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + getFileName( thumbnailUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
-			Util.log( "CacheManager, getAssetThumbnailByURL localUrl: " + localUrl );
+			Util.log( "CacheManager, getThumbnailByURL localUrl: " + localUrl );
 			if( cacheFile.exists )
 			{
-				Util.log( "CacheManager, getAssetThumbnailByURL cacheFile exists: " + cacheFile.url );
+				Util.log( "CacheManager, getThumbnailByURL cacheFile exists: " + cacheFile.url );
 				return cacheFile.url;
 			} 
 			else 
 			{
-				Util.log( "CacheManager, getAssetThumbnailByURL cacheFile does not exist: " + thumbnailUrl );
+				Util.log( "CacheManager, getThumbnailByURL cacheFile does not exist: " + thumbnailUrl );
 				addThumbToCache( thumbnailUrl );
 				return thumbnailUrl;
 			}		
@@ -61,16 +61,16 @@ package fr.batchass
 			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
-			Util.log( "CacheManager, getAssetByURL localUrl: " + localUrl );
+			Util.log( "CacheManager, getClipByURL localUrl: " + localUrl );
 			if( cacheFile.exists )
 			{
-				Util.log( "CacheManager, getAssetByURL cacheFile exists: " + cacheFile.url );
+				Util.log( "CacheManager, getClipByURL cacheFile exists: " + cacheFile.url );
 				cacheFile.openWithDefaultApplication();
 				return cacheFile.url;
 			} 
 			else 
 			{
-				Util.log( "CacheManager, getAssetByURL cacheFile does not exist: " + assetUrl );
+				Util.log( "CacheManager, getClipByURL cacheFile does not exist: " + assetUrl );
 				addAssetToCache( assetUrl );
 				return assetUrl;
 			}
