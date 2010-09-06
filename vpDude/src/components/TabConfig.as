@@ -1,6 +1,7 @@
 import components.*;
 
 import flash.desktop.NativeApplication;
+import flash.filesystem.File;
 
 import fr.batchass.Util;
 import fr.batchass.readTextFile;
@@ -66,7 +67,7 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	}
 	else
 	{
-		vpFolderPath = File.documentsDirectory.resolvePath( "videopong" ).nativePath;
+		vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
 	}
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
@@ -81,7 +82,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 		trace ( "changed" );
 		parentDocument.statusText.text = "Configuration saved";
 
-		checkFolder( File.documentsDirectory.resolvePath( vpFolderPath ) );
+		checkFolder( vpFolderPath );
 	}
 	writeFolderXmlFile();
 
@@ -128,19 +129,35 @@ private function dbFolderSelection(event:Event):void
 	}		
 }
 
-private function checkFolder(folder:File):void 
+private function checkFolder( folderPath:String ):void 
 {
+	var folder:File = new File( folderPath );
+	var folderPath:String = folder.nativePath.toString();
 	// creates folder if it does not exists
 	if (!folder.exists) 
 	{
-		parentDocument.statusText.text('Creating: ' + folder.name);
 		// create the directory
 		folder.createDirectory();
+		parentDocument.statusText.text = 'Creating: ' + folderPath;
+		Util.log('Created: ' + folderPath);
 	}
 	if (!folder.exists) 
 	{
-		parentDocument.statusText.text('Could not create: ' + folder.name);
-		Util.log('Could not create: ' + folder.name);
+		parentDocument.statusText.text = 'Could not create: ' + folderPath;
+		Util.log('Could not create: ' + folderPath);
+	}
+	else
+	{
+		//create subfolder structure
+		parentDocument.dldFolderPath = folderPath + File.separator + "dld";
+		var dldFolder:File = new File( parentDocument.dldFolderPath );
+		dldFolder.createDirectory();
+		Util.log('Created: ' + parentDocument.dldFolderPath);
+		parentDocument.dbFolderPath = folderPath + File.separator + "db";
+		var dbFolder:File = new File( parentDocument.dbFolderPath );
+		dbFolder.createDirectory();
+		Util.log('Created: ' + parentDocument.dbFolderPath);
+		
 	}
 
 }

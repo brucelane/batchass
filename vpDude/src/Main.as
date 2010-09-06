@@ -20,10 +20,11 @@ private var monitor:URLMonitor;
 public var vpUrl:String = "http://www.videopong.net/vpdude/";
 public var vpRootUrl:String = "http://www.videopong.net/";
 
-
 [Bindable]
 public var vpFullUrl:String = vpUrl;
 
+public var dldFolderPath:String;
+public var dbFolderPath:String;
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
 {
