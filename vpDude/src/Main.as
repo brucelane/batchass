@@ -17,14 +17,29 @@ private var gb:Singleton = Singleton.getInstance();
 //monitor the website url
 private var monitor:URLMonitor;
 
-public var vpUrl:String = "http://www.videopong.net/vpdude/";
 public var vpRootUrl:String = "http://www.videopong.net/";
+public var vpUrl:String = vpRootUrl + "vpdude/";
 
 [Bindable]
 public var vpFullUrl:String = vpUrl;
 
+
 public var dldFolderPath:String;
 public var dbFolderPath:String;
+[Bindable]
+public function get vpFolderPath():String
+{
+	return _vpFolderPath;
+}
+
+private function set vpFolderPath(value:String):void
+{
+	_vpFolderPath = value;
+	dldFolderPath = _vpFolderPath + File.separator + "dld";
+	dbFolderPath = _vpFolderPath + File.separator + "db";
+}
+
+private var _vpFolderPath:String;
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
 {

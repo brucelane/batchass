@@ -52,9 +52,14 @@ private function e4xLoadComplete( event:Event ):void
 	
 	trace(loader.data);
 	var xmlFile:XML = XML( loader.data );
-	var videoUrl:String = xmlFile..urldownload;
+	/*var clipId:String = xmlFile..clipid;
+	var videoUrl:String = xmlFile..urldownload;*/
 	
-	cache = new CacheManager( parentDocument.dldFolderPath );
+	if ( !cache ) cache = new CacheManager( parentDocument.dldFolderPath );
+	cache.getThumbnailByURL( xmlFile..urlthumb1 );
+	cache.getThumbnailByURL( xmlFile..urlthumb2 );
+	cache.getThumbnailByURL( xmlFile..urlthumb3 );
+	cache.getClipByURL( xmlFile..urldownload );
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
