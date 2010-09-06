@@ -13,13 +13,13 @@ internal var gb:Singleton = Singleton.getInstance();
 
 private var airApp : Object = this;
 private var cache:CacheManager;
+
 private function init():void
 {
 	trace ( "init" );
 	
 	
 }
-
 
 //inject a reference to "this" into the HTML dom
 private function onHTMLComplete() : void
@@ -53,6 +53,8 @@ private function e4xLoadComplete( event:Event ):void
 	trace(loader.data);
 	var xmlFile:XML = XML( loader.data );
 	var videoUrl:String = xmlFile..urldownload;
+	
+	cache = new CacheManager( parentDocument.dldFolderPath );
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
