@@ -38,7 +38,7 @@ package fr.batchass
 			
 			return instance;
 		}
-		public function getAssetThumbnailByURL( thumbnailUrl:String ):String
+		public function getThumbnailByURL( thumbnailUrl:String ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + getFileName( thumbnailUrl ) ;
 			var cacheFile:File = new File( localUrl );
@@ -56,9 +56,8 @@ package fr.batchass
 				return thumbnailUrl;
 			}		
 		}
-		public function getAssetByURL( assetUrl:String ):String
+		public function getClipByURL( assetUrl:String ):String
 		{
-			//var cacheFile:File = new File( _cacheDir.nativePath + folder + File.separator + cleanURLString( url ) );
 			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
@@ -215,11 +214,12 @@ package fr.batchass
 		
 		public function getFileName( url:String ):String
 		{
+			var fileName:String = "";
 			var lastSlash:uint = url.lastIndexOf( '/' );
-			var fileName:String = "assets/closeBtn.png";
-			if ( lastSlash > -1 )
+			var formerSlash:uint = url.substr( 0, lastSlash - 1).lastIndexOf( '/' );
+			if ( formerSlash > -1 )
 			{
-				fileName = url.substr( lastSlash + 1 );
+				fileName = url.substr( formerSlash + 1 );
 			}
 			return fileName;
 		}
