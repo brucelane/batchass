@@ -16,7 +16,7 @@
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Database files path:" verticalAlign="middle"/>
-				<s:TextInput width="{tiWidth}" text="{dbFolderPath}" id="dbTextInput"/>
+				<s:TextInput width="{tiWidth}" text="{vpFolderPath}" id="dbTextInput"/>
 				<s:Button label="..." id="browseConfigPathBtn" width="30" click="browseConfigPathBtn_clickHandler(event)"/>			
 			</s:HGroup>
 			<!--<s:HGroup>

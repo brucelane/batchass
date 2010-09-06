@@ -2,6 +2,7 @@ import components.*;
 
 import flash.desktop.NativeApplication;
 
+import fr.batchass.Util;
 import fr.batchass.readTextFile;
 import fr.batchass.writeTextFile;
 
@@ -22,7 +23,7 @@ private var userName:String = "";
 [Bindable]
 private var password:String = "";
 [Bindable]
-private var dbFolderPath:String;
+private var vpFolderPath:String;
 
 public static var CONFIG_XML:XML;
 public static const DEFAULT_CONFIG_XML:XML;
@@ -35,16 +36,16 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 		
 		if ( !configFile.exists )
 		{
-			gb.log( "config.xml does not exist" );
+			Util.log( "config.xml does not exist" );
 		}
 		else
 		{
-			gb.log( "config.xml exists, load the file xml" );
+			Util.log( "config.xml exists, load the file xml" );
 			CONFIG_XML = new XML( readTextFile( configFile ) );
 			
 			userName = CONFIG_XML..username[0].toString();
 			password = CONFIG_XML..pwd[0].toString();
-			dbFolderPath = CONFIG_XML..db[0].toString();
+			vpFolderPath = CONFIG_XML..db[0].toString();
 			isConfigured = true;
 		}
 	}
@@ -52,7 +53,7 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 	{	
 		var msg:String = 'Error loading config.xml file: ' + e.message;
 		parentDocument.statusText.text = msg;
-		gb.log( msg );
+		Util.log( msg );
 	}
 	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
 	
@@ -65,22 +66,22 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	}
 	else
 	{
-		dbFolderPath = File.documentsDirectory.resolvePath( "videopong/db/" ).nativePath;
+		vpFolderPath = File.documentsDirectory.resolvePath( "videopong" ).nativePath;
 	}
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	var isChanged:Boolean = false;
-	if ( userName != userTextInput.text || password != pwdTextInput.text  || dbFolderPath != dbTextInput.text ) 
+	if ( userName != userTextInput.text || password != pwdTextInput.text  || vpFolderPath != dbTextInput.text ) 
 	{
 		isChanged = true;
 		userName = userTextInput.text;
 		password = pwdTextInput.text;
-		dbFolderPath != dbTextInput.text;
+		vpFolderPath = dbTextInput.text;
 		trace ( "changed" );
 		parentDocument.statusText.text = "Configuration saved";
 
-		checkFolder( File.documentsDirectory.resolvePath( dbFolderPath ) );
+		checkFolder( File.documentsDirectory.resolvePath( vpFolderPath ) );
 	}
 	writeFolderXmlFile();
 
@@ -99,7 +100,7 @@ private function writeFolderXmlFile():void
 	CONFIG_XML = <config> 
 					<username>{userName}</username>
 					<pwd>{password}</pwd>
-					<db>{dbFolderPath}</db>
+					<db>{vpFolderPath}</db>
 				 </config>;
 	var folderFile:File = File.applicationStorageDirectory.resolvePath( defaultConfigXmlPath );
 	// write the text file
@@ -123,7 +124,7 @@ private function dbFolderSelection(event:Event):void
 	
 	if (event.type === Event.SELECT) 
 	{
-		dbFolderPath = file.nativePath;
+		vpFolderPath = file.nativePath;
 	}		
 }
 
@@ -139,7 +140,7 @@ private function checkFolder(folder:File):void
 	if (!folder.exists) 
 	{
 		parentDocument.statusText.text('Could not create: ' + folder.name);
-		gb.log('Could not create: ' + folder.name);
+		Util.log('Could not create: ' + folder.name);
 	}
 
 }
