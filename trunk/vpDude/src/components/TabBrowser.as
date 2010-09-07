@@ -5,6 +5,7 @@ import flash.net.navigateToURL;
 
 import fr.batchass.CacheManager;
 import fr.batchass.Util;
+import fr.batchass.writeTextFile;
 
 import mx.controls.Alert;
 import mx.controls.HTML;
@@ -51,15 +52,24 @@ private function e4xLoadComplete( event:Event ):void
 	var loader:URLLoader = event.target as URLLoader;
 	
 	trace(loader.data);
-	var xmlFile:XML = XML( loader.data );
-	/*var clipId:String = xmlFile..clipid;
-	var videoUrl:String = xmlFile..urldownload;*/
+	var clipXml:XML = XML( loader.data );
+	var clipId:String = clipXml..clipid;
 	
 	if ( !cache ) cache = new CacheManager( parentDocument.dldFolderPath );
-	cache.getThumbnailByURL( xmlFile..urlthumb1 );
-	cache.getThumbnailByURL( xmlFile..urlthumb2 );
-	cache.getThumbnailByURL( xmlFile..urlthumb3 );
-	cache.getClipByURL( xmlFile..urldownload );
+	cache.getThumbnailByURL( clipXml..urlthumb1 );
+	cache.getThumbnailByURL( clipXml..urlthumb2 );
+	cache.getThumbnailByURL( clipXml..urlthumb3 );
+	cache.getClipByURL( clipXml..urldownload );
+	clipXml.video.dlddate = new Date();
+	writeClipXmlFile( clipId, clipXml );
+}
+private function writeClipXmlFile( clipId:String, clipXml:XML ):void
+{
+	var localClipXMLFile:String = parentDocument.dbFolderPath + File.separator + clipId + ".xml" ;
+	var clipXmlFile:File = new File( localClipXMLFile );
+	
+	// write the text file
+	writeTextFile( clipXmlFile, clipXml );					
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
