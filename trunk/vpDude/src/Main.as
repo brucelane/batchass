@@ -23,9 +23,12 @@ public var vpUrl:String = vpRootUrl + "vpdude/";
 [Bindable]
 public var vpFullUrl:String = vpUrl;
 
-
 public var dldFolderPath:String;
 public var dbFolderPath:String;
+
+public static var TAGS_XML:XML;
+
+private var _vpFolderPath:String;
 [Bindable]
 public function get vpFolderPath():String
 {
@@ -39,7 +42,6 @@ private function set vpFolderPath(value:String):void
 	dbFolderPath = _vpFolderPath + File.separator + "db";
 }
 
-private var _vpFolderPath:String;
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
 {

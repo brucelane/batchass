@@ -3,18 +3,12 @@
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="search" 
+					creationComplete="search_creationCompleteHandler(event)"
 					>
-	<fx:Script>
-		<![CDATA[
-			import spark.events.TextOperationEvent;
 
-			protected function searchTerm_changeHandler(event:TextOperationEvent):void
-			{
-				// search arrayCollection of tags, titles, usernames
-			}
+	
 
-		]]>
-	</fx:Script>
+	<fx:Script source="TabSearch.as" />
 
 	
 		<s:VGroup width="95%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
