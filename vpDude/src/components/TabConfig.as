@@ -25,7 +25,7 @@ private var userName:String = "";
 private var password:String = "";
 
 public static var CONFIG_XML:XML;
-public static const DEFAULT_CONFIG_XML:XML;
+//public static const DEFAULT_CONFIG_XML:XML;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -91,9 +91,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 		parentDocument.addTabs();
 	}
 }
-private function updateConfigXml():void
-{
-}
+
 private function writeFolderXmlFile():void
 {
 	CONFIG_XML = <config> 

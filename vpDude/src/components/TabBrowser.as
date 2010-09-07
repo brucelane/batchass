@@ -9,6 +9,7 @@ import fr.batchass.writeTextFile;
 
 import mx.controls.Alert;
 import mx.controls.HTML;
+import mx.states.AddChild;
 
 internal var gb:Singleton = Singleton.getInstance();
 
@@ -60,7 +61,8 @@ private function e4xLoadComplete( event:Event ):void
 	cache.getThumbnailByURL( clipXml..urlthumb2 );
 	cache.getThumbnailByURL( clipXml..urlthumb3 );
 	cache.getClipByURL( clipXml..urldownload );
-	clipXml.video.dlddate = new Date();
+	clipXml.dlddate = Util.nowDate;
+	parentDocument.TAGS_XML.AddChild
 	writeClipXmlFile( clipId, clipXml );
 }
 private function writeClipXmlFile( clipId:String, clipXml:XML ):void
