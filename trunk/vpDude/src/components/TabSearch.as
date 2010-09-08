@@ -38,10 +38,10 @@ protected function search_creationCompleteHandler(event:FlexEvent):void
 	}
 	if ( !isConfigured )
 	{
-		parentDocument.TAGS_XML = <tags />;
+		/*parentDocument.TAGS_XML = <tags />;
 		var folderFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
 		// write the text file
-		writeTextFile( tagsFile, parentDocument.TAGS_XML );					
+		writeTextFile( tagsFile, parentDocument.TAGS_XML );	*/				
 		
 	}
 }
