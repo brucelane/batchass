@@ -5,7 +5,6 @@ import components.*;
 
 import flash.display.InteractiveObject;
 import flash.events.NativeWindowDisplayStateEvent;
-import flash.globalization.CurrencyFormatter;
 
 import fr.batchass.*;
 
