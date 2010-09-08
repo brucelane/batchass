@@ -17,14 +17,8 @@ package fr.batchass
 		}
 		public static function log( text:String, clear:Boolean=false ):void
 		{
-			if ( !_nowDate )
-			{
-				dateFormatter = new DateFormatter();
-				dateFormatter.formatString = "YYYYMMDD-HHhNN";
-				_nowDate = dateFormatter.format(new Date());
-				
-			}
-			var file:File = File.applicationStorageDirectory.resolvePath( _nowDate + ".log" );
+			
+			var file:File = File.applicationStorageDirectory.resolvePath( nowDate + ".log" );
 			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
 			
 			var fileStream:FileStream = new FileStream();
@@ -35,5 +29,20 @@ package fr.batchass
 			trace( text );
 			
 		} 
+
+		public static function get nowDate():String
+		{
+			if ( !_nowDate )
+			{
+				dateFormatter = new DateFormatter();
+				dateFormatter.formatString = "YYYYMMDD-HHhNN";
+				_nowDate = dateFormatter.format(new Date());
+				
+			}
+			return _nowDate;
+		}
+
+
+
 	}
 }

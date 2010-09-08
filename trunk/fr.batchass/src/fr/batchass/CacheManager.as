@@ -65,7 +65,7 @@ package fr.batchass
 			if( cacheFile.exists )
 			{
 				Util.log( "CacheManager, getClipByURL cacheFile exists: " + cacheFile.url );
-				cacheFile.openWithDefaultApplication();
+				//cacheFile.openWithDefaultApplication();
 				return cacheFile.url;
 			} 
 			else 
@@ -168,7 +168,7 @@ package fr.batchass
 			stream.open(cacheFile,FileMode.WRITE);
 			stream.writeBytes(loader.data);
 			stream.close();
-			cacheFile.openWithDefaultApplication();
+			//cacheFile.openWithDefaultApplication();
 			
 			delete pendingDictionaryByLoader[loader]
 			delete pendingDictionaryByURL[url];
