@@ -13,8 +13,9 @@ override public function set data( value:Object ) : void {
 	super.data = value;
 	if ( data )
 	{
-		data.urlthumb1 ? cachedThumbnail = getCachedThumbnail( data.urlthumb1[0] ) : cachedThumbnail = 'assets/noThumb.png';
+		data.urlthumb1 ? cachedThumbnail = getCachedThumbnail( data.urlthumb1 ) : cachedThumbnail = 'assets/noThumb.png';
 		data.clipname ? clipname = data.clipname : "...";
+		this.toolTip = clipname;
 		trace("cachedThumbnail:" + cachedThumbnail);
 	}
 }
@@ -28,5 +29,5 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 
 protected function imgUrl_clickHandler(event:MouseEvent):void
 {
-	trace( event.currentTarget.toString() );
+	trace( data.urldownload );
 }

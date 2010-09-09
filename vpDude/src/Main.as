@@ -30,23 +30,26 @@ public var TAGS_XML:XML = <tags>
 							<tag>videopong</tag>
 						 </tags>;
 public var CLIPS_XML:XML = <clips> 
-							<clip description="batchassclip">
+							<video description="batchassclip">
 								<tag>batchass</tag>
 								<clipname>Batchass</clipname>
 								<urlthumb1>http://img.videopong.net/0d96vvdmvfk/thumb1.jpg</urlthumb1>
-							</clip>
-							<clip description="videopongclip">
+								<urldownload>http://www.videopong.net/clip/download/0d96vvdmvfk/0d96vvdmvfk-Uzu.mov</urldownload>
+							</video>
+							<video description="videopongclip">
 								<tag>videopong</tag>
 								<clipname>Videopong</clipname>
 								<urlthumb1>http://img.videopong.net/0d96vvdmvfk/thumb2.jpg</urlthumb1>
-							</clip>
+								<urldownload>http://www.videopong.net/clip/download/0d96vvdmvfk/0d96vvdmvfk-Uzu.mov</urldownload>
+							</video>
 							
 						 </clips>;
 [Bindable]
 public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag);
 [Bindable]
-public var clipXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.clip);
+public var clipXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
 
+private var tagsXmlPath:String;
 public var cache:CacheManager;
 
 private var _vpFolderPath:String;
@@ -78,21 +81,61 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize);
 	urlMonitor( vpRootUrl );
+	
 }
 public function addTabs():void 
 {
 	if ( tabNav.numChildren == 2 )
 	{
 		tabNav.removeChildAt( 1 );//Quit
-		tabNav.removeChildAt( 0 );
+		tabNav.removeChildAt( 0 );//Config
 		tabNav.addChild( new Search() );
 		tabNav.addChild( new Download() );
 		tabNav.addChild( new Config() );	
 		tabNav.addChild( new Quit() );	
-		//tabNav.addChildAt( new Search(), 0 );
-		//tabNav.addChildAt( new Download(), 1 );
-		//tabNav.addChildAt( new Upload(), 3 );	
+		// load tagsFile when config is done
+		loadTagsFile();
 	}
+}
+
+public function loadTagsFile():void 
+{
+	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
+	var isConfigured:Boolean = false;
+	var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
+	try
+	{
+		
+		if ( !tagsFile.exists )
+		{
+			Util.log( "tags.xml does not exist" );
+		}
+		else
+		{
+			Util.log( "tags.xml exists, load the file xml" );
+			TAGS_XML = new XML( readTextFile( tagsFile ) );
+			isConfigured = true;
+		}
+	}
+	catch ( e:Error )
+	{	
+		var msg:String = 'Error loading tags.xml file: ' + e.message;
+		statusText.text = msg;
+		Util.log( msg );
+	}
+	if ( !isConfigured )
+	{
+		TAGS_XML = <tags />;
+		writeTagsFile();
+	}
+}
+public function writeTagsFile():void 
+{
+	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
+	var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
+	// write the text file
+	writeTextFile( tagsFile, TAGS_XML );					
+
 }
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void
@@ -141,7 +184,5 @@ private function onMonitor(event:StatusEvent):void
 	{
 		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "could not be reached" );
 		Util.log( statusText.text );
-		//monitor.stop();
-		//monitor = null;
 	}
 }
