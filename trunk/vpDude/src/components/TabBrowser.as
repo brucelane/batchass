@@ -49,7 +49,23 @@ private function e4xLoadComplete( event:Event ):void
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb3 );
 	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	clipXml.dlddate = Util.nowDate;
-	parentDocument.TAGS_XML.AddChild
+	
+	var tagList:XMLList = clipXml..tags[0] as XMLList;
+	var newTag:Boolean = false;
+	
+	trace("l:"+tagList.length());
+	//trace("2"+tagList[0].tags.tag[0].toString());
+	for each ( var oneTag:XML in tagList )
+	{
+		trace(oneTag.tag);
+		trace(oneTag.tags.tag);
+		if ( parentDocument.TAGS_XML..tags.(tag==oneTag).length() )
+		{
+			parentDocument.TAGS_XML.appendChild( oneTag );
+			newTag = true;	
+		}
+	}
+	if ( newTag ) parentDocument.writeTagsFile();
 	writeClipXmlFile( clipId, clipXml );
 }
 private function writeClipXmlFile( clipId:String, clipXml:XML ):void

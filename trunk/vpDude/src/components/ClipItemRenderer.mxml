@@ -24,7 +24,7 @@
 				  scaleContent="true"
 				  toolTip="click"
 				  />	
-		<s:Label text="{clipname}"/>
+		<s:Label text="{clipname}" horizontalCenter="center"/>
 		
 	</s:VGroup>
 </s:ItemRenderer>
