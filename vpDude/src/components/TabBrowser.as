@@ -3,25 +3,12 @@ import flash.net.URLLoaderDataFormat;
 import flash.net.URLRequest;
 import flash.net.navigateToURL;
 
-import fr.batchass.CacheManager;
-import fr.batchass.Util;
-import fr.batchass.writeTextFile;
+import fr.batchass.*;
 
-import mx.controls.Alert;
 import mx.controls.HTML;
-import mx.states.AddChild;
-
-internal var gb:Singleton = Singleton.getInstance();
+	
 
 private var airApp : Object = this;
-private var cache:CacheManager;
-
-private function init():void
-{
-	trace ( "init" );
-	
-	
-}
 
 //inject a reference to "this" into the HTML dom
 private function onHTMLComplete() : void
@@ -56,11 +43,11 @@ private function e4xLoadComplete( event:Event ):void
 	var clipXml:XML = XML( loader.data );
 	var clipId:String = clipXml..clipid;
 	
-	if ( !cache ) cache = new CacheManager( parentDocument.dldFolderPath );
-	cache.getThumbnailByURL( clipXml..urlthumb1 );
-	cache.getThumbnailByURL( clipXml..urlthumb2 );
-	cache.getThumbnailByURL( clipXml..urlthumb3 );
-	cache.getClipByURL( clipXml..urldownload );
+	if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );
+	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb1 );
+	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb2 );
+	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb3 );
+	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	clipXml.dlddate = Util.nowDate;
 	parentDocument.TAGS_XML.AddChild
 	writeClipXmlFile( clipId, clipXml );

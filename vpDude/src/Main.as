@@ -8,10 +8,9 @@ import flash.events.NativeWindowDisplayStateEvent;
 
 import fr.batchass.*;
 
+import mx.collections.XMLListCollection;
 import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
-
-private var gb:Singleton = Singleton.getInstance();
 
 //monitor the website url
 private var monitor:URLMonitor;
@@ -25,7 +24,30 @@ public var vpFullUrl:String = vpUrl;
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 
-public static var TAGS_XML:XML;
+public var TAGS_XML:XML = <tags> 
+							<tag>batchass</tag>
+							<tag>cool</tag>
+							<tag>videopong</tag>
+						 </tags>;
+public var CLIPS_XML:XML = <clips> 
+							<clip description="batchassclip">
+								<tag>batchass</tag>
+								<clipname>Batchass</clipname>
+								<urlthumb1>http://img.videopong.net/0d96vvdmvfk/thumb1.jpg</urlthumb1>
+							</clip>
+							<clip description="videopongclip">
+								<tag>videopong</tag>
+								<clipname>Videopong</clipname>
+								<urlthumb1>http://img.videopong.net/0d96vvdmvfk/thumb2.jpg</urlthumb1>
+							</clip>
+							
+						 </clips>;
+[Bindable]
+public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag);
+[Bindable]
+public var clipXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.clip);
+
+public var cache:CacheManager;
 
 private var _vpFolderPath:String;
 [Bindable]
@@ -117,7 +139,7 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "down" );
+		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "could not be reached" );
 		Util.log( statusText.text );
 		//monitor.stop();
 		//monitor = null;

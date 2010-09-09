@@ -3,7 +3,6 @@
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="download" 
-					creationComplete="init()"
 					width="824" height="461">
 	<fx:Script source="TabBrowser.as" />
 	
