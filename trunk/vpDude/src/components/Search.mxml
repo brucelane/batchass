@@ -2,18 +2,42 @@
 <s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					xmlns:components="com.hillelcoren.components.*"
 					label="search" 
-					creationComplete="search_creationCompleteHandler(event)"
+					creationComplete="search_creationCompleteHandler(event)"  
 					>
 
-	
-
 	<fx:Script source="TabSearch.as" />
+	<fx:Style source="css/defaults.css" />
 
-	
-		<s:VGroup width="95%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
-			<s:TextInput id="searchTerm" text="..." change="searchTerm_changeHandler(event)" />
-		</s:VGroup>
-
-	
+	<s:VGroup width="95%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
+		<s:HGroup>
+			<components:AdvancedAutoComplete
+				id="autoComplete"
+				dataProvider="{ parentDocument.tagsXMLList }" 
+				allowMultipleSelection="true"
+				allowNewValues="true"
+				styleName="doesnotwork"
+				width="400">
+				<components:inlineButton>
+					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>
+				</components:inlineButton>
+			</components:AdvancedAutoComplete>
+				
+				
+			<s:Button id="btnSearch" />
+			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" />
+		</s:HGroup>
+		<s:List id="clipList" width="600" height="400" 
+				itemRenderer="components.ClipItemRenderer" 
+				
+				dataProvider="{parentDocument.clipXMLList}"
+				>
+			<s:layout>
+				<s:TileLayout horizontalAlign="center" 
+							  verticalAlign="middle"
+							  columnWidth="100" rowHeight="100" />
+			</s:layout>
+		</s:List>
+	</s:VGroup>
 </s:NavigatorContent>

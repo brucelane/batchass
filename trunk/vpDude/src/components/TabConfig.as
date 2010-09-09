@@ -9,7 +9,6 @@ import fr.batchass.writeTextFile;
 
 import mx.events.FlexEvent;
 
-private var gb:Singleton = Singleton.getInstance();
 private var defaultConfigXmlPath:String = 'config' + File.separator + '.vpDudeConfig';
 
 [Bindable]

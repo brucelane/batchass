@@ -6,11 +6,19 @@ import spark.events.TextOperationEvent;
 
 private var isConfigured:Boolean = false;
 
-
-protected function searchTerm_changeHandler(event:TextOperationEvent):void
+private function handleButtonClick():void
 {
-	// search arrayCollection of tags, titles, usernames
+    if (autoComplete.isDropDownVisible())
+        {
+                autoComplete.hideDropDown();
+            }
+    else
+    {
+            autoComplete.search();
+            autoComplete.showDropDown();
+        }
 }
+
 protected function search_creationCompleteHandler(event:FlexEvent):void
 {
 	var tagsXmlPath:String = parentDocument.dbFolderPath + File.separator + "tags.xml";
@@ -38,10 +46,15 @@ protected function search_creationCompleteHandler(event:FlexEvent):void
 	}
 	if ( !isConfigured )
 	{
-		/*parentDocument.TAGS_XML = <tags />;
+		//use facebook style for tags
+		parentDocument.TAGS_XML = <tags> 
+							<tag>batchass</tag>
+							<tag>cool</tag>
+							<tag>videopong</tag>
+						 </tags>;
 		var folderFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
 		// write the text file
-		writeTextFile( tagsFile, parentDocument.TAGS_XML );	*/				
+		writeTextFile( tagsFile, parentDocument.TAGS_XML );					
 		
 	}
 }
