@@ -16,7 +16,7 @@
 				id="autoComplete" dataProvider="{ colors }" labelField="name"
 									 width="300" useListBuilder="{ useListBuilder.selected }" matchType="anyPart"
 									 showBrowseButton="{ showBrowse.selected }" showOrderButtons="{ showOrder.selected }"
-									 allowMultipleSelection="true" selectionLayout="vertical" change="handleAutoCompleteChange()"
+									 allowMultipleSelection="true" selectionLayout="vertical" 
 									 dropDownItemRenderer="{ dropDownItemRenderer }" itemClick="handleItemClick(event)"
 									 actionsMenuDataProvider="{ menuData }" showRemoveButton="{ showRemove.selected }"
 									 browserFields="{ ['name','hex'] }"/>--> 
@@ -28,20 +28,20 @@
 				allowMultipleSelection="true"
 				allowNewValues="true"
 				showRemoveIcon = "true"
+				change="handleAutoCompleteChange()"
+				prompt="Select tags from dropbox"
+				promptColor="255"
 				width="400">
 				<components:inlineButton>
 					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>
 				</components:inlineButton>
 			</components:AdvancedAutoComplete>
-				
-				
-			<s:Button id="btnSearch" />
-			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" />
+
+			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" width="200"/>
 		</s:HGroup>
 		<s:List id="clipList" width="600" height="400" 
 				itemRenderer="components.ClipItemRenderer" 
-				
-				dataProvider="{parentDocument.clipXMLList}"
+				dataProvider="{parentDocument.selectedClipsXMLList}"
 				>
 			<s:layout>
 				<s:TileLayout horizontalAlign="center" 

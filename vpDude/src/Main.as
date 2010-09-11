@@ -27,7 +27,7 @@ public var dbFolderPath:String;
 public var TAGS_XML:XML = <tags>
 							<tag>none</tag>
 						  </tags>;
-public var CLIPS_XML:XML = <clips> 
+public var CLIPS_XML:XML = <videos> 
 							<video description="batchassclip">
 								<tag>batchass</tag>
 								<clipname>Batchass</clipname>
@@ -41,13 +41,18 @@ public var CLIPS_XML:XML = <clips>
 								<urldownload>http://www.videopong.net/clip/download/0d96vvdmvfk/0d96vvdmvfk-Uzu.mov</urldownload>
 							</video>
 							
-						 </clips>;
+						 </videos>;
+// Collection of tags
 [Bindable]
 public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag);
+// Collection of selected videos for search tab
 [Bindable]
-public var clipXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
+public var selectedClipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
+// Collection of all the clips
+public var clipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
 
 private var tagsXmlPath:String;
+private var clipsXmlPath:String;
 public var cache:CacheManager;
 
 private var _vpFolderPath:String;
@@ -93,9 +98,65 @@ public function addTabs():void
 		tabNav.addChild( new Quit() );	
 		// load tagsFile when config is done
 		loadTagsFile();
+		loadClipsFile();
 	}
 }
 
+public function loadClipsFile():void 
+{
+	clipsXmlPath = parentDocument.dbFolderPath + File.separator + "clips.xml";
+	var isConfigured:Boolean = false;
+	var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
+	try
+	{
+		
+		if ( !clipsFile.exists )
+		{
+			Util.log( "clips.xml does not exist" );
+		}
+		else
+		{
+			Util.log( "clips.xml exists, load the file xml" );
+			CLIPS_XML = new XML( readTextFile( clipsFile ) );
+			if ( CLIPS_XML..video.length() )
+			{
+				trace("OK:"+CLIPS_XML.videos);
+				isConfigured = true;
+			}
+			else
+			{
+				trace("KO:"+CLIPS_XML.videos);
+				
+			}
+		}
+	}
+	catch ( e:Error )
+	{	
+		var msg:String = 'Error loading clips.xml file: ' + e.message;
+		statusText.text = msg;
+		Util.log( msg );
+	}
+	if ( !isConfigured )
+	{
+		CLIPS_XML = <videos />;
+		writeClipsFile();
+	}
+	refreshClipsXMLList();
+}
+public function writeClipsFile():void 
+{
+	clipsXmlPath = parentDocument.dbFolderPath + File.separator + "clips.xml";
+	var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
+	refreshClipsXMLList();
+
+	// write the text file
+	writeTextFile( clipsFile, CLIPS_XML );					
+}
+public function refreshClipsXMLList():void 
+{
+	clipsXMLList = new XMLListCollection( CLIPS_XML.video );
+	selectedClipsXMLList = new XMLListCollection( CLIPS_XML.video );
+}
 public function loadTagsFile():void 
 {
 	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
@@ -137,16 +198,20 @@ public function loadTagsFile():void
 		TAGS_XML = <tags />;
 		writeTagsFile();
 	}
+	refreshTagsXMLList();
 }
 public function writeTagsFile():void 
 {
 	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
 	var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
-	tagsXMLList = new XMLListCollection( TAGS_XML.tag );
+	refreshTagsXMLList();
 
 	// write the text file
 	writeTextFile( tagsFile, TAGS_XML );					
-
+}
+public function refreshTagsXMLList():void 
+{
+	tagsXMLList = new XMLListCollection( TAGS_XML.tag );
 }
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void

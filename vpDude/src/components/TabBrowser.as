@@ -54,6 +54,21 @@ private function e4xLoadComplete( event:Event ):void
 	var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;
 	var newTag:Boolean = false;
 	var foundNewTag:Boolean;
+	var foundNewClip:Boolean = true;
+	
+	var clipList:XMLList = parentDocument.CLIPS_XML..video as XMLList;
+	for each ( var appClip:XML in clipList )
+	{
+		if ( appClip.clipid.toString()==clipId )
+		{
+			foundNewClip = false;
+		}
+	}
+	if ( foundNewClip )
+	{
+		parentDocument.CLIPS_XML.appendChild( clipXml );
+		parentDocument.writeClipsFile();	
+	}
 	
 	for each ( var oneTag:XML in clipXmlTagList )
 	{
