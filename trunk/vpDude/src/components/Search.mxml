@@ -12,12 +12,22 @@
 
 	<s:VGroup width="95%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 		<s:HGroup>
+			<!--<hc:AdvancedAutoComplete 
+				id="autoComplete" dataProvider="{ colors }" labelField="name"
+									 width="300" useListBuilder="{ useListBuilder.selected }" matchType="anyPart"
+									 showBrowseButton="{ showBrowse.selected }" showOrderButtons="{ showOrder.selected }"
+									 allowMultipleSelection="true" selectionLayout="vertical" change="handleAutoCompleteChange()"
+									 dropDownItemRenderer="{ dropDownItemRenderer }" itemClick="handleItemClick(event)"
+									 actionsMenuDataProvider="{ menuData }" showRemoveButton="{ showRemove.selected }"
+									 browserFields="{ ['name','hex'] }"/>--> 
+			
+			
 			<components:AdvancedAutoComplete
 				id="autoComplete"
-				dataProvider="{ parentDocument.tagsXMLList }" 
+				dataProvider="{parentDocument.tagsXMLList}" 
 				allowMultipleSelection="true"
 				allowNewValues="true"
-				styleName="doesnotwork"
+				showRemoveIcon = "true"
 				width="400">
 				<components:inlineButton>
 					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>

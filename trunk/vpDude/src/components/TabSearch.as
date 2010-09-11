@@ -1,3 +1,5 @@
+import com.hillelcoren.components.AutoComplete;
+
 import fr.batchass.*;
 
 import mx.events.FlexEvent;
@@ -21,5 +23,5 @@ private function handleButtonClick():void
 
 protected function search_creationCompleteHandler(event:FlexEvent):void
 {
-
+	autoComplete.setStyle( "selectedItemStyleName", AutoComplete.STYLE_FACEBOOK );
 }
