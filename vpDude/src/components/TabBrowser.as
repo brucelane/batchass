@@ -5,6 +5,7 @@ import flash.net.navigateToURL;
 
 import fr.batchass.*;
 
+import mx.collections.XMLListCollection;
 import mx.controls.HTML;
 	
 
@@ -50,22 +51,31 @@ private function e4xLoadComplete( event:Event ):void
 	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	clipXml.dlddate = Util.nowDate;
 	
-	var tagList:XMLList = clipXml..tags[0] as XMLList;
+	var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;
 	var newTag:Boolean = false;
+	var foundNewTag:Boolean;
 	
-	trace("l:"+tagList.length());
-	//trace("2"+tagList[0].tags.tag[0].toString());
-	for each ( var oneTag:XML in tagList )
+	for each ( var oneTag:XML in clipXmlTagList )
 	{
-		trace(oneTag.tag);
-		trace(oneTag.tags.tag);
-		if ( parentDocument.TAGS_XML..tags.(tag==oneTag).length() )
+		foundNewTag = true;
+		var appTagList:XMLList = parentDocument.TAGS_XML..tag as XMLList;
+		for each ( var appTag:XML in appTagList )
+		{
+			if ( appTag.toString()==oneTag.toString() )
+			{
+				foundNewTag = false;
+			}
+		}
+		if ( foundNewTag )
 		{
 			parentDocument.TAGS_XML.appendChild( oneTag );
 			newTag = true;	
 		}
 	}
-	if ( newTag ) parentDocument.writeTagsFile();
+	if ( newTag )
+	{
+		parentDocument.writeTagsFile();
+	}
 	writeClipXmlFile( clipId, clipXml );
 }
 private function writeClipXmlFile( clipId:String, clipXml:XML ):void

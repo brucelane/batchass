@@ -24,11 +24,9 @@ public var vpFullUrl:String = vpUrl;
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 
-public var TAGS_XML:XML = <tags> 
-							<tag>batchass</tag>
-							<tag>cool</tag>
-							<tag>videopong</tag>
-						 </tags>;
+public var TAGS_XML:XML = <tags>
+							<tag>none</tag>
+						  </tags>;
 public var CLIPS_XML:XML = <clips> 
 							<video description="batchassclip">
 								<tag>batchass</tag>
@@ -114,7 +112,18 @@ public function loadTagsFile():void
 		{
 			Util.log( "tags.xml exists, load the file xml" );
 			TAGS_XML = new XML( readTextFile( tagsFile ) );
-			isConfigured = true;
+			if ( TAGS_XML..tag.length() )
+			{
+				trace("OK:"+TAGS_XML.tags);
+				isConfigured = true;
+			}
+			else
+			{
+				trace("KO:"+TAGS_XML.tags);
+				
+			}
+			trace(TAGS_XML.tags);
+			trace(TAGS_XML..tags);
 		}
 	}
 	catch ( e:Error )
@@ -133,6 +142,8 @@ public function writeTagsFile():void
 {
 	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
 	var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
+	tagsXMLList = new XMLListCollection( TAGS_XML.tag );
+
 	// write the text file
 	writeTextFile( tagsFile, TAGS_XML );					
 
