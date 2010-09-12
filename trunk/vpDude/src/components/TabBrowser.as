@@ -76,7 +76,8 @@ private function e4xLoadComplete( event:Event ):void
 		var appTagList:XMLList = parentDocument.TAGS_XML..tag as XMLList;
 		for each ( var appTag:XML in appTagList )
 		{
-			if ( appTag.toString()==oneTag.toString() )
+			//if ( appTag.toString()==oneTag.toString() )
+			if ( appTag.@name==oneTag.@name )
 			{
 				foundNewTag = false;
 			}
