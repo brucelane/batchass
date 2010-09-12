@@ -6,22 +6,11 @@
 					label="search" 
 					creationComplete="search_creationCompleteHandler(event)"  
 					>
-
 	<fx:Script source="TabSearch.as" />
 	<fx:Style source="css/defaults.css" />
 
-	<s:VGroup width="95%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
+	<s:VGroup width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
 		<s:HGroup>
-			<!--<hc:AdvancedAutoComplete 
-				id="autoComplete" dataProvider="{ colors }" labelField="name"
-									 width="300" useListBuilder="{ useListBuilder.selected }" matchType="anyPart"
-									 showBrowseButton="{ showBrowse.selected }" showOrderButtons="{ showOrder.selected }"
-									 allowMultipleSelection="true" selectionLayout="vertical" 
-									 dropDownItemRenderer="{ dropDownItemRenderer }" itemClick="handleItemClick(event)"
-									 actionsMenuDataProvider="{ menuData }" showRemoveButton="{ showRemove.selected }"
-									 browserFields="{ ['name','hex'] }"/>--> 
-			
-			
 			<components:AdvancedAutoComplete
 				id="autoComplete"
 				dataProvider="{parentDocument.tagsXMLList}" 
@@ -29,8 +18,6 @@
 				allowNewValues="true"
 				showRemoveIcon = "true"
 				change="handleAutoCompleteChange()"
-				prompt="Select tags from dropbox"
-				promptColor="255"
 				width="400">
 				<components:inlineButton>
 					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>

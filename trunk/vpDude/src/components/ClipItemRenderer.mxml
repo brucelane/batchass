@@ -15,19 +15,24 @@
 		<s:State name="hovered"/>
 		<s:State name="selected" />
 	</s:states>
+	<fx:Declarations>
+		<s:CrossFade id="xFade" target="{imgUrl}" duration="3000" />
+	</fx:Declarations>
+
 	<s:VGroup>
 		<mx:Image id="imgUrl" alpha.hovered=".7" 
-				  source="{cachedThumbnail}" 
+				  source.normal="{cachedThumbnail1}" 
+				  source.hovered="{cachedThumbnail2}" 
+				  source.selected="{cachedThumbnail3}" 
 				  click="imgUrl_clickHandler(event)"
 				  horizontalAlign="center"
 				  verticalAlign="middle"
 				  width="100" height="75" 
 				  scaleContent="true"
-				  toolTip="click"
 				  mouseOver="imgUrl_mouseOverHandler(event)"
 				  mouseOut="imgUrl_mouseOutHandler(event)"
 				  />	
 		<s:Label text="{clipname}" horizontalCenter="center"/>
-		
+		<s:Label text="{tags}" horizontalCenter="center"/>
 	</s:VGroup>
 </s:ItemRenderer>

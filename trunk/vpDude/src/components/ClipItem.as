@@ -1,9 +1,11 @@
+import flash.display.BitmapData;
+import flash.events.TimerEvent;
+import flash.utils.Timer;
+
 import fr.batchass.*;
 
 import mx.core.Application;
 import mx.core.FlexGlobals;
-import flash.events.TimerEvent;
-import flash.utils.Timer;
 
 private var currentThumb:uint = 1;
 private var timer:Timer;
@@ -11,18 +13,43 @@ private var timer:Timer;
 [Bindable]
 private var cachedThumbnail:String;
 [Bindable]
+private var cachedThumbnail1:String;
+[Bindable]
+private var cachedThumbnail2:String;
+[Bindable]
+private var cachedThumbnail3:String;
+[Bindable]
 private var clipname:String;
+[Bindable]
+private var tags:String;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
 	if ( data )
 	{
-		changeThumb();
-		
-		data.urlthumb1 ? cachedThumbnail = getCachedThumbnail( data.urlthumb1 ) : cachedThumbnail = 'assets/noThumb.png';
+		//changeThumb();
+		if ( data.urlthumb1 )
+		{
+			cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
+		};
+		if ( data.urlthumb2 )
+		{
+			cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
+		};
+		if ( data.urlthumb3 )
+		{
+			cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
+		};
 		data.clipname ? clipname = data.clipname : "...";
-		this.toolTip = clipname;
-		trace("cachedThumbnail:" + cachedThumbnail);
+		var clipXmlTagList:XMLList = data..tags.tag as XMLList;
+		var tagString:String = "";
+		for each ( var oneTag:XML in clipXmlTagList )
+		{
+			if ( tagString.length > 0 ) tagString += ",";
+			tagString += oneTag.toString();
+		}
+		tags = tagString;
+		this.toolTip = clipname + "\n" + tags;
 	}
 }
 
@@ -39,23 +66,24 @@ protected function imgUrl_clickHandler(event:MouseEvent):void
 }
 protected function imgUrl_mouseOverHandler( event:MouseEvent ):void
 {
-	if ( !timer )
+	/*if ( !timer )
 	{
 		timer = new Timer( 500, 30 );
 		timer.start();
 		timer.addEventListener( TimerEvent.TIMER, onTimer );
 		timer.addEventListener( TimerEvent.TIMER_COMPLETE, onTimerComplete );
-	}
+	}*/
 }
 protected function imgUrl_mouseOutHandler( event:MouseEvent ):void
 {
-	removeTimer();
+	//removeTimer();
 }
+/*
 private function onTimer( event:TimerEvent ):void 
 {
 	if ( data )
 	{
-		if ( currentThumb++ ==4 ) currentThumb = 1;
+		if ( currentThumb++ == 4 ) currentThumb = 1;
 		changeThumb(); 
 	}
 }
@@ -73,8 +101,8 @@ private function onTimerComplete( event:TimerEvent ):void
 {
 	removeTimer();
 }
-
-private function changeThumb():void
+*/
+/*private function changeThumb():void
 {
 	switch ( currentThumb )
 	{
@@ -97,5 +125,4 @@ private function changeThumb():void
 			};
 			break;
 	}
-	
-}
+}*/
