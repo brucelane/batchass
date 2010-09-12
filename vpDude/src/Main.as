@@ -25,23 +25,9 @@ public var dldFolderPath:String;
 public var dbFolderPath:String;
 
 public var TAGS_XML:XML = <tags>
-							<tag>none</tag>
+							<tag name="none"/>
 						  </tags>;
-public var CLIPS_XML:XML = <videos> 
-							<video description="batchassclip">
-								<tag>batchass</tag>
-								<clipname>Batchass</clipname>
-								<urlthumb1>http://img.videopong.net/0d96vvdmvfk/thumb1.jpg</urlthumb1>
-								<urldownload>http://www.videopong.net/clip/download/0d96vvdmvfk/0d96vvdmvfk-Uzu.mov</urldownload>
-							</video>
-							<video description="videopongclip">
-								<tag>videopong</tag>
-								<clipname>Videopong</clipname>
-								<urlthumb1>http://img.videopong.net/0d96vvdmvfk/thumb2.jpg</urlthumb1>
-								<urldownload>http://www.videopong.net/clip/download/0d96vvdmvfk/0d96vvdmvfk-Uzu.mov</urldownload>
-							</video>
-							
-						 </videos>;
+public var CLIPS_XML:XML = <videos /> ;
 // Collection of tags
 [Bindable]
 public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag);
@@ -175,16 +161,8 @@ public function loadTagsFile():void
 			TAGS_XML = new XML( readTextFile( tagsFile ) );
 			if ( TAGS_XML..tag.length() )
 			{
-				trace("OK:"+TAGS_XML.tags);
 				isConfigured = true;
 			}
-			else
-			{
-				trace("KO:"+TAGS_XML.tags);
-				
-			}
-			trace(TAGS_XML.tags);
-			trace(TAGS_XML..tags);
 		}
 	}
 	catch ( e:Error )

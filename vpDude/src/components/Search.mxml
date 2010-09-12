@@ -4,7 +4,8 @@
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					xmlns:components="com.hillelcoren.components.*"
 					label="search" 
-					creationComplete="search_creationCompleteHandler(event)"  
+					creationComplete="search_creationCompleteHandler(event)" 
+					width="824" height="461"
 					>
 	<fx:Script source="TabSearch.as" />
 	<fx:Style source="css/defaults.css" />
@@ -14,6 +15,7 @@
 			<components:AdvancedAutoComplete
 				id="autoComplete"
 				dataProvider="{parentDocument.tagsXMLList}" 
+				labelField="@name"
 				allowMultipleSelection="true"
 				allowNewValues="true"
 				showRemoveIcon = "true"
@@ -24,16 +26,17 @@
 				</components:inlineButton>
 			</components:AdvancedAutoComplete>
 
-			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" width="200"/>
+			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" width="400"/>
 		</s:HGroup>
-		<s:List id="clipList" width="600" height="400" 
+		<s:List id="clipList" width="819" height="430" 
 				itemRenderer="components.ClipItemRenderer" 
+				labelField="@name"
 				dataProvider="{parentDocument.selectedClipsXMLList}"
 				>
 			<s:layout>
 				<s:TileLayout horizontalAlign="center" 
 							  verticalAlign="middle"
-							  columnWidth="100" rowHeight="100" />
+							  columnWidth="110" rowHeight="120" />
 			</s:layout>
 		</s:List>
 	</s:VGroup>

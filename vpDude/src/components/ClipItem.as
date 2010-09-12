@@ -41,15 +41,7 @@ override public function set data( value:Object ) : void {
 			cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
 		};
 		data.clipname ? clipname = data.clipname : "...";
-		var clipXmlTagList:XMLList = data..tags.tag as XMLList;
-		var tagString:String = "";
-		for each ( var oneTag:XML in clipXmlTagList )
-		{
-			if ( tagString.length > 0 ) tagString += ",";
-			tagString += oneTag.toString();
-		}
-		tags = tagString;
-		this.toolTip = clipname + "\n" + tags;
+		
 	}
 }
 
@@ -59,10 +51,44 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 	var cachedThumbUrl:String = FlexGlobals.topLevelApplication.cache.getThumbnailByURL( thumbnailUrl );
 	return cachedThumbUrl;
 }
-
-protected function imgUrl_clickHandler(event:MouseEvent):void
+protected function tagClip_mouseOverHandler(event:MouseEvent):void
 {
-	trace( data.urldownload );
+	var clipXmlTagList:XMLList = data..tags.tag as XMLList;
+	var tagString:String = "";
+	for each ( var oneTag:XML in clipXmlTagList )
+	{
+		if ( tagString.length > 0 ) tagString += ",";
+		tagString += oneTag.@name;
+	}
+	tags = tagString;
+	tagClip.toolTip = "Tags: " + tags;
+}
+
+protected function moreClip_mouseOverHandler(event:MouseEvent):void
+{
+	moreClip.toolTip = "Created by " + data.creatorname;
+}
+
+
+protected function rateClip_mouseOverHandler(event:MouseEvent):void
+{
+}
+protected function tagClip_clickHandler(event:MouseEvent):void
+{
+}
+
+protected function rateClip_clickHandler(event:MouseEvent):void
+{
+}
+
+protected function viewClip_clickHandler(event:MouseEvent):void
+{
+	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
+	FlexGlobals.topLevelApplication.cache.getClipByURL( data.urldownload, true );
+}
+
+protected function moreClip_clickHandler(event:MouseEvent):void
+{
 }
 protected function imgUrl_mouseOverHandler( event:MouseEvent ):void
 {

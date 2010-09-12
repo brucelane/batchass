@@ -28,7 +28,7 @@ private function handleAutoCompleteChange():void
 	
 	if ( tag )
 	{
-		trace( "selected tag:", tag );
+		trace( "selected tag:", tag.@name );
 		//parentDocument.selectedClipsXMLList = new XMLListCollection( parentDocument.CLIPS_XML.video.(@tag==tag) );
 
 	}				
