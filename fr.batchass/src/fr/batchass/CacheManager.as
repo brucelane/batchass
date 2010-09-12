@@ -56,7 +56,7 @@ package fr.batchass
 				return thumbnailUrl;
 			}		
 		}
-		public function getClipByURL( assetUrl:String ):String
+		public function getClipByURL( assetUrl:String, displayInDefaultApp:Boolean = false ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
@@ -65,13 +65,13 @@ package fr.batchass
 			if( cacheFile.exists )
 			{
 				Util.log( "CacheManager, getClipByURL cacheFile exists: " + cacheFile.url );
-				//cacheFile.openWithDefaultApplication();
+				if ( displayInDefaultApp ) cacheFile.openWithDefaultApplication();
 				return cacheFile.url;
 			} 
 			else 
 			{
 				Util.log( "CacheManager, getClipByURL cacheFile does not exist: " + assetUrl );
-				addAssetToCache( assetUrl );
+				addAssetToCache( assetUrl, displayInDefaultApp );
 				return assetUrl;
 			}
 		}
@@ -110,7 +110,7 @@ package fr.batchass
 				pendingDictionaryByURL[url] = true;
 			} 
 		}
-		private  function addAssetToCache( url:String ):void
+		private function addAssetToCache( url:String, displayInDefaultApp:Boolean = false ):void
 		{
 			if(!pendingDictionaryByURL[url]){
 				var req:URLRequest = new URLRequest(url);
@@ -118,7 +118,14 @@ package fr.batchass
 				loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 				loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
-				loader.addEventListener( Event.COMPLETE, assetLoadComplete );
+				if ( displayInDefaultApp )
+				{
+					loader.addEventListener( Event.COMPLETE, assetLoadCompleteAndShow );
+				}
+				else
+				{
+					loader.addEventListener( Event.COMPLETE, assetLoadComplete );
+				}
 				loader.dataFormat = URLLoaderDataFormat.BINARY;
 				loader.load(req);
 				pendingDictionaryByLoader[loader] = url;
@@ -169,6 +176,23 @@ package fr.batchass
 			stream.writeBytes(loader.data);
 			stream.close();
 			//cacheFile.openWithDefaultApplication();
+			
+			delete pendingDictionaryByLoader[loader]
+			delete pendingDictionaryByURL[url];
+		}
+		private function assetLoadCompleteAndShow( event:Event ):void
+		{
+			var loader:URLLoader = event.target as URLLoader;
+			var url:String = pendingDictionaryByLoader[loader];
+			
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( url ) );
+			var stream:FileStream = new FileStream();
+			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			stream.open(cacheFile,FileMode.WRITE);
+			stream.writeBytes(loader.data);
+			stream.close();
+			cacheFile.openWithDefaultApplication();
 			
 			delete pendingDictionaryByLoader[loader]
 			delete pendingDictionaryByURL[url];
