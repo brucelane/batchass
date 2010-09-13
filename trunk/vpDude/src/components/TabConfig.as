@@ -67,6 +67,7 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 		parentDocument.vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
 		parentDocument.ownFolderPath = File.documentsDirectory.resolvePath( "vpdude/own/" ).nativePath;
 	}
+	
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
