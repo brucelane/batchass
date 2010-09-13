@@ -24,7 +24,6 @@ private var userName:String = "";
 private var password:String = "";
 
 public static var CONFIG_XML:XML;
-//public static const DEFAULT_CONFIG_XML:XML;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -44,6 +43,7 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			userName = CONFIG_XML..username[0].toString();
 			password = CONFIG_XML..pwd[0].toString();
 			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
+			parentDocument.ownFolderPath = CONFIG_XML..own[0].toString();
 			isConfigured = true;
 		}
 	}
@@ -65,21 +65,24 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	else
 	{
 		parentDocument.vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
+		parentDocument.ownFolderPath = File.documentsDirectory.resolvePath( "vpdude/own/" ).nativePath;
 	}
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	var isChanged:Boolean = false;
-	if ( userName != userTextInput.text || password != pwdTextInput.text  || parentDocument.vpFolderPath != dbTextInput.text ) 
+	if ( userName != userTextInput.text || password != pwdTextInput.text || parentDocument.vpFolderPath != dbTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
 	{
 		isChanged = true;
 		userName = userTextInput.text;
 		password = pwdTextInput.text;
 		parentDocument.vpFolderPath = dbTextInput.text;
+		parentDocument.ownFolderPath = ownTextInput.text;
 		trace ( "changed" );
 		parentDocument.statusText.text = "Configuration saved";
 
 		checkFolder( parentDocument.vpFolderPath );
+		checkFolder( parentDocument.ownFolderPath );
 	}
 	writeFolderXmlFile();
 
@@ -97,6 +100,7 @@ private function writeFolderXmlFile():void
 					<username>{userName}</username>
 					<pwd>{password}</pwd>
 					<db>{parentDocument.vpFolderPath}</db>
+					<own>{parentDocument.ownFolderPath}</own>
 				 </config>;
 	var folderFile:File = File.applicationStorageDirectory.resolvePath( defaultConfigXmlPath );
 	// write the text file
@@ -107,11 +111,19 @@ protected function browseConfigPathBtn_clickHandler(event:MouseEvent):void
 	var file:File = File.documentsDirectory;
 	file.addEventListener(Event.SELECT, dbFolderSelection);
 	file.addEventListener(Event.CANCEL, dbFolderSelection);
-	parentDocument.statusText.text = "Choose where the database files will be stored";
+	parentDocument.statusText.text = "Choose where the database files will be stored.";
 	
 	file.browseForDirectory( "Select a location to store the database files." ); 
 }
-
+protected function browseOwnPathBtn_clickHandler(event:MouseEvent):void
+{
+	var file:File = File.documentsDirectory;
+	file.addEventListener(Event.SELECT, ownFolderSelection);
+	file.addEventListener(Event.CANCEL, ownFolderSelection);
+	parentDocument.statusText.text = "Choose where your own videos are located.";
+	
+	file.browseForDirectory( "Select where your own videos are located." ); 
+}
 private function dbFolderSelection(event:Event):void 
 {
 	var file:File = event.currentTarget as File;
@@ -123,6 +135,17 @@ private function dbFolderSelection(event:Event):void
 		parentDocument.vpFolderPath = file.nativePath;
 	}		
 }
+private function ownFolderSelection(event:Event):void 
+{
+	var file:File = event.currentTarget as File;
+	file.removeEventListener(Event.SELECT, ownFolderSelection);
+	file.removeEventListener(Event.CANCEL, ownFolderSelection);
+	
+	if (event.type === Event.SELECT) 
+	{
+		parentDocument.ownFolderPath = file.nativePath;
+	}		
+}
 
 private function checkFolder( folderPath:String ):void 
 {
@@ -131,8 +154,8 @@ private function checkFolder( folderPath:String ):void
 	// creates folder if it does not exists
 	if (!folder.exists) 
 	{
-		parentDocument.statusText.text = 'Creating folder structure in ' + folderPath;
-		Util.log('Creating folder structure in ' + folderPath);
+		parentDocument.statusText.text = 'Creating folder: ' + folderPath;
+		Util.log('Creating folder: ' + folderPath);
 		// create the directory
 		folder.createDirectory();
 	}

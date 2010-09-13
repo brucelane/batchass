@@ -11,16 +11,21 @@ import fr.batchass.*;
 
 import mx.collections.ArrayCollection;
 import mx.collections.XMLListCollection;
+import mx.events.DragEvent;
 import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
+import mx.managers.DragManager;
 
 private var monitor:URLMonitor;
 
 public var vpRootUrl:String = "http://www.videopong.net/";
 public var vpUrl:String = vpRootUrl + "vpdude/";
+public var vpUpUrl:String = vpRootUrl + "vpdudeup/";
 
 [Bindable]
 public var vpFullUrl:String = vpUrl;
+[Bindable]
+public var vpUploadUrl:String = vpUpUrl;
 
 public var dldFolderPath:String;
 public var dbFolderPath:String;
@@ -32,9 +37,6 @@ public var CLIPS_XML:XML = <videos /> ;
 // Collection of tags
 [Bindable]
 public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag.@name);
-// Collection of selected videos for search tab
-/*[Bindable]
-public var selectedClipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);*/
 // Collection of all the clips
 public var clipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
 
@@ -43,6 +45,7 @@ private var clipsXmlPath:String;
 public var cache:CacheManager;
 private var _acFilter:ArrayCollection;
 
+// path to vpDude folder
 private var _vpFolderPath:String;
 [Bindable]
 public function get vpFolderPath():String
@@ -55,6 +58,18 @@ private function set vpFolderPath(value:String):void
 	_vpFolderPath = value;
 	dldFolderPath = _vpFolderPath + File.separator + "dld";
 	dbFolderPath = _vpFolderPath + File.separator + "db";
+}
+// path to own videos folder
+private var _ownFolderPath:String;
+[Bindable]
+public function get ownFolderPath():String
+{
+	return _ownFolderPath;
+}
+
+private function set ownFolderPath(value:String):void
+{
+	_ownFolderPath = value;
 }
 
 
@@ -70,7 +85,8 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
-	this.addEventListener(NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize);
+	this.addEventListener( NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize );
+
 	urlMonitor( vpRootUrl );
 	
 }
@@ -82,11 +98,14 @@ public function addTabs():void
 		tabNav.removeChildAt( 0 );//Config
 		tabNav.addChild( new Search() );
 		tabNav.addChild( new Download() );
+		tabNav.addChild( new Upload() );
 		tabNav.addChild( new Config() );	
 		tabNav.addChild( new Quit() );	
 		// load tagsFile when config is done
 		loadTagsFile();
 		loadClipsFile();
+		this.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
+		this.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
 	}
 }
 
@@ -165,7 +184,12 @@ private function xmlListColl_filterFunc(item:Object):Boolean
 	var isMatch:Boolean = false;
 	var currentTag:String;
 	var nbFound:uint = 0;
-	var clipTags:String = item..@name;
+	var clipTags:String = "";// = item..@name;
+	
+	for each ( var oneTag:XML in item..tag )
+	{
+		clipTags += oneTag.@name + "|";
+	}
 	for each ( currentTag in _acFilter ) 
 	{
 		trace( "cur:" + currentTag );
@@ -272,4 +296,26 @@ private function onMonitor(event:StatusEvent):void
 		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "could not be reached" );
 		Util.log( statusText.text );
 	}
+}
+public function onDragEnter(event:DragEvent):void
+{
+	if(event.dragSource.hasFormat("air:file list"))
+	{
+		DragManager.acceptDragDrop(this);
+	}
+	else
+	{
+		statusText.text = 'Format not supported, please drop file(s).';
+	}
+}
+public function onDragDrop(event:DragEvent):void
+{
+	trace("onDragDrop" );
+	var fileToUpload:File;
+	var itemsArray:Array = event.dragSource.dataForFormat("air:file list") as Array;
+	if(itemsArray != null)
+	{
+		//TODO
+	}
+	statusText.text = "Dropped file(s) added."
 }

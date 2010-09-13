@@ -6,12 +6,7 @@
 					creationComplete="config_creationCompleteHandler(event)"
 					label="config" 
 					>
-	<fx:Script>
-		<![CDATA[
 
-		]]>
-	</fx:Script>
-	
 	<fx:Script source="TabConfig.as" />
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:HGroup>
@@ -19,11 +14,6 @@
 				<s:TextInput width="{tiWidth}" text="{parentDocument.vpFolderPath}" id="dbTextInput"/>
 				<s:Button label="..." id="browseConfigPathBtn" width="30" click="browseConfigPathBtn_clickHandler(event)"/>			
 			</s:HGroup>
-			<!--<s:HGroup>
-				<s:Label width="{lblWidth}" text="Downloaded files path:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="{dldFolderPath}" id="dldTextInput"/>
-				<s:Button label="..." id="browseCachePathBtn" width="30" click="browseCachePathBtn_clickHandler(event)"/>			
-			</s:HGroup>-->
 			<s:HGroup>
 				<mx:Label text="If you have already a videopong.net account please fill in, otherwise please create one first on" />
 				<mx:LinkButton label="videopong.net" click="navigateToURL(new URLRequest('http://videopong.net'))" />
@@ -35,6 +25,11 @@
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Password:" verticalAlign="bottom"/>
 				<s:TextInput width="{tiWidth}" text="{password}" id="pwdTextInput" />
+			</s:HGroup>
+			<s:HGroup>
+				<s:Label width="{lblWidth}" text="Local own videos path:" verticalAlign="bottom"/>
+				<s:TextInput width="{tiWidth}" text="{parentDocument.ownFolderPath}" id="ownTextInput"/>
+				<s:Button label="..." id="browseOwnPathBtn" width="30" click="browseOwnPathBtn_clickHandler(event)"/>			
 			</s:HGroup>
 			<s:Button label="Apply" id="applyBtn" click="applyBtn_clickHandler(event)"/>
 			
