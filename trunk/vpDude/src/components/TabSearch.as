@@ -2,6 +2,7 @@ import com.hillelcoren.components.AutoComplete;
 
 import fr.batchass.*;
 
+import mx.collections.ArrayCollection;
 import mx.collections.XMLListCollection;
 import mx.events.FlexEvent;
 
@@ -23,15 +24,8 @@ private function handleButtonClick():void
 }
 private function handleAutoCompleteChange():void
 {
-	//var tag:ArrayCollection = autoComplete.selectedItems;
-	var tag:Object = autoComplete.selectedItem;
-	
-	if ( tag )
-	{
-		trace( "selected tag:", tag.@name );
-		//parentDocument.selectedClipsXMLList = new XMLListCollection( parentDocument.CLIPS_XML.video.(@tag==tag) );
-
-	}				
+	parentDocument.filterTags( autoComplete.selectedItems );
+	//var tag:Object = autoComplete.selectedItem;			
 }
 protected function search_creationCompleteHandler(event:FlexEvent):void
 {

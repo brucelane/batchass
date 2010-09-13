@@ -13,7 +13,7 @@
 			
 			private function init():void
 			{
-				_list = listData.owner as List;
+				if ( listData )	_list = listData.owner as List;
 			}
 		]]>
 	</mx:Script>

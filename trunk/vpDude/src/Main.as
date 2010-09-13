@@ -5,14 +5,15 @@ import components.*;
 
 import flash.display.InteractiveObject;
 import flash.events.NativeWindowDisplayStateEvent;
+import flash.globalization.LastOperationStatus;
 
 import fr.batchass.*;
 
+import mx.collections.ArrayCollection;
 import mx.collections.XMLListCollection;
 import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
 
-//monitor the website url
 private var monitor:URLMonitor;
 
 public var vpRootUrl:String = "http://www.videopong.net/";
@@ -30,16 +31,17 @@ public var TAGS_XML:XML = <tags>
 public var CLIPS_XML:XML = <videos /> ;
 // Collection of tags
 [Bindable]
-public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag);
+public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag.@name);
 // Collection of selected videos for search tab
-[Bindable]
-public var selectedClipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
+/*[Bindable]
+public var selectedClipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);*/
 // Collection of all the clips
 public var clipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
 
 private var tagsXmlPath:String;
 private var clipsXmlPath:String;
 public var cache:CacheManager;
+private var _acFilter:ArrayCollection;
 
 private var _vpFolderPath:String;
 [Bindable]
@@ -141,8 +143,39 @@ public function writeClipsFile():void
 public function refreshClipsXMLList():void 
 {
 	clipsXMLList = new XMLListCollection( CLIPS_XML.video );
-	selectedClipsXMLList = new XMLListCollection( CLIPS_XML.video );
+	//selectedClipsXMLList = new XMLListCollection( CLIPS_XML.video );
 }
+/*private function filterFunc(item:Object):Boolean {
+	return item.@name="kultur";
+}*/
+
+public function filterTags( acFilter:ArrayCollection ):void 
+{
+	_acFilter = acFilter;
+	if ( acFilter.length == 0 ) {
+		clipsXMLList.filterFunction = null;
+	} else {
+		clipsXMLList.filterFunction = xmlListColl_filterFunc;
+	}
+	clipsXMLList.refresh();
+}
+
+private function xmlListColl_filterFunc(item:Object):Boolean 
+{
+	var isMatch:Boolean = false;
+	var currentTag:String;
+	var nbFound:uint = 0;
+	var clipTags:String = item..@name;
+	for each ( currentTag in _acFilter ) 
+	{
+		trace( "cur:" + currentTag );
+		if ( clipTags.indexOf( currentTag ) > -1 ) nbFound++;
+	}
+	if ( nbFound >= _acFilter.length ) isMatch = true;
+	trace ( item..@name );
+	return isMatch;
+}
+
 public function loadTagsFile():void 
 {
 	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
@@ -189,7 +222,7 @@ public function writeTagsFile():void
 }
 public function refreshTagsXMLList():void 
 {
-	tagsXMLList = new XMLListCollection( TAGS_XML.tag );
+	tagsXMLList = new XMLListCollection( TAGS_XML.tag.@name );
 }
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void
