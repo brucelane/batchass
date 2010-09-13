@@ -54,6 +54,7 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 		Util.log( msg );
 	}
 	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
+	parentDocument.vpUploadUrl = parentDocument.vpUpUrl + "?login=" + userName + "&password=" + password;
 	
 }
 protected function config_creationCompleteHandler(event:FlexEvent):void
@@ -88,6 +89,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	writeFolderXmlFile();
 
 	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
+	parentDocument.vpUploadUrl = parentDocument.vpUpUrl + "?login=" + userName + "&password=" + password;
 	if ( !isConfigured )
 	{
 		isConfigured = true;
