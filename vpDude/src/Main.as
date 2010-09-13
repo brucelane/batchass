@@ -4,7 +4,7 @@ import air.net.URLMonitor;
 import components.*;
 
 import flash.display.InteractiveObject;
-import flash.events.NativeWindowDisplayStateEvent;
+import flash.events.NativeWindowBoundsEvent;
 import flash.globalization.LastOperationStatus;
 import flash.system.Capabilities;
 
@@ -94,6 +94,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	urlMonitor( vpRootUrl );
 	checkFFMpeg();
 }
+
 private function checkFFMpeg():void
 {
 	// determine OS to download right ffmpeg
@@ -170,7 +171,6 @@ public function loadClipsFile():void
 	var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
 	try
 	{
-		
 		if ( !clipsFile.exists )
 		{
 			Util.log( "clips.xml does not exist" );
@@ -181,13 +181,7 @@ public function loadClipsFile():void
 			CLIPS_XML = new XML( readTextFile( clipsFile ) );
 			if ( CLIPS_XML..video.length() )
 			{
-				trace("OK:"+CLIPS_XML.videos);
 				isConfigured = true;
-			}
-			else
-			{
-				trace("KO:"+CLIPS_XML.videos);
-				
 			}
 		}
 	}
@@ -216,11 +210,7 @@ public function writeClipsFile():void
 public function refreshClipsXMLList():void 
 {
 	clipsXMLList = new XMLListCollection( CLIPS_XML.video );
-	//selectedClipsXMLList = new XMLListCollection( CLIPS_XML.video );
 }
-/*private function filterFunc(item:Object):Boolean {
-	return item.@name="kultur";
-}*/
 
 public function filterTags( acFilter:ArrayCollection ):void 
 {

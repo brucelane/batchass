@@ -1,4 +1,5 @@
 import flash.display.BitmapData;
+import flash.events.KeyboardEvent;
 import flash.events.TimerEvent;
 import flash.utils.Timer;
 
@@ -6,6 +7,8 @@ import fr.batchass.*;
 
 import mx.core.Application;
 import mx.core.FlexGlobals;
+
+import spark.components.TextInput;
 
 private var currentThumb:uint = 1;
 private var timer:Timer;
@@ -22,6 +25,9 @@ private var cachedThumbnail3:String;
 private var clipname:String;
 [Bindable]
 private var tags:String;
+private var NEW_TAGS_XML:XML = <tags />;
+private var tagTextInput:TextInput = new TextInput();
+private var newTagsXmlPath:String = FlexGlobals.topLevelApplication.dbFolderPath + File.separator + "newtags.xml";
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -42,6 +48,14 @@ override public function set data( value:Object ) : void {
 		};
 		data.clipname ? clipname = data.clipname : "...";
 		
+		var clipXmlTagList:XMLList = data..tags.tag as XMLList;
+		var tagString:String = "";
+		for each ( var oneTag:XML in clipXmlTagList )
+		{
+			if ( tagString.length > 0 ) tagString += ",";
+			tagString += oneTag.@name;
+		}
+		tags = tagString;		
 	}
 }
 
@@ -53,15 +67,8 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 }
 protected function tagClip_mouseOverHandler(event:MouseEvent):void
 {
-	var clipXmlTagList:XMLList = data..tags.tag as XMLList;
-	var tagString:String = "";
-	for each ( var oneTag:XML in clipXmlTagList )
-	{
-		if ( tagString.length > 0 ) tagString += ",";
-		tagString += oneTag.@name;
-	}
-	tags = tagString;
-	tagClip.toolTip = "Tags: " + tags;
+	
+	tagClip.toolTip = "Tags: " + tags + "\nClick to edit tags";
 }
 
 protected function moreClip_mouseOverHandler(event:MouseEvent):void
@@ -75,8 +82,72 @@ protected function rateClip_mouseOverHandler(event:MouseEvent):void
 }
 protected function tagClip_clickHandler(event:MouseEvent):void
 {
+	loadNewTagsFile();
+	tagTextInput.text = tags;
+	tagTextInput.width = 95;
+	tagTextInput.addEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
+	this.addElement( tagTextInput );
+}
+private function checkTagInput( event:KeyboardEvent ):void 
+{
+	trace("keyDownHandler: " + event.keyCode);
+	if ( event.keyCode == Keyboard.ENTER )
+	{
+		var newTag:XML;
+		if ( NEW_TAGS_XML..tag.(@clipid == data.clipid) )
+		{
+			NEW_TAGS_XML..tag.(@clipid == data.clipid).@names = tagTextInput.text;
+			NEW_TAGS_XML..tag.(@clipid == data.clipid).@creationdate = Util.nowDate;
+		}
+		else
+		{
+			newTag = <tag names={tagTextInput.text} creationdate={Util.nowDate} clipid={data.clipid} />;
+			NEW_TAGS_XML.appendChild( newTag );
+		}
+		writeNewTagsFile();
+		tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
+		this.removeElement( tagTextInput );
+	}
 }
 
+public function writeNewTagsFile():void 
+{
+	var newTagsFile:File = File.applicationStorageDirectory.resolvePath( newTagsXmlPath );
+	
+	// write the text file
+	writeTextFile( newTagsFile, NEW_TAGS_XML );
+}
+public function loadNewTagsFile():void 
+{
+	var isConfigured:Boolean = false;
+	var newTagsFile:File = File.applicationStorageDirectory.resolvePath( newTagsXmlPath );
+	try
+	{
+		if ( !newTagsFile.exists )
+		{
+			Util.log( "newtags.xml does not exist" );
+		}
+		else
+		{
+			Util.log( "newtags.xml exists, load the file xml" );
+			NEW_TAGS_XML = new XML( readTextFile( newTagsFile ) );
+			if ( NEW_TAGS_XML..tag.length() )
+			{
+				isConfigured = true;
+			}
+		}
+	}
+	catch ( e:Error )
+	{	
+		var msg:String = 'Error loading newtags.xml file: ' + e.message;
+		Util.log( msg );
+	}
+	if ( !isConfigured )
+	{
+		NEW_TAGS_XML = <tags />;
+		writeNewTagsFile();
+	}
+}
 protected function rateClip_clickHandler(event:MouseEvent):void
 {
 }
