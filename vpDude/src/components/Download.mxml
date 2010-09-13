@@ -11,8 +11,8 @@
 			<s:HGroup paddingLeft="5">
 				<s:Button label="&lt;" width="30" height="18" toolTip="back" click="htmlBrowser.historyBack()"/>
 				<s:Button label="&gt;" width="30" height="18" toolTip="forward" click="htmlBrowser.historyForward()"/>
-				<s:TextInput id="loc" width="500" enter="htmlBrowser.location = loc.text" text="{htmlBrowser.location}"/>
-				<s:Button label="Go" click="htmlBrowser.location = loc.text"/>
+				<!--<s:TextInput id="loc" width="500" enter="htmlBrowser.location = loc.text" text="{htmlBrowser.location}"/>-->
+				<!--<s:Button label="Go" click="htmlBrowser.location = loc.text"/>-->
 				<s:Button label="Reload" height="18" click="htmlBrowser.reload()"/>
 				
 			</s:HGroup>

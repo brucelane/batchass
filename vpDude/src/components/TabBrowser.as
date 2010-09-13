@@ -69,7 +69,7 @@ private function e4xLoadComplete( event:Event ):void
 		parentDocument.CLIPS_XML.appendChild( clipXml );
 		parentDocument.writeClipsFile();	
 	}
-	
+	//TODO optimize
 	for each ( var oneTag:XML in clipXmlTagList )
 	{
 		foundNewTag = true;
