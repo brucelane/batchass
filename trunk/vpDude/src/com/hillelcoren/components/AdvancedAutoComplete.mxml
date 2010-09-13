@@ -18,25 +18,25 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ListCollectionView;
-			import mx.controls.LinkButton;
-			import mx.controls.Button;
-			import mx.core.EdgeMetrics;
-			import mx.events.ResizeEvent;
-			import mx.events.MoveEvent;
-			import mx.events.MenuEvent;
-			import mx.containers.GridRow;
-			import mx.containers.GridItem;
-			import mx.core.UIComponent;
-			import mx.containers.VBox;
-			import mx.containers.HBox;
-			import mx.managers.PopUpManager;
-			import mx.core.IFlexDisplayObject;
-			import mx.core.Application;
-			import mx.controls.Button;
-			import mx.collections.ArrayCollection;
-			import com.hillelcoren.components.autoComplete.interfaces.IBrowser;
 			import com.hillelcoren.components.autoComplete.classes.*;
+			import com.hillelcoren.components.autoComplete.interfaces.IBrowser;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.ListCollectionView;
+			import mx.containers.GridItem;
+			import mx.containers.GridRow;
+			import mx.containers.HBox;
+			import mx.containers.VBox;
+			import mx.controls.Button;
+			import mx.controls.LinkButton;
+			import mx.core.EdgeMetrics;
+			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
+			import mx.core.UIComponent;
+			import mx.events.MenuEvent;
+			import mx.events.MoveEvent;
+			import mx.events.ResizeEvent;
+			import mx.managers.PopUpManager;
 			
 			private var _showBrowseButton:Boolean;
 			private var _showBrowseButtonChanged:Boolean;
@@ -271,7 +271,7 @@
 					_browser.selectedItems = _selectedItems.source;
 				}
 							
-				PopUpManager.addPopUp( IFlexDisplayObject( _browser ), DisplayObject( Application.application), true );
+				PopUpManager.addPopUp( IFlexDisplayObject( _browser ), DisplayObject( FlexGlobals.topLevelApplication), true );
 				PopUpManager.centerPopUp( IFlexDisplayObject( _browser ) );
 				
 				_browser.init();
