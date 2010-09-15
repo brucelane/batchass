@@ -17,6 +17,8 @@ import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
 import mx.managers.DragManager;
 
+import videopong.Tags;
+
 private var monitor:URLMonitor;
 
 public var vpDudeFiles:String = "http://www.videopong.net/vpdudefiles/";
@@ -34,17 +36,10 @@ public var vpUploadUrl:String = vpUpUrl;
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 
-public var TAGS_XML:XML = <tags>
-							<tag name="none"/>
-						  </tags>;
 public var CLIPS_XML:XML = <videos /> ;
-// Collection of tags
-[Bindable]
-public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag.@name);
 // Collection of all the clips
 public var clipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
 
-private var tagsXmlPath:String;
 private var clipsXmlPath:String;
 public var cache:CacheManager;
 private var _acFilter:ArrayCollection;
@@ -99,12 +94,17 @@ private function checkFFMpeg():void
 {
 	// determine OS to download right ffmpeg
 	var os:String = Capabilities.os.substr(0, 3);
-	if (os == "Win") {
+	if (os == "Win") 
+	{
 		vpFFMpeg = "ffmpeg.exe";
-	} else if (os == "Mac") {
-		vpFFMpeg = "ffmpeg.lame";
-	} else {
-		vpFFMpeg = "ffmpeg.dat"; 
+	} 
+	else if (os == "Mac") 
+	{
+		vpFFMpeg = "ffmpeg.dat";
+	} 
+	else 
+	{
+		vpFFMpeg = "ffmpeg.lame"; 
 	}
 	
 	var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
@@ -146,21 +146,23 @@ private function FFMpegLoadComplete( event:Event ):void
 }
 
 public function addTabs():void 
-{
+{ 
 	if ( tabNav.numChildren == 2 )
 	{
 		tabNav.removeChildAt( 1 );//Quit
 		tabNav.removeChildAt( 0 );//Config
 		tabNav.addChild( new Search() );
+		tabNav.addChild( new Config() );	
 		tabNav.addChild( new Download() );
 		tabNav.addChild( new Upload() );
-		tabNav.addChild( new Config() );	
 		tabNav.addChild( new Quit() );	
 		// load tagsFile when config is done
-		loadTagsFile();
+		var tags:Tags = Tags.getInstance();
+		tags.dbPath = dbFolderPath;
+		tags.loadTagsFile();
 		loadClipsFile();
-		this.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
-		this.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
+		// this.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
+		// this.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
 	}
 }
 
@@ -211,7 +213,22 @@ public function refreshClipsXMLList():void
 {
 	clipsXMLList = new XMLListCollection( CLIPS_XML.video );
 }
-
+// write one clip xml fole in db
+public function writeClipXmlFile( clipId:String, clipXml:XML ):void
+{
+	var localClipXMLFile:String = parentDocument.dbFolderPath + File.separator + clipId + ".xml" ;
+	var clipXmlFile:File = new File( localClipXMLFile );
+	
+	// write the text file
+	writeTextFile( clipXmlFile, clipXml );					
+}
+public function addNewClip( clipId:String, clipXml:XML ):void
+{
+	CLIPS_XML.appendChild( clipXml );
+	writeClipsFile();	
+	writeClipXmlFile( clipId, clipXml );
+	
+}
 public function filterTags( acFilter:ArrayCollection ):void 
 {
 	_acFilter = acFilter;
@@ -242,55 +259,6 @@ private function xmlListColl_filterFunc(item:Object):Boolean
 	if ( nbFound >= _acFilter.length ) isMatch = true;
 	trace ( item..@name );
 	return isMatch;
-}
-
-public function loadTagsFile():void 
-{
-	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
-	var isConfigured:Boolean = false;
-	var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
-	try
-	{
-		
-		if ( !tagsFile.exists )
-		{
-			Util.log( "tags.xml does not exist" );
-		}
-		else
-		{
-			Util.log( "tags.xml exists, load the file xml" );
-			TAGS_XML = new XML( readTextFile( tagsFile ) );
-			if ( TAGS_XML..tag.length() )
-			{
-				isConfigured = true;
-			}
-		}
-	}
-	catch ( e:Error )
-	{	
-		var msg:String = 'Error loading tags.xml file: ' + e.message;
-		statusText.text = msg;
-		Util.log( msg );
-	}
-	if ( !isConfigured )
-	{
-		TAGS_XML = <tags />;
-		writeTagsFile();
-	}
-	refreshTagsXMLList();
-}
-public function writeTagsFile():void 
-{
-	tagsXmlPath = parentDocument.dbFolderPath + File.separator + "tags.xml";
-	var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
-	refreshTagsXMLList();
-
-	// write the text file
-	writeTextFile( tagsFile, TAGS_XML );					
-}
-public function refreshTagsXMLList():void 
-{
-	tagsXMLList = new XMLListCollection( TAGS_XML.tag.@name );
 }
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void
@@ -337,8 +305,31 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		statusText.text = vpRootUrl + " is " + ( monitor.available ? "available" : "could not be reached" );
+		statusText.text = vpRootUrl +  ( monitor.available ? " is available" : " could not be reached" );
 		Util.log( statusText.text );
+
+		trace( tabNav.numChildren );	
+		if ( monitor.available ) 
+		{
+			if ( tabNav.numChildren == 3 )
+			{
+				tabNav.removeChildAt( 2 );//Quit
+				tabNav.addChild( new Download() );
+				tabNav.addChild( new Upload() );
+				tabNav.addChild( new Quit() );	
+			}
+		}
+		else
+		{
+			if ( tabNav.numChildren == 5 )
+			{
+				tabNav.removeChildAt( 4 );//Quit
+				tabNav.removeChildAt( 3 );//Upload
+				tabNav.removeChildAt( 2 );//Download
+				tabNav.addChild( new Quit() );	
+			}
+			
+		}	
 	}
 }
 public function onDragEnter(event:DragEvent):void

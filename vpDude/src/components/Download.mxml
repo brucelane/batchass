@@ -7,7 +7,7 @@
 	<fx:Script source="TabBrowser.as" />
 	
 	
-		<s:VGroup width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+		<s:VGroup id="vGroup" width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
 			<s:HGroup paddingLeft="5">
 				<s:Button label="&lt;" width="30" height="18" toolTip="back" click="htmlBrowser.historyBack()"/>
 				<s:Button label="&gt;" width="30" height="18" toolTip="forward" click="htmlBrowser.historyForward()"/>
