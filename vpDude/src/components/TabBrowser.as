@@ -7,7 +7,8 @@ import fr.batchass.*;
 
 import mx.collections.XMLListCollection;
 import mx.controls.HTML;
-	
+
+import videopong.*;
 
 private var airApp : Object = this;
 
@@ -43,7 +44,7 @@ private function e4xLoadComplete( event:Event ):void
 	trace(loader.data);
 	// downloaded one clip xml
 	var clipXml:XML = XML( loader.data );
-	var clipId:String = clipXml..clipid;
+	var clipId:String = clipXml..clip.@id;
 	
 	// download thumbs and video if not in cache
 	if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );
@@ -59,7 +60,10 @@ private function e4xLoadComplete( event:Event ):void
 	var foundNewTag:Boolean;
 	var foundNewClip:Boolean = true;
 	
-	var clipList:XMLList = parentDocument.CLIPS_XML..video as XMLList;
+	var clips:Clips = Clips.getInstance();
+	var tags:Tags = Tags.getInstance();
+
+	var clipList:XMLList = clips.CLIPS_XML..video as XMLList;
 	for each ( var appClip:XML in clipList )
 	{
 		if ( appClip.clipid.toString()==clipId )
@@ -69,16 +73,15 @@ private function e4xLoadComplete( event:Event ):void
 	}
 	if ( foundNewClip )
 	{
-		parentDocument.addNewClip( clipId, clipXml );
+		clips.addNewClip( clipId, clipXml );
 	}
 	//TODO optimize
 	for each ( var oneTag:XML in clipXmlTagList )
 	{
 		foundNewTag = true;
-		var appTagList:XMLList = parentDocument.TAGS_XML..tag as XMLList;
+		var appTagList:XMLList = tags.TAGS_XML..tag as XMLList;
 		for each ( var appTag:XML in appTagList )
 		{
-			//if ( appTag.toString()==oneTag.toString() )
 			if ( appTag.@name==oneTag.@name )
 			{
 				foundNewTag = false;
@@ -86,13 +89,13 @@ private function e4xLoadComplete( event:Event ):void
 		}
 		if ( foundNewTag )
 		{
-			parentDocument.TAGS_XML.appendChild( oneTag );
+			tags.TAGS_XML.appendChild( oneTag );
 			newTag = true;	
 		}
 	}
 	if ( newTag )
 	{
-		parentDocument.writeTagsFile();
+		tags.writeTagsFile();
 	}
 }
 

@@ -17,7 +17,7 @@ import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
 import mx.managers.DragManager;
 
-import videopong.Tags;
+import videopong.*;
 
 private var monitor:URLMonitor;
 
@@ -36,13 +36,7 @@ public var vpUploadUrl:String = vpUpUrl;
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 
-public var CLIPS_XML:XML = <videos /> ;
-// Collection of all the clips
-public var clipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
-
-private var clipsXmlPath:String;
 public var cache:CacheManager;
-private var _acFilter:ArrayCollection;
 
 // path to vpDude folder
 private var _vpFolderPath:String;
@@ -160,106 +154,15 @@ public function addTabs():void
 		var tags:Tags = Tags.getInstance();
 		tags.dbPath = dbFolderPath;
 		tags.loadTagsFile();
-		loadClipsFile();
+		// load tagsFile when config is done
+		var clips:Clips = Clips.getInstance();
+		clips.dbPath = dbFolderPath;
+		clips.loadClipsFile();
 		// this.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
 		// this.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
 	}
 }
 
-public function loadClipsFile():void 
-{
-	clipsXmlPath = parentDocument.dbFolderPath + File.separator + "clips.xml";
-	var isConfigured:Boolean = false;
-	var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
-	try
-	{
-		if ( !clipsFile.exists )
-		{
-			Util.log( "clips.xml does not exist" );
-		}
-		else
-		{
-			Util.log( "clips.xml exists, load the file xml" );
-			CLIPS_XML = new XML( readTextFile( clipsFile ) );
-			if ( CLIPS_XML..video.length() )
-			{
-				isConfigured = true;
-			}
-		}
-	}
-	catch ( e:Error )
-	{	
-		var msg:String = 'Error loading clips.xml file: ' + e.message;
-		statusText.text = msg;
-		Util.log( msg );
-	}
-	if ( !isConfigured )
-	{
-		CLIPS_XML = <videos />;
-		writeClipsFile();
-	}
-	refreshClipsXMLList();
-}
-public function writeClipsFile():void 
-{
-	clipsXmlPath = parentDocument.dbFolderPath + File.separator + "clips.xml";
-	var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
-	refreshClipsXMLList();
-
-	// write the text file
-	writeTextFile( clipsFile, CLIPS_XML );					
-}
-public function refreshClipsXMLList():void 
-{
-	clipsXMLList = new XMLListCollection( CLIPS_XML.video );
-}
-// write one clip xml fole in db
-public function writeClipXmlFile( clipId:String, clipXml:XML ):void
-{
-	var localClipXMLFile:String = parentDocument.dbFolderPath + File.separator + clipId + ".xml" ;
-	var clipXmlFile:File = new File( localClipXMLFile );
-	
-	// write the text file
-	writeTextFile( clipXmlFile, clipXml );					
-}
-public function addNewClip( clipId:String, clipXml:XML ):void
-{
-	CLIPS_XML.appendChild( clipXml );
-	writeClipsFile();	
-	writeClipXmlFile( clipId, clipXml );
-	
-}
-public function filterTags( acFilter:ArrayCollection ):void 
-{
-	_acFilter = acFilter;
-	if ( acFilter.length == 0 ) {
-		clipsXMLList.filterFunction = null;
-	} else {
-		clipsXMLList.filterFunction = xmlListColl_filterFunc;
-	}
-	clipsXMLList.refresh();
-}
-
-private function xmlListColl_filterFunc(item:Object):Boolean 
-{
-	var isMatch:Boolean = false;
-	var currentTag:String;
-	var nbFound:uint = 0;
-	var clipTags:String = "";// = item..@name;
-	
-	for each ( var oneTag:XML in item..tag )
-	{
-		clipTags += oneTag.@name + "|";
-	}
-	for each ( currentTag in _acFilter ) 
-	{
-		trace( "cur:" + currentTag );
-		if ( clipTags.indexOf( currentTag ) > -1 ) nbFound++;
-	}
-	if ( nbFound >= _acFilter.length ) isMatch = true;
-	trace ( item..@name );
-	return isMatch;
-}
 
 protected function tabNav_changeHandler(event:IndexChangedEvent):void
 {
@@ -332,7 +235,7 @@ private function onMonitor(event:StatusEvent):void
 		}	
 	}
 }
-public function onDragEnter(event:DragEvent):void
+/*public function onDragEnter(event:DragEvent):void
 {
 	if(event.dragSource.hasFormat("air:file list"))
 	{
@@ -353,7 +256,7 @@ public function onDragDrop(event:DragEvent):void
 		//TODO
 	}
 	statusText.text = "Dropped file(s) added."
-}
+}*/
 public function ioErrorHandler( event:IOErrorEvent ):void
 {
 	Util.log( 'An IO Error has occured: ' + event.text );
