@@ -2,21 +2,17 @@ import flash.display.BitmapData;
 import flash.events.KeyboardEvent;
 import flash.events.TimerEvent;
 import flash.utils.Timer;
-
 import fr.batchass.*;
-
 import mx.core.Application;
 import mx.core.FlexGlobals;
-
 import spark.components.TextInput;
-
-import videopong.Tags;
+import videopong.*;
 
 private var currentThumb:uint = 1;
 private var timer:Timer;
 
-[Bindable]
-private var cachedThumbnail:String;
+/*[Bindable]
+private var cachedThumbnail:String;*/
 [Bindable]
 private var cachedThumbnail1:String;
 [Bindable]
@@ -31,6 +27,8 @@ private var tagList:String;
 private var tagTextInput:TextInput = new TextInput();
 // get instance of Tags class
 private var tags:Tags;
+// get instance of Clips class
+private var clips:Clips;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -48,7 +46,7 @@ override public function set data( value:Object ) : void {
 		{
 			cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
 		};
-		data.clipname ? clipname = data.clipname : "...";
+		data.clip.@name ? clipname = data.clip.@name : "...";
 		
 		var clipXmlTagList:XMLList = data..tags.tag as XMLList;
 		var tagString:String = "";
@@ -75,7 +73,7 @@ protected function tagClip_mouseOverHandler(event:MouseEvent):void
 
 protected function moreClip_mouseOverHandler(event:MouseEvent):void
 {
-	moreClip.toolTip = "Created by " + data.creatorname;
+	moreClip.toolTip = "Created by " + data.creator.@name;
 }
 
 
@@ -101,23 +99,16 @@ private function checkTagInput( event:KeyboardEvent ):void
 			// if tag not already in global tags, add it
 			tags.addTagIfNew( tagArray[i] );
 			
+			clips = Clips.getInstance();
 			//test if tag is not already in clip
-			if ( data..tags.tag.(@name==tagArray[i]) )
-			{
-				
-			}
-			else
-			{
-				newTag = <tag name={tagArray[i]} creationdate={Util.nowDate} clipid={data.clipid} />;
-				data..tags.tag.appendChild( newTag );
-				FlexGlobals.topLevelApplication.addNewClip( data.clipid, data );
-			}
+			clips.addTagIfNew( tagArray[i], data.clipid );
+			
 		}
 		//remove textInput
 		tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
 		this.removeElement( tagTextInput );
 	}
-	if ( event.keyCode == Keyboard.ESCAPE )
+	if ( event.keyCode == 27 )
 	{
 		//remove textInput
 		tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );

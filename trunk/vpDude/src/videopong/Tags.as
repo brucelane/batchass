@@ -2,9 +2,7 @@ package videopong
 {
 	import flash.filesystem.File;
 	
-	import fr.batchass.Util;
-	import fr.batchass.readTextFile;
-	import fr.batchass.writeTextFile;
+	import fr.batchass.*;
 	
 	import mx.collections.XMLListCollection;
 
@@ -12,13 +10,12 @@ package videopong
 	{
 		private static var instance:Tags = new Tags();
 		private static var tagsXmlPath:String;
-		private var TAGS_XML:XML = <tags>
+		public var TAGS_XML:XML = <tags>
 									<tag name="none"/>
 								  </tags>;
 		// Collection of tags
 		[Bindable]
 		public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag.@name);
-		//public var tagsXMLList:XMLListCollection = new XMLListCollection(TAGS_XML.tag.@name);
 		
 		private static var _dbPath:String;
 		
@@ -83,12 +80,7 @@ package videopong
 		{
 			tagsXMLList = new XMLListCollection( TAGS_XML.tag.@name );
 		}
-		
-			/*if ( !tags.tagExist( tagArray[i] ) )
-			{
-			newTag = <tag name={tagArray[i]} creationdate={Util.nowDate} clipid={data.clipid} />;
-			tags.appendTag( newTag );
-			}*/
+
 		public function addTagIfNew( tagToSearch:String ):void
 		{
 			
@@ -102,11 +94,6 @@ package videopong
 			}
 			
 		}
-		/*public function appendTag( tag:XML ):void
-		{
-			TAGS_XML.appendChild( tag );
-			writeTagsFile();
-		}*/
 
 		public function get dbPath():String
 		{
