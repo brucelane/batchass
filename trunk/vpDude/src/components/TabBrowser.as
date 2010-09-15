@@ -41,9 +41,11 @@ private function e4xLoadComplete( event:Event ):void
 	var loader:URLLoader = event.target as URLLoader;
 	
 	trace(loader.data);
+	// downloaded one clip xml
 	var clipXml:XML = XML( loader.data );
 	var clipId:String = clipXml..clipid;
 	
+	// download thumbs and video if not in cache
 	if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb1 );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb2 );
@@ -51,6 +53,7 @@ private function e4xLoadComplete( event:Event ):void
 	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	clipXml.dlddate = Util.nowDate;
 	
+	// xml list of tags
 	var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;
 	var newTag:Boolean = false;
 	var foundNewTag:Boolean;
@@ -66,8 +69,7 @@ private function e4xLoadComplete( event:Event ):void
 	}
 	if ( foundNewClip )
 	{
-		parentDocument.CLIPS_XML.appendChild( clipXml );
-		parentDocument.writeClipsFile();	
+		parentDocument.addNewClip( clipId, clipXml );
 	}
 	//TODO optimize
 	for each ( var oneTag:XML in clipXmlTagList )
@@ -92,16 +94,8 @@ private function e4xLoadComplete( event:Event ):void
 	{
 		parentDocument.writeTagsFile();
 	}
-	writeClipXmlFile( clipId, clipXml );
 }
-private function writeClipXmlFile( clipId:String, clipXml:XML ):void
-{
-	var localClipXMLFile:String = parentDocument.dbFolderPath + File.separator + clipId + ".xml" ;
-	var clipXmlFile:File = new File( localClipXMLFile );
-	
-	// write the text file
-	writeTextFile( clipXmlFile, clipXml );					
-}
+
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
 	Util.log( 'TabBrowser, An IO Error has occured: ' + event.text );

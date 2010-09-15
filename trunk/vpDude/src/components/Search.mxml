@@ -9,14 +9,11 @@
 					>
 
 	<fx:Script source="TabSearch.as" />
-	<fx:Style source="css/defaults.css" />
 
 	<s:VGroup width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
 		<s:HGroup><!---->
 			<components:AdvancedAutoComplete
 				id="autoComplete"
-				dataProvider="{parentDocument.tagsXMLList}" 
-				labelField="@name"
 				allowMultipleSelection="true"
 				allowNewValues="true"
 				showRemoveIcon = "true"
