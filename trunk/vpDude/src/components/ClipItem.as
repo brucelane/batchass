@@ -8,11 +8,9 @@ import mx.core.FlexGlobals;
 import spark.components.TextInput;
 import videopong.*;
 
-private var currentThumb:uint = 1;
-private var timer:Timer;
+/*private var currentThumb:uint = 1;
+private var timer:Timer;*/
 
-/*[Bindable]
-private var cachedThumbnail:String;*/
 [Bindable]
 private var cachedThumbnail1:String;
 [Bindable]
@@ -26,8 +24,10 @@ private var tagList:String;
 
 private var tagTextInput:TextInput = new TextInput();
 // get instance of Tags class
+[Bindable]
 private var tags:Tags;
 // get instance of Clips class
+[Bindable]
 private var clips:Clips;
 
 override public function set data( value:Object ) : void {
@@ -59,6 +59,10 @@ override public function set data( value:Object ) : void {
 	}
 }
 
+/*private function refreshTags():void
+{
+	
+}*/
 private function getCachedThumbnail( thumbnailUrl:String ):String
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );

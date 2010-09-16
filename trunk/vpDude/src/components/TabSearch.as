@@ -18,6 +18,8 @@ private var tags:Tags = Tags.getInstance();
 
 private function handleButtonClick():void
 {
+	
+	autoComplete.dataProvider = tags.tagsXMLList;
     if (autoComplete.isDropDownVisible())
     {
         autoComplete.hideDropDown();
@@ -38,6 +40,11 @@ protected function search_creationCompleteHandler(event:FlexEvent):void
 	
 	autoComplete.dataProvider = tags.tagsXMLList;
 	//autoComplete.labelField = "@name";
-	//clipList.dataProvider = clips.clipsXMLList;
+	//
 	clipList.labelField = "@name";
 }
+/*public function refreshDataBinding():void
+{
+	autoComplete.dataProvider = tags.tagsXMLList;
+	clipList.dataProvider = clips.clipsXMLList;
+}*/
