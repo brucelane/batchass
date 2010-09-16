@@ -44,7 +44,7 @@ private function e4xLoadComplete( event:Event ):void
 	trace(loader.data);
 	// downloaded one clip xml
 	var clipXml:XML = XML( loader.data );
-	var clipId:String = clipXml..clip.@id;
+	var clipId:String = clipXml.video.@id;
 	
 	// download thumbs and video if not in cache
 	if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );

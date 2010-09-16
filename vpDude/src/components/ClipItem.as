@@ -101,7 +101,7 @@ private function checkTagInput( event:KeyboardEvent ):void
 			
 			clips = Clips.getInstance();
 			//test if tag is not already in clip
-			clips.addTagIfNew( tagArray[i], data.clipid );
+			clips.addTagIfNew( tagArray[i], data.clip.@id  );
 			
 		}
 		//remove textInput
