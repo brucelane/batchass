@@ -25,7 +25,6 @@
 				  width="100" height="75" 
 				  scaleContent="true"
 				  mouseDown="imgUrl_mouseDownHandler(event)"
-				  nativeDragComplete="imgUrl_nativeDragCompleteHandler(event)"
 				  toolTip="Click to drag video"
 				  />	
 		
