@@ -1,5 +1,7 @@
 package videopong
 {
+	import components.Search;
+	
 	import flash.filesystem.File;
 	
 	import fr.batchass.*;
@@ -109,8 +111,12 @@ package videopong
 				var newTag:XML = <tag name={tag} creationdate={Util.nowDate}  />;
 				clipXml..tags.appendChild( newTag );
 				writeClipXmlFile( clipId, clipXml );
-				//TODO update global CLIPS_XML file
+				//update global CLIPS_XML file
 				CLIPS_XML..video.(@id==clipId).tags.appendChild( newTag );
+				writeClipsFile();
+				refreshClipsXMLList();
+				var tags:Tags = Tags.getInstance();
+				tags.addTagIfNew( tag );
 			}
 			else
 			{
