@@ -24,8 +24,9 @@
 				  verticalAlign="middle"
 				  width="100" height="75" 
 				  scaleContent="true"
-				  mouseOver="imgUrl_mouseOverHandler(event)"
-				  mouseOut="imgUrl_mouseOutHandler(event)"
+				  mouseDown="imgUrl_mouseDownHandler(event)"
+				  nativeDragComplete="imgUrl_nativeDragCompleteHandler(event)"
+				  toolTip="Click to drag video"
 				  />	
 		
 		<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" x="0" y="0" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
