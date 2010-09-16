@@ -12,7 +12,7 @@ package videopong
 		private static var instance:Clips = new Clips();
 		public var CLIPS_XML:XML = <videos /> ;
 		// Collection of all the clips
-		//[Bindable]
+		[Bindable]
 		public var clipsXMLList:XMLListCollection = new XMLListCollection(CLIPS_XML.video);
 		private static var _dbPath:String;		
 		private static var clipsXmlPath:String;
@@ -105,11 +105,12 @@ package videopong
 			}
 			if ( foundNewTag )
 			{		
+				trace( tag + " is new tag, save in clip xml file");
 				var newTag:XML = <tag name={tag} creationdate={Util.nowDate}  />;
 				clipXml..tags.appendChild( newTag );
 				writeClipXmlFile( clipId, clipXml );
 				//TODO update global CLIPS_XML file
-				CLIPS_XML..clip.(@id==clipId).appendChild( newTag );
+				CLIPS_XML..video.(@id==clipId).tags.appendChild( newTag );
 			}
 			else
 			{

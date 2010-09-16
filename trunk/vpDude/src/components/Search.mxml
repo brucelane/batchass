@@ -28,6 +28,8 @@
 		</s:HGroup>
 		<s:List id="clipList" width="819" height="430" 
 				itemRenderer="components.ClipItemRenderer" 
+				labelField="@name"
+				dataProvider="{clips.clipsXMLList}"
 				>
 			<s:layout>
 				<s:TileLayout horizontalAlign="center" 
