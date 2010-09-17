@@ -27,6 +27,7 @@ public var vpUrl:String = vpRootUrl + "vpdude/";
 public var vpUpUrl:String = vpRootUrl + "vpdudeup/";
 // ffmpeg file name depending on OS
 private var vpFFMpeg:String;
+public var vpFFMpegExePath:String;
 
 [Bindable]
 public var vpFullUrl:String = vpUrl;
@@ -102,6 +103,7 @@ private function checkFFMpeg():void
 	}
 	
 	var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
+	vpFFMpegExePath = FFMpegFile.url;
 	
 	if( FFMpegFile.exists )
 	{
@@ -128,9 +130,8 @@ private function dlFFMpeg( url:String ):void
 private function FFMpegLoadComplete( event:Event ):void
 {
 	var loader:URLLoader = event.target as URLLoader;
-	//var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
 	
-	var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
+	var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( vpFFMpegExePath );
 	var stream:FileStream = new FileStream();
 	FFMpegFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 	stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );

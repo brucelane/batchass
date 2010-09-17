@@ -1,13 +1,22 @@
 import components.*;
 
 import flash.desktop.NativeApplication;
+import flash.desktop.NativeProcess;
+import flash.events.ProgressEvent;
 import flash.filesystem.File;
+import flash.filesystem.FileMode;
 
 import fr.batchass.Util;
 import fr.batchass.readTextFile;
 import fr.batchass.writeTextFile;
 
+import mx.collections.ArrayCollection;
 import mx.events.FlexEvent;
+
+import videopong.Clips;
+
+[Bindable]
+private var ownFiles:ArrayCollection;
 
 private var defaultConfigXmlPath:String = 'config' + File.separator + '.vpDudeConfig';
 
@@ -24,6 +33,10 @@ private var userName:String = "";
 private var password:String = "";
 
 public static var CONFIG_XML:XML;
+private var OWN_CLIPS_XML:XML;
+
+private var startFFMpegProcess:NativeProcess;
+
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -170,15 +183,109 @@ private function checkFolder( folderPath:String ):void
 	else
 	{
 		//create subfolder structure
-		//parentDocument.dldFolderPath = folderPath + File.separator + "dld";
 		var dldFolder:File = new File( parentDocument.dldFolderPath );
 		dldFolder.createDirectory();
 		Util.log('Created: ' + parentDocument.dldFolderPath);
-		//parentDocument.dbFolderPath = folderPath + File.separator + "db";
 		var dbFolder:File = new File( parentDocument.dbFolderPath );
 		dbFolder.createDirectory();
 		Util.log('Created: ' + parentDocument.dbFolderPath);
 		
 	}
 
+}
+
+protected function resyncBtn_clickHandler(event:MouseEvent):void
+{
+	var selectedDirectory:File = new File( parentDocument.ownFolderPath );
+	// Get directory listing
+	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
+	// read all files in the folder
+	trace ( ProcessAllFiles( selectedDirectory ) );
+	
+}
+// Process all files in a directory structure including subdirectories.
+public function ProcessAllFiles( selectedDir:File ):String
+{
+	var str:String = "";
+	var clips:Clips = Clips.getInstance();
+	for each( var lstFile:File in selectedDir.getDirectoryListing() )
+	{
+		if( lstFile.isDirectory )
+		{
+			//recursively call function
+			str += ProcessAllFiles( lstFile );
+		}
+		else
+		{
+			var clipId:String = Util.nowDate;
+			var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
+			var thumbsFolder:File = new File( thumbsPath );
+			// creates folder if it does not exists
+			if (!thumbsFolder.exists) 
+			{
+				// create the directory
+				thumbsFolder.createDirectory();
+			}
+			startFFMpegProcess = new NativeProcess();
+			execute( startFFMpegProcess, lstFile.nativePath, thumbsPath );
+			str+= lstFile.nativePath + "\n";
+			OWN_CLIPS_XML = <video id={clipId} own="true"> 
+								<urllocal>{lstFile.nativePath}</urllocal>
+								<urlthumb1>{thumbsPath + "thumb12.jpg"}</urlthumb1>
+								<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
+								<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
+								<clip name="very new own clip from the top uploader"/>
+								<creator name={userName}/>
+								<tags>
+									<tag name="own"/>
+								</tags>
+							</video>;
+			clips.addNewClip( clipId, OWN_CLIPS_XML );
+		}
+	}	
+	return str;
+}
+private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath:String ):void
+{
+	// Start the process
+	try
+	{
+		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		//nativeProcessStartupInfo.workingDirectory = thumbsdir;
+		var processArgs:Vector.<String> = new Vector.<String>();
+		processArgs[0] = "-i";
+		processArgs[1] = ownVideoPath;
+		processArgs[2] = "-vframes";
+		processArgs[3] = "3";
+		processArgs[4] = "-f";
+		processArgs[5] = "image2";
+		processArgs[6] = "-vcodec";
+		processArgs[7] = "mjpeg";
+		processArgs[8] = thumbsPath + "thumb1.jpg";
+		nativeProcessStartupInfo.arguments = processArgs;
+		startFFMpegProcess = new NativeProcess();
+		startFFMpegProcess.start(nativeProcessStartupInfo);
+		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
+			outputDataHandler);
+		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
+			errorOutputDataHandler);
+	}
+	catch (e:Error)
+	{
+		Util.log( "NativeProcess Error: " + e.message );
+	}
+}
+private function outputDataHandler(event:ProgressEvent):void
+{
+	var process:NativeProcess = event.target as NativeProcess;
+	var data:String = process.standardOutput.readUTFBytes(process.standardOutput.bytesAvailable);
+	log.text += data;
+}
+
+private function errorOutputDataHandler(event:ProgressEvent):void
+{
+	var process:NativeProcess = event.target as NativeProcess;
+	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
+	log.text += data;
 }

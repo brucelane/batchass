@@ -84,8 +84,6 @@ package videopong
 		public function addTagIfNew( tagToSearch:String ):void
 		{
 			
-			//if ( TAGS_XML..tag.attribute("name" ) ) trace( "name attr exists");
-
 			trace( TAGS_XML..tag.(@name==tagToSearch).length() );
 			if ( TAGS_XML..tag.(@name==tagToSearch).length() < 1 )
 			{

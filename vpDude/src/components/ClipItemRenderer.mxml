@@ -15,7 +15,7 @@
 		<s:State name="selected" />
 	</s:states>
 
-	<mx:Canvas>
+	<s:VGroup>
 		<mx:Image id="imgUrl" alpha.hovered=".7" 
 				  source.normal="{cachedThumbnail1}" 
 				  source.hovered="{cachedThumbnail2}" 
@@ -28,12 +28,13 @@
 				  toolTip="Click to drag video"
 				  />	
 		
-		<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" x="0" y="0" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
-		<mx:LinkButton id="rateClip" click="rateClip_clickHandler(event)" mouseOver="rateClip_mouseOverHandler(event)" x="50"  y="0" label="Rate" visible.hovered="true" visible.selected="true" visible.normal="false" />
-		<mx:LinkButton id="viewClip" click="viewClip_clickHandler(event)" x="0" y="51" toolTip="View in default app" label="View" visible.hovered="true" visible.selected="true" visible.normal="false" />
-		<mx:LinkButton id="moreClip" click="moreClip_clickHandler(event)" mouseOver="moreClip_mouseOverHandler(event)" x="50" y="51" label="More" visible.hovered="true" visible.selected="true" visible.normal="false" />
-		
-		<s:Label x="0" y="80" text="{clipname}" horizontalCenter="center" width="100" height="30"/>
-		
-	</mx:Canvas>
+		<s:Label text="{clipname}" horizontalCenter="center" width="100" height="15"/>
+		<s:HGroup>
+			<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
+			<mx:LinkButton id="moreClip" click="moreClip_clickHandler(event)" mouseOver="moreClip_mouseOverHandler(event)" label="More" visible.hovered="true" visible.selected="true" visible.normal="false" />			
+		</s:HGroup>
+		<!--<mx:LinkButton id="rateClip" click="rateClip_clickHandler(event)" mouseOver="rateClip_mouseOverHandler(event)" x="50"  y="76" label="Rate" visible.hovered="true" visible.selected="true" visible.normal="false" />-->
+		<!--<mx:LinkButton id="viewClip" click="viewClip_clickHandler(event)" x="0" y="51" toolTip="View in default app" label="View" visible.hovered="true" visible.selected="true" visible.normal="false" />-->
+	</s:VGroup>
+
 </s:ItemRenderer>
