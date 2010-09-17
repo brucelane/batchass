@@ -16,7 +16,7 @@
 				<s:Button label="Reload" height="18" click="htmlBrowser.reload()"/>
 				
 			</s:HGroup>
-			<mx:HTML id="htmlBrowser" width="815" height="440" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
+			<mx:HTML id="htmlBrowser" width="815" height="640" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
 			
 		</s:VGroup>
 	

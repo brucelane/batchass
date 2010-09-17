@@ -126,10 +126,20 @@ package videopong
 		}
 		public function addNewClip( clipId:String, clipXml:XML ):void
 		{
-			CLIPS_XML.appendChild( clipXml );
-			writeClipsFile();	
-			writeClipXmlFile( clipId, clipXml );
-			
+			var foundNewClip:Boolean = true;
+			for each ( var appClip:XML in clipsXMLList )
+			{
+				if ( appClip.clipid.toString()==clipId )
+				{
+					foundNewClip = false;
+				}
+			}
+			if ( foundNewClip )
+			{
+				CLIPS_XML.appendChild( clipXml );
+				writeClipsFile();	
+				writeClipXmlFile( clipId, clipXml );
+			}
 		}
 		
 		public function filterTags( acFilter:ArrayCollection ):void 

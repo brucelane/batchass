@@ -58,23 +58,13 @@ private function e4xLoadComplete( event:Event ):void
 	var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;
 	var newTag:Boolean = false;
 	var foundNewTag:Boolean;
-	var foundNewClip:Boolean = true;
 	
 	var clips:Clips = Clips.getInstance();
 	var tags:Tags = Tags.getInstance();
 
-	var clipList:XMLList = clips.CLIPS_XML..video as XMLList;
-	for each ( var appClip:XML in clipList )
-	{
-		if ( appClip.clipid.toString()==clipId )
-		{
-			foundNewClip = false;
-		}
-	}
-	if ( foundNewClip )
-	{
-		clips.addNewClip( clipId, clipXml );
-	}
+	//add new clip if exists
+	clips.addNewClip( clipId, clipXml );
+	
 	//TODO optimize
 	for each ( var oneTag:XML in clipXmlTagList )
 	{

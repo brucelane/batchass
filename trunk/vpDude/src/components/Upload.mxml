@@ -13,7 +13,7 @@
 				<s:Button label="&gt;" width="30" height="18" toolTip="forward" click="htmlUploadBrowser.historyForward()"/>
 				<s:Button label="Reload" height="18" click="htmlUploadBrowser.reload()"/>
 			</s:HGroup>
-			<mx:HTML id="htmlUploadBrowser" width="815" height="440" location="{parentDocument.vpUploadUrl}" complete="onHTMLComplete()" />
+			<mx:HTML id="htmlUploadBrowser" width="815" height="640" location="{parentDocument.vpUploadUrl}" complete="onHTMLComplete()" />
 			
 		</s:VGroup>
 		

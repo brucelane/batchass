@@ -37,14 +37,8 @@ private function handleAutoCompleteChange():void
 protected function search_creationCompleteHandler(event:FlexEvent):void
 {
 	autoComplete.setStyle( "selectedItemStyleName", AutoComplete.STYLE_FACEBOOK );
-	
 	autoComplete.dataProvider = tags.tagsXMLList;
-	//autoComplete.labelField = "@name";
-	//
+	
 	clipList.labelField = "@name";
 }
-/*public function refreshDataBinding():void
-{
-	autoComplete.dataProvider = tags.tagsXMLList;
-	clipList.dataProvider = clips.clipsXMLList;
-}*/
+

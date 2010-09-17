@@ -29,10 +29,21 @@
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Local own videos path:" verticalAlign="bottom"/>
 				<s:TextInput width="{tiWidth}" text="{parentDocument.ownFolderPath}" id="ownTextInput"/>
-				<s:Button label="..." id="browseOwnPathBtn" width="30" click="browseOwnPathBtn_clickHandler(event)"/>			
+				<s:Button label="..." id="browseOwnPathBtn" width="30" click="browseOwnPathBtn_clickHandler(event)"/>	
+				<s:Button label="Sync" toolTip="resync my own files" id="resyncBtn" click="resyncBtn_clickHandler(event)"/>
 			</s:HGroup>
 			<s:Button label="Apply" id="applyBtn" click="applyBtn_clickHandler(event)"/>
-			
+			<s:VGroup width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+				<mx:DataGrid width="100%" height="50%" dataProvider="{ownFiles}">
+					
+					<mx:columns>
+						<mx:DataGridColumn dataField="icon" headerText="File type" width="60" itemRenderer="videopong.ImageRenderer"/>
+						<mx:DataGridColumn dataField="name" headerText="File name"/>
+					</mx:columns>
+					
+				</mx:DataGrid>
+				<s:TextArea id="log" width="100%" height="50%"/>
+			</s:VGroup>			
 		</s:VGroup>
 
 </s:NavigatorContent>

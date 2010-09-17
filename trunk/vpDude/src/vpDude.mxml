@@ -4,7 +4,7 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   preinitialize="vpDude_preinitializeHandler(event)"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
-					   width="840" height="600"
+					   width="840" height="800"
 					   xmlns:components="components.*">
 
 	<fx:Declarations>
@@ -14,7 +14,7 @@
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
 		<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
 		
-		<mx:TabNavigator id="tabNav" width="830" height="520" change="tabNav_changeHandler(event)" >
+		<mx:TabNavigator id="tabNav" width="830" height="720" change="tabNav_changeHandler(event)" >
 			<components:Config  />
 			<components:Quit/>
 		</mx:TabNavigator>

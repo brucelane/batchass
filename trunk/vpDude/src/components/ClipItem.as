@@ -45,18 +45,28 @@ override public function set data( value:Object ) : void {
 	super.data = value;
 	if ( data )
 	{
-		if ( data.urlthumb1 ) 
-		{
-			cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
-			var req:URLRequest = new URLRequest( cachedThumbnail1 );
-			var loader:Loader = new Loader();
-			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
-			loader.load( req );
+		if ( data.attribute( "own" ) ) 
+		{	
+			//don't load from cache as it is local files
+			if ( data.urlthumb1 ) cachedThumbnail1 = data.urlthumb1;
+			if ( data.urlthumb2 ) cachedThumbnail2 = data.urlthumb2;
+			if ( data.urlthumb3 ) cachedThumbnail3 = data.urlthumb3;
+			if ( data.urldownload ) cachedVideo = data.urldownload;
 		}
-		if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
-		if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
-	
-		if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload );
+		else
+		{
+			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
+			if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
+			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
+			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload );
+		}
+		//load image for drag n drop
+		var req:URLRequest = new URLRequest( cachedThumbnail1 );
+		var loader:Loader = new Loader();
+		loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
+		loader.load( req );
+		
+
 		data.clip.@name ? clipname = data.clip.@name : "...";
 		
 		var clipXmlTagList:XMLList = data..tags.tag as XMLList;
@@ -69,11 +79,10 @@ override public function set data( value:Object ) : void {
 		tagList = tagString;		
 	}
 }
-
-/*private function refreshTags():void
+private function loadComplete(event:Event):void
 {
-	
-}*/
+	image = event.target.loader.content;
+}
 private function getCachedVideo( videoUrl:String ):String
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
@@ -145,11 +154,11 @@ protected function rateClip_clickHandler(event:MouseEvent):void
 {
 }
 
-protected function viewClip_clickHandler(event:MouseEvent):void
+/*protected function viewClip_clickHandler(event:MouseEvent):void
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
 	FlexGlobals.topLevelApplication.cache.getClipByURL( data.urldownload, true );
-}
+}*/
 
 protected function moreClip_clickHandler(event:MouseEvent):void
 {
@@ -159,9 +168,10 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 	var draggedObject:Clipboard = new Clipboard();
 	var fileToDrag:File = new File( cachedVideo );
 	var dragOptions : NativeDragOptions = new NativeDragOptions();
-	dragOptions.allowCopy = true;
-	dragOptions.allowLink = true;
-	dragOptions.allowMove = false;	
+	// we don't want the file to be moved
+		dragOptions.allowCopy = true;
+		dragOptions.allowLink = true;
+		dragOptions.allowMove = false;	
 	
 	draggedObject.setData( ClipboardFormats.FILE_LIST_FORMAT, new Array( fileToDrag ), false );
 	
@@ -171,8 +181,5 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 								new Point( -image.width/2, -image.height/2 ),
 								dragOptions ); 
 }
-private function loadComplete(event:Event):void
-{
-	image = event.target.loader.content;
-}
+
 
