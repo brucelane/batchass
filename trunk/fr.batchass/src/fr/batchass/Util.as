@@ -32,13 +32,12 @@ package fr.batchass
 
 		public static function get nowDate():String
 		{
-			if ( !_nowDate )
+			if ( !dateFormatter )
 			{
 				dateFormatter = new DateFormatter();
-				dateFormatter.formatString = "YYYYMMDD-HHhNN";
-				_nowDate = dateFormatter.format(new Date());
-				
+				dateFormatter.formatString = "YYYYMMDD-HHhNNmnSSsQQQ";
 			}
+			_nowDate = dateFormatter.format(new Date());	
 			return _nowDate;
 		}
 
