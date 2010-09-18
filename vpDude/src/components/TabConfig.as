@@ -30,13 +30,16 @@ private var isConfigured:Boolean = false;
 [Bindable]
 private var userName:String = "";
 [Bindable]
+private var hiddenPassword:String = "";
+
 private var password:String = "";
+private var passwordChanged:Boolean = false;
 
 public static var CONFIG_XML:XML;
 private var OWN_CLIPS_XML:XML;
 
 private var startFFMpegProcess:NativeProcess;
-
+import spark.events.TextOperationEvent;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -55,6 +58,11 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			
 			userName = CONFIG_XML..username[0].toString();
 			password = CONFIG_XML..pwd[0].toString();
+			for ( var i:uint = 0; i < password.length; i++ )
+			{
+				hiddenPassword += "*";
+			}
+			
 			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
 			parentDocument.ownFolderPath = CONFIG_XML..own[0].toString();
 			isConfigured = true;
@@ -83,14 +91,18 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	}
 	
 }
+protected function pwdTextInput_changeHandler(event:TextOperationEvent):void
+{
+	passwordChanged = true;
+}
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	var isChanged:Boolean = false;
-	if ( userName != userTextInput.text || password != pwdTextInput.text || parentDocument.vpFolderPath != dbTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
+	if ( userName != userTextInput.text || parentDocument.vpFolderPath != dbTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
 	{
 		isChanged = true;
 		userName = userTextInput.text;
-		password = pwdTextInput.text;
+		
 		parentDocument.vpFolderPath = dbTextInput.text;
 		parentDocument.ownFolderPath = ownTextInput.text;
 		trace ( "changed" );
@@ -98,6 +110,11 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 
 		checkFolder( parentDocument.vpFolderPath );
 		checkFolder( parentDocument.ownFolderPath );
+	}
+	if ( passwordChanged ) 
+	{
+		isChanged = true;
+		password = pwdTextInput.text;
 	}
 	writeFolderXmlFile();
 
@@ -289,6 +306,7 @@ private function outputDataHandler(event:ProgressEvent):void
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardOutput.readUTFBytes(process.standardOutput.bytesAvailable);
 	log.text += data;
+	Util.log( "NativeProcess outputDataHandler: " + data );
 }
 
 private function errorOutputDataHandler(event:ProgressEvent):void
@@ -296,4 +314,5 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
 	log.text += data;
+	Util.errorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
