@@ -40,6 +40,7 @@ private var OWN_CLIPS_XML:XML;
 
 private var startFFMpegProcess:NativeProcess;
 import spark.events.TextOperationEvent;
+import videopong.Tags;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -261,6 +262,9 @@ public function ProcessAllFiles( selectedDir:File ):String
 									</tags>
 								</video>;
 				clips.addNewClip( clipId, OWN_CLIPS_XML, lstFile.nativePath );
+				
+				var tags:Tags = Tags.getInstance();
+				tags.addTagIfNew( "own" );
 			}
 		}
 	}	
