@@ -69,11 +69,12 @@ package videopong
 		{
 			clipsXmlPath = _dbPath + File.separator + "clips.xml";
 			var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
-			refreshClipsXMLList();
 			
 			// write the text file
 			writeTextFile( clipsFile, CLIPS_XML );					
+			refreshClipsXMLList();
 		}
+		// refresh XML collection for data binding
 		public function refreshClipsXMLList():void 
 		{
 			clipsXMLList = new XMLListCollection( CLIPS_XML.video );
