@@ -217,35 +217,39 @@ public function ProcessAllFiles( selectedDir:File ):String
 		}
 		else
 		{
-			var clipId:String = Util.nowDate;
-			var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
-			var thumbsFolder:File = new File( thumbsPath );
-			// creates folder if it does not exists
-			if (!thumbsFolder.exists) 
+			if ( clips.newClip( lstFile.nativePath ) )
 			{
-				// create the directory
-				thumbsFolder.createDirectory();
+				var clipId:String = Util.nowDate;
+				var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
+				var thumbsFolder:File = new File( thumbsPath );
+				// creates folder if it does not exists
+				if (!thumbsFolder.exists) 
+				{
+					// create the directory
+					thumbsFolder.createDirectory();
+				}
+				startFFMpegProcess = new NativeProcess();
+				execute( startFFMpegProcess, lstFile.nativePath, thumbsPath, 1 );
+				execute( startFFMpegProcess, lstFile.nativePath, thumbsPath, 2 );
+				execute( startFFMpegProcess, lstFile.nativePath, thumbsPath, 3 );
+				str+= lstFile.nativePath + "\n";
+				OWN_CLIPS_XML = <video id={clipId} urllocal={lstFile.nativePath}> 
+									<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
+									<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
+									<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
+									<clip name="very new own clip from the top uploader"/>
+									<creator name={userName}/>
+									<tags>
+										<tag name="own"/>
+									</tags>
+								</video>;
+				clips.addNewClip( clipId, OWN_CLIPS_XML, lstFile.nativePath );
 			}
-			startFFMpegProcess = new NativeProcess();
-			execute( startFFMpegProcess, lstFile.nativePath, thumbsPath );
-			str+= lstFile.nativePath + "\n";
-			OWN_CLIPS_XML = <video id={clipId} own="true"> 
-								<urllocal>{lstFile.nativePath}</urllocal>
-								<urlthumb1>{thumbsPath + "thumb12.jpg"}</urlthumb1>
-								<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
-								<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
-								<clip name="very new own clip from the top uploader"/>
-								<creator name={userName}/>
-								<tags>
-									<tag name="own"/>
-								</tags>
-							</video>;
-			clips.addNewClip( clipId, OWN_CLIPS_XML );
 		}
 	}	
 	return str;
 }
-private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath:String ):void
+private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
 	// Start the process
 	try
@@ -257,12 +261,16 @@ private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath
 		processArgs[0] = "-i";
 		processArgs[1] = ownVideoPath;
 		processArgs[2] = "-vframes";
-		processArgs[3] = "3";
+		processArgs[3] = "1";
 		processArgs[4] = "-f";
 		processArgs[5] = "image2";
 		processArgs[6] = "-vcodec";
 		processArgs[7] = "mjpeg";
-		processArgs[8] = thumbsPath + "thumb1.jpg";
+		processArgs[8] =  "-s";
+		processArgs[9] = "100x74"; //Frame size must be a multiple of 2
+		processArgs[10] =  "-ss";
+		processArgs[11] = thumbNumber.toString();
+		processArgs[12] = thumbsPath + "thumb" + thumbNumber + ".jpg";
 		nativeProcessStartupInfo.arguments = processArgs;
 		startFFMpegProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);

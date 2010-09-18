@@ -123,10 +123,11 @@ private function dlFFMpeg( url:String ):void
 		loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 		loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
 		loader.addEventListener( Event.COMPLETE, FFMpegLoadComplete );
+		loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 		loader.load(req);
-
 }
+    
 private function FFMpegLoadComplete( event:Event ):void
 {
 	var loader:URLLoader = event.target as URLLoader;
@@ -258,6 +259,11 @@ public function onDragDrop(event:DragEvent):void
 	}
 	statusText.text = "Dropped file(s) added."
 }*/
+
+public function errorEventErrorHandler(event:ErrorEvent):void
+{
+	Util.log( 'An ErrorEvent has occured: ' + event.text );
+}    
 public function ioErrorHandler( event:IOErrorEvent ):void
 {
 	Util.log( 'An IO Error has occured: ' + event.text );

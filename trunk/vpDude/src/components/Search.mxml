@@ -26,7 +26,7 @@
 
 			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" width="400"/>
 		</s:HGroup>
-		<s:List id="clipList" width="819" height="430" 
+		<s:List id="clipList" width="819" height="630" 
 				itemRenderer="components.ClipItemRenderer" 
 				labelField="@name"
 				dataProvider="{clips.clipsXMLList}"
@@ -34,7 +34,7 @@
 			<s:layout>
 				<s:TileLayout horizontalAlign="center" 
 							  verticalAlign="middle"
-							  columnWidth="110" rowHeight="120" />
+							  columnWidth="110" rowHeight="140" />
 			</s:layout>
 		</s:List>
 	</s:VGroup>

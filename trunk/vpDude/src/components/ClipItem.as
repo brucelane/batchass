@@ -45,13 +45,13 @@ override public function set data( value:Object ) : void {
 	super.data = value;
 	if ( data )
 	{
-		if ( data.attribute( "own" ) ) 
+		if ( data.attribute( "urllocal" ) ) 
 		{	
 			//don't load from cache as it is local files
 			if ( data.urlthumb1 ) cachedThumbnail1 = data.urlthumb1;
 			if ( data.urlthumb2 ) cachedThumbnail2 = data.urlthumb2;
 			if ( data.urlthumb3 ) cachedThumbnail3 = data.urlthumb3;
-			if ( data.urldownload ) cachedVideo = data.urldownload;
+			if ( data.@urllocal ) cachedVideo = data.@urllocal;
 		}
 		else
 		{
@@ -64,6 +64,7 @@ override public function set data( value:Object ) : void {
 		var req:URLRequest = new URLRequest( cachedThumbnail1 );
 		var loader:Loader = new Loader();
 		loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
+		loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 		loader.load( req );
 		
 
@@ -175,11 +176,26 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 	
 	draggedObject.setData( ClipboardFormats.FILE_LIST_FORMAT, new Array( fileToDrag ), false );
 	
-	NativeDragManager.doDrag( 	this, 
-								draggedObject, 
-								image.bitmapData, 
-								new Point( -image.width/2, -image.height/2 ),
-								dragOptions ); 
+	if ( image )
+	{
+		NativeDragManager.doDrag( 	this, 
+									draggedObject, 
+									image.bitmapData, 
+									new Point( -image.width/2, -image.height/2 ),
+									dragOptions ); 	
+	}
+	else
+	{   
+		//thumb1 could not be loaded
+		NativeDragManager.doDrag( 	this, 
+									draggedObject, 
+									null, 
+									null,
+									dragOptions ); 
+	}
 }
 
-
+private function ioErrorHandler( event:IOErrorEvent ):void
+{
+	Util.log( 'ClipItem, An IO Error has occured: ' + event.text );
+} 
