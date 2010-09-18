@@ -75,7 +75,7 @@ protected function vpDude_preinitializeHandler(event:FlexEvent):void
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
-	AIRUpdater.checkForUpdate();
+	AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
 
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );

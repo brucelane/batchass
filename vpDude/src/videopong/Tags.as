@@ -11,7 +11,7 @@ package videopong
 		private static var instance:Tags = new Tags();
 		private static var tagsXmlPath:String;
 		public var TAGS_XML:XML = <tags>
-									<tag name="none"/>
+									<tag name="own"/>
 								  </tags>;
 		// Collection of tags
 		[Bindable]
@@ -62,7 +62,6 @@ package videopong
 			}
 			if ( !isConfigured )
 			{
-				TAGS_XML = <tags />;
 				writeTagsFile();
 			}
 			refreshTagsXMLList();
@@ -71,11 +70,12 @@ package videopong
 		{
 			tagsXmlPath = _dbPath + File.separator + "tags.xml";
 			var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
-			refreshTagsXMLList();
 			
 			// write the text file
 			writeTextFile( tagsFile, TAGS_XML );					
+			refreshTagsXMLList();
 		}
+		//refresh XML collection for data binding
 		public function refreshTagsXMLList():void 
 		{
 			tagsXMLList = new XMLListCollection( TAGS_XML.tag.@name );
