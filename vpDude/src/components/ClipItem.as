@@ -1,13 +1,17 @@
 import flash.display.BitmapData;
+import flash.display.Graphics;
+import flash.display.NativeWindow;
+import flash.display.NativeWindowInitOptions;
 import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.events.TimerEvent;
-import flash.geom.Point;
-import flash.utils.Timer;
+
+import flashx.textLayout.factory.TruncationOptions;
 
 import fr.batchass.*;
 
+import mx.controls.LinkButton;
 import mx.core.Application;
 import mx.core.FlexGlobals;
 import mx.core.UIComponent;
@@ -38,8 +42,8 @@ private var clips:Clips;
 private var image:Bitmap;
 // url of clip
 private var cachedVideo:String;
-//image container for drag/drop
-private var imageContainer:UIComponent;
+// container for more details
+private var moreContainer:NativeWindow;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -103,12 +107,6 @@ protected function tagClip_mouseOverHandler(event:MouseEvent):void
 	tagClip.toolTip = "Tags: " + tagList + "\nClick to edit tags";
 }
 
-protected function moreClip_mouseOverHandler(event:MouseEvent):void
-{
-	moreClip.toolTip = "Created by " + data.creator.@name;
-}
-
-
 protected function rateClip_mouseOverHandler(event:MouseEvent):void
 {
 }
@@ -152,7 +150,52 @@ private function deleteTagTextInput( event:FocusEvent=null ):void
 		tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
 		this.removeElement( tagTextInput );
 }
+protected function moreClip_mouseOverHandler(event:MouseEvent):void
+{
+	moreClip.toolTip = "Created by " + data.creator.@name + "\nClick for more details";
+}
+protected function moreClip_clickHandler(event:MouseEvent):void
+{
+	var options:NativeWindowInitOptions = new NativeWindowInitOptions();
+	options.systemChrome	= NativeWindowSystemChrome.ALTERNATE;
+	options.transparent		= false;
+	options.type			= NativeWindowType.UTILITY;
+	moreContainer = new NativeWindow(options);
+	moreContainer.width = 95;
+	moreContainer.height = 95;
+	moreContainer.x = event.localX;
+	moreContainer.y = event.localY;
+	moreContainer.alwaysInFront	= true;
 
+	
+	var viewClipBtn:LinkButton = new LinkButton();
+	viewClipBtn.label = "View online";
+	viewClipBtn.width = 100;
+	viewClipBtn.y = 75;
+	viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
+	moreContainer.stage.addChild( viewClipBtn );
+	moreContainer.activate();
+	var viewCreatorBtn:LinkButton = new LinkButton();
+	viewCreatorBtn.label = "Creator page";
+	viewCreatorBtn.width = 100;
+	viewCreatorBtn.height = 30;
+	viewCreatorBtn.y = 95;
+	viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
+	//moreContainer.addChild(viewCreatorBtn);
+	this.addElement( viewCreatorBtn );
+//	<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
+
+}
+protected function viewOnline_clickHandler(event:MouseEvent):void
+{
+	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/clip/detail/" + data.@id;
+	FlexGlobals.topLevelApplication.tabNav.selectedIndex=2;
+}
+protected function creator_clickHandler(event:MouseEvent):void
+{
+	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/user/"+ data.creator.@id + "/" + data.creator.@name;
+	FlexGlobals.topLevelApplication.tabNav.selectedIndex=2;
+}
 protected function rateClip_clickHandler(event:MouseEvent):void
 {
 }
@@ -163,9 +206,6 @@ protected function rateClip_clickHandler(event:MouseEvent):void
 	FlexGlobals.topLevelApplication.cache.getClipByURL( data.urldownload, true );
 }*/
 
-protected function moreClip_clickHandler(event:MouseEvent):void
-{
-}
 protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 {
 	var draggedObject:Clipboard = new Clipboard();

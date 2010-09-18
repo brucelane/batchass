@@ -69,7 +69,6 @@ private function set ownFolderPath(value:String):void
 
 protected function vpDude_preinitializeHandler(event:FlexEvent):void
 {
-	
 }
 
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
