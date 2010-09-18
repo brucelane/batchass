@@ -10,6 +10,7 @@ package fr.batchass
 	{
 		private static var dateFormatter:DateFormatter;
 		private static var _nowDate:String;
+		private static var _sessionDate:String;
 		
 		public static function trim(s:String):String 
 		{
@@ -18,7 +19,7 @@ package fr.batchass
 		public static function log( text:String, clear:Boolean=false ):void
 		{
 			
-			var file:File = File.applicationStorageDirectory.resolvePath( nowDate + ".log" );
+			var file:File = File.applicationStorageDirectory.resolvePath( sessionDate + ".log" );
 			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
 			
 			var fileStream:FileStream = new FileStream();
@@ -39,6 +40,20 @@ package fr.batchass
 			}
 			_nowDate = dateFormatter.format(new Date());	
 			return _nowDate;
+		}
+
+		public static function get sessionDate():String
+		{
+			if ( !_sessionDate )
+			{
+				if ( !dateFormatter )
+				{
+					dateFormatter = new DateFormatter();
+					dateFormatter.formatString = "YYYYMMDD-HHhNN";
+				}
+				_sessionDate = dateFormatter.format(new Date());	
+			}
+			return _sessionDate;
 		}
 
 
