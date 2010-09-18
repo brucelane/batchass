@@ -16,10 +16,10 @@ package fr.batchass
 		/**
 		 * 	checks website for update
 		 */
-		public static function checkForUpdate():void 
+		public static function checkForUpdate( updateUrl:String = "http://www.batchass.fr/update/" ):void 
 		{ 
 			// set the URL for the xml file
-			appUpdater.updateURL = "http://www.batchass.fr/update/" + getApplicationName() + ".xml"; // Server-side XML file describing update  
+			appUpdater.updateURL = updateUrl + getApplicationName() + ".xml"; // Server-side XML file describing update  
 			appUpdater.addEventListener(UpdateEvent.INITIALIZED, onUpdate);
 			appUpdater.addEventListener(ErrorEvent.ERROR, onUpdaterError);
 			// Hide the dialog asking for permission for checking for a new update.
