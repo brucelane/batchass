@@ -45,7 +45,7 @@ override public function set data( value:Object ) : void {
 	super.data = value;
 	if ( data )
 	{
-		if ( data.attribute( "urllocal" ) ) 
+		if ( data.attribute( "urllocal" ).length() > 0 ) 
 		{	
 			//don't load from cache as it is local files
 			if ( data.urlthumb1 ) cachedThumbnail1 = data.urlthumb1;
@@ -55,6 +55,7 @@ override public function set data( value:Object ) : void {
 		}
 		else
 		{
+			// get urls from cached files
 			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
 			if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
 			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
@@ -115,6 +116,7 @@ protected function tagClip_clickHandler(event:MouseEvent):void
 {
 	tagTextInput.text = tagList;
 	tagTextInput.width = 95;
+	tagTextInput.toolTip = "Edit tags values, separate with commas\nValidate with Enter key, cancel with Esc key.";
 	tagTextInput.addEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
 	this.addElement( tagTextInput );
 }
@@ -167,6 +169,10 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 {
 	var draggedObject:Clipboard = new Clipboard();
+	/*if ( !cachedVideo || cachedVideo.length = 0 ) 
+	{
+		
+	}*/
 	var fileToDrag:File = new File( cachedVideo );
 	var dragOptions : NativeDragOptions = new NativeDragOptions();
 	// we don't want the file to be moved
@@ -193,6 +199,7 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 									null,
 									dragOptions ); 
 	}
+		
 }
 
 private function ioErrorHandler( event:IOErrorEvent ):void
