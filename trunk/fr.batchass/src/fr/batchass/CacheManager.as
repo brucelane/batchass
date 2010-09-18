@@ -103,6 +103,7 @@ package fr.batchass
 				loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 				loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
+				loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
 				loader.addEventListener( Event.COMPLETE, thumbLoadComplete );
 				loader.dataFormat = URLLoaderDataFormat.BINARY;
 				loader.load(req);
@@ -117,6 +118,7 @@ package fr.batchass
 				var loader:URLLoader = new URLLoader();
 				loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+				loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
 				loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
 				if ( displayInDefaultApp )
 				{
@@ -247,6 +249,11 @@ package fr.batchass
 			}
 			return fileName;
 		}
+		
+		public function errorEventErrorHandler(event:ErrorEvent):void
+		{
+			Util.log( 'An ErrorEvent has occured: ' + event.text );
+		}	
 		private function ioErrorHandler( event:IOErrorEvent ):void
 		{
 			Util.log( 'CacheManager, An IO Error has occured: ' + event.text );
