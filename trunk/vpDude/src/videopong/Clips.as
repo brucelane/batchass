@@ -189,17 +189,22 @@ package videopong
 			var nbFound:uint = 0;
 			var clipTags:String = "";// = item..@name;
 			
+			// search for tag name attribute
 			for each ( var oneTag:XML in item..tag )
 			{
 				clipTags += oneTag.@name + "|";
 			}
+			// search for creator name attribute
+			clipTags += item..creator.@name + "|";
+			// search for clip name attribute
+			clipTags += item..clip.@name + "|";
+			
 			for each ( currentTag in _acFilter ) 
 			{
 				trace( "cur:" + currentTag );
 				if ( clipTags.indexOf( currentTag ) > -1 ) nbFound++;
 			}
 			if ( nbFound >= _acFilter.length ) isMatch = true;
-			trace ( item..@name );
 			return isMatch;
 		}
 
