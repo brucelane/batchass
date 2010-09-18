@@ -124,15 +124,41 @@ package videopong
 			}
 			
 		}
-		public function addNewClip( clipId:String, clipXml:XML ):void
+		public function newClip( urllocal:String ):Boolean
 		{
 			var foundNewClip:Boolean = true;
-			for each ( var appClip:XML in clipsXMLList )
+			if ( urllocal )
 			{
-				if ( appClip.clipid.toString()==clipId )
+				for each ( var appClip:XML in clipsXMLList )
 				{
-					foundNewClip = false;
+					if ( appClip.@urllocal.toString()==urllocal )
+					{
+						foundNewClip = false;
+					}
 				}
+				
+			}
+			return foundNewClip;
+		}
+		public function addNewClip( clipId:String, clipXml:XML, urllocal:String=null ):void
+		{
+			var foundNewClip:Boolean = true;
+			if ( urllocal )
+			{
+				// for own clips, test if already in db
+				foundNewClip = newClip( urllocal );
+			}
+			else
+			{
+				// for downloaded clips, test if already in db
+				for each ( var appClip:XML in clipsXMLList )
+				{
+					if ( appClip.@clipid.toString()==clipId )//TO BE VERIFIED
+					{
+						foundNewClip = false;
+					}
+				}
+				
 			}
 			if ( foundNewClip )
 			{

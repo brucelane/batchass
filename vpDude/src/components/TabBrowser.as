@@ -33,6 +33,7 @@ public var launchE4X:Function = function( e4xResult : String ) : void
 	loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 	loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 	loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
+	loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
 	loader.addEventListener( Event.COMPLETE, e4xLoadComplete );
 	loader.dataFormat = URLLoaderDataFormat.TEXT;
 	loader.load(req);
@@ -89,6 +90,10 @@ private function e4xLoadComplete( event:Event ):void
 	}
 }
 
+public function errorEventErrorHandler(event:ErrorEvent):void
+{
+	Util.log( 'An ErrorEvent has occured: ' + event.text );
+}	
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
 	Util.log( 'TabBrowser, An IO Error has occured: ' + event.text );
