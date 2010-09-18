@@ -9,6 +9,7 @@ package fr.batchass
 	public class Util
 	{
 		private static var dateFormatter:DateFormatter;
+		private static var millisDateFormatter:DateFormatter;
 		private static var _nowDate:String;
 		private static var _sessionDate:String;
 		
@@ -30,15 +31,29 @@ package fr.batchass
 			trace( text );
 			
 		} 
+		public static function errorLog( text:String, clear:Boolean=false ):void
+		{
+			
+			var file:File = File.applicationStorageDirectory.resolvePath( "error-" + sessionDate + ".log" );
+			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( file, fileMode );
+			
+			fileStream.writeMultiByte( text + "\n", File.systemCharset );
+			fileStream.close();
+			trace( text );
+			
+		} 
 
 		public static function get nowDate():String
 		{
-			if ( !dateFormatter )
+			if ( !millisDateFormatter )
 			{
-				dateFormatter = new DateFormatter();
-				dateFormatter.formatString = "YYYYMMDD-HHhNNmnSSsQQQ";
+				millisDateFormatter = new DateFormatter();
+				millisDateFormatter.formatString = "YYYYMMDD-HHhNNmnSSsQQQ";
 			}
-			_nowDate = dateFormatter.format(new Date());	
+			_nowDate = millisDateFormatter.format(new Date());	
 			return _nowDate;
 		}
 
