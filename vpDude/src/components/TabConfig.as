@@ -31,6 +31,8 @@ private var isConfigured:Boolean = false;
 private var userName:String = "";
 [Bindable]
 private var hiddenPassword:String = "";
+[Bindable]
+private var vpDbPath:String = "";
 
 private var password:String = "";
 private var passwordChanged:Boolean = false;
@@ -41,6 +43,7 @@ private var OWN_CLIPS_XML:XML;
 private var startFFMpegProcess:NativeProcess;
 import spark.events.TextOperationEvent;
 import videopong.Tags;
+import mx.controls.Alert;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -65,6 +68,11 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			}
 			
 			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
+			if ( !parentDocument.vpFolderPath || parentDocument.vpFolderPath.length == 0 )
+			{
+				parentDocument.vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
+			}
+			vpDbPath = parentDocument.vpFolderPath;
 			parentDocument.ownFolderPath = CONFIG_XML..own[0].toString();
 			isConfigured = true;
 		}
@@ -89,24 +97,25 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 	{
 		parentDocument.vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
 		parentDocument.ownFolderPath = File.documentsDirectory.resolvePath( "vpdude/own/" ).nativePath;
+		vpDbPath = parentDocument.vpFolderPath;
 	}
-	
 }
 protected function pwdTextInput_changeHandler(event:TextOperationEvent):void
 {
+	if ( pwdTextInput.text.indexOf("*") > 0 ) pwdTextInput.text ="";
+	/*var regPattern:RegExp = /·/gi;  
+	pwdTextInput.text.replace( regPattern, " " ); */ 
 	passwordChanged = true;
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
-	var isChanged:Boolean = false;
-	if ( userName != userTextInput.text || parentDocument.vpFolderPath != dbTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
+	//var isChanged:Boolean = false;
+	if ( userName != userTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
 	{
-		isChanged = true;
+		//isChanged = true;
 		userName = userTextInput.text;
 		
-		parentDocument.vpFolderPath = dbTextInput.text;
 		parentDocument.ownFolderPath = ownTextInput.text;
-		trace ( "changed" );
 		parentDocument.statusText.text = "Configuration saved";
 
 		checkFolder( parentDocument.vpFolderPath );
@@ -114,8 +123,41 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	}
 	if ( passwordChanged ) 
 	{
-		isChanged = true;
+		//isChanged = true;
 		password = pwdTextInput.text;
+	}
+	if ( parentDocument.vpFolderPath != dbTextInput.text ) 
+	{
+		//isChanged = true;
+		// Copy db to new location
+		CopyFolders( new File( parentDocument.vpFolderPath ), dbTextInput.text );
+		//var sourceFolder:File = new File( parentDocument.vpFolderPath + "/db/clips.xml" );
+		//var destFolder:File = new File( dbTextInput.text + "/db/clips.xml" );
+		/*if ( destFolder.exists )
+		{*/
+			//sourceFolder.addEventListener( Event.COMPLETE, fileCopyCompleteHandler );
+			/*sourceFolder.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			sourceFolder.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+			try 
+			{
+				if ( sourceFolder.copyTo( destFolder ) ) {
+					trace("Done.");
+				}
+				
+			}
+			catch (error:Error)
+			{
+				Alert( "Error:" + error.message );
+				Util.errorLog( "Error:" + error.message );
+				vpDbPath = parentDocument.vpFolderPath;
+			}*/
+			//sourceFolder.copyToAsync( destFolder );
+/*		}
+		else
+		{
+			Alert("New folder does not exist, reverting to former path.");
+			vpDbPath = parentDocument.vpFolderPath;
+		}*/	
 	}
 	writeFolderXmlFile();
 
@@ -128,6 +170,52 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	}
 }
 
+// Copy all files in a directory structure including subdirectories.
+public function CopyFolders( sourceDir:File, destDir:String, destDirRoot:String="" ):Boolean
+{
+	var str:String = "";
+	var copySuccess:Boolean = true
+	for each( var lstFile:File in sourceDir.getDirectoryListing() )
+	{
+		if( lstFile.isDirectory )
+		{
+			var sourcePath:String = lstFile.nativePath;
+			/*var indexOfSourceFolder:uint = sourcePath.indexOf( parentDocument.vpFolderPath );
+			if ( indexOfSourceFolder > 0 )
+			{*/
+				var newSubdir:String = sourcePath.substr( parentDocument.vpFolderPath.length );
+				if ( destDirRoot == "") destDirRoot = destDir;
+				var newDestDir:String = destDirRoot + newSubdir;
+				//recursively call function
+				CopyFolders( lstFile, newDestDir, destDirRoot );
+			//}
+			
+		}
+		else
+		{
+			var sourceFile:File = lstFile;
+			var destFile:File = new File( destDir + "/" + lstFile.name );
+			sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+			try 
+			{
+				sourceFile.copyTo( destFile );
+			}
+			catch (error:Error)
+			{
+				Util.errorLog( "CopyFolders Error:" + error.message );
+				copySuccess = false;
+			}
+		}
+	}	
+	return copySuccess;
+}
+//TODO remove if obsolete
+protected function fileCopyCompleteHandler(event:Event):void 
+{
+	Alert( "vpDude data folders are now copied to" + dbTextInput.text );
+	parentDocument.vpFolderPath = dbTextInput.text;
+}
 private function writeFolderXmlFile():void
 {
 	CONFIG_XML = <config> 
@@ -166,7 +254,7 @@ private function dbFolderSelection(event:Event):void
 	
 	if (event.type === Event.SELECT) 
 	{
-		parentDocument.vpFolderPath = file.nativePath;
+		vpDbPath = file.nativePath;
 	}		
 }
 private function ownFolderSelection(event:Event):void 
@@ -206,10 +294,8 @@ private function checkFolder( folderPath:String ):void
 		Util.log('Created: ' + parentDocument.dldFolderPath);
 		var dbFolder:File = new File( parentDocument.dbFolderPath );
 		dbFolder.createDirectory();
-		Util.log('Created: ' + parentDocument.dbFolderPath);
-		
+		Util.log('Created: ' + parentDocument.dbFolderPath);	
 	}
-
 }
 
 protected function resyncBtn_clickHandler(event:MouseEvent):void
@@ -320,3 +406,12 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 	log.text += data;
 	Util.errorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
+private function ioErrorHandler( event:IOErrorEvent ):void
+{
+	Util.log( 'TabConfig, An IO Error has occured: ' + event.text );
+}    
+// only called if a security error detected by flash player such as a sandbox violation
+private function securityErrorHandler( event:SecurityErrorEvent ):void
+{
+	Util.log( "TabConfig, securityErrorHandler: " + event.text );
+}	
