@@ -13,6 +13,9 @@ import fr.batchass.writeTextFile;
 import mx.collections.ArrayCollection;
 import mx.events.FlexEvent;
 
+import spark.events.TextOperationEvent;
+
+import videopong.Tags;
 import videopong.Clips;
 
 [Bindable]
@@ -41,9 +44,6 @@ public static var CONFIG_XML:XML;
 private var OWN_CLIPS_XML:XML;
 
 private var startFFMpegProcess:NativeProcess;
-import spark.events.TextOperationEvent;
-import videopong.Tags;
-import mx.controls.Alert;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -100,65 +100,37 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 		vpDbPath = parentDocument.vpFolderPath;
 	}
 }
+protected function pwdTextInput_focusInHandler(event:FocusEvent):void
+{
+	if ( pwdTextInput.text.indexOf("*") > -1 ) pwdTextInput.text ="";
+}
 protected function pwdTextInput_changeHandler(event:TextOperationEvent):void
 {
-	if ( pwdTextInput.text.indexOf("*") > 0 ) pwdTextInput.text ="";
-	/*var regPattern:RegExp = /·/gi;  
-	pwdTextInput.text.replace( regPattern, " " ); */ 
 	passwordChanged = true;
 }
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
-	//var isChanged:Boolean = false;
+	var isChanged:Boolean = false;
 	if ( userName != userTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
 	{
-		//isChanged = true;
+		isChanged = true;
 		userName = userTextInput.text;
-		
 		parentDocument.ownFolderPath = ownTextInput.text;
-		parentDocument.statusText.text = "Configuration saved";
-
-		checkFolder( parentDocument.vpFolderPath );
 		checkFolder( parentDocument.ownFolderPath );
 	}
 	if ( passwordChanged ) 
 	{
-		//isChanged = true;
+		isChanged = true;
 		password = pwdTextInput.text;
 	}
 	if ( parentDocument.vpFolderPath != dbTextInput.text ) 
 	{
-		//isChanged = true;
+		isChanged = true;
 		// Copy db to new location
 		CopyFolders( new File( parentDocument.vpFolderPath ), dbTextInput.text );
-		//var sourceFolder:File = new File( parentDocument.vpFolderPath + "/db/clips.xml" );
-		//var destFolder:File = new File( dbTextInput.text + "/db/clips.xml" );
-		/*if ( destFolder.exists )
-		{*/
-			//sourceFolder.addEventListener( Event.COMPLETE, fileCopyCompleteHandler );
-			/*sourceFolder.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
-			sourceFolder.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
-			try 
-			{
-				if ( sourceFolder.copyTo( destFolder ) ) {
-					trace("Done.");
-				}
-				
-			}
-			catch (error:Error)
-			{
-				Alert( "Error:" + error.message );
-				Util.errorLog( "Error:" + error.message );
-				vpDbPath = parentDocument.vpFolderPath;
-			}*/
-			//sourceFolder.copyToAsync( destFolder );
-/*		}
-		else
-		{
-			Alert("New folder does not exist, reverting to former path.");
-			vpDbPath = parentDocument.vpFolderPath;
-		}*/	
 	}
+	if ( isChanged ) parentDocument.statusText.text = "Configuration saved";
+	checkFolder( parentDocument.vpFolderPath );
 	writeFolderXmlFile();
 
 	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
@@ -180,19 +152,15 @@ public function CopyFolders( sourceDir:File, destDir:String, destDirRoot:String=
 		if( lstFile.isDirectory )
 		{
 			var sourcePath:String = lstFile.nativePath;
-			/*var indexOfSourceFolder:uint = sourcePath.indexOf( parentDocument.vpFolderPath );
-			if ( indexOfSourceFolder > 0 )
-			{*/
-				var newSubdir:String = sourcePath.substr( parentDocument.vpFolderPath.length );
-				if ( destDirRoot == "") destDirRoot = destDir;
-				var newDestDir:String = destDirRoot + newSubdir;
-				//recursively call function
-				CopyFolders( lstFile, newDestDir, destDirRoot );
-			//}
-			
+			var newSubdir:String = sourcePath.substr( parentDocument.vpFolderPath.length );
+			if ( destDirRoot == "") destDirRoot = destDir;
+			var newDestDir:String = destDirRoot + newSubdir;
+			//recursively call function
+			CopyFolders( lstFile, newDestDir, destDirRoot );
 		}
 		else
 		{
+			//file: copy
 			var sourceFile:File = lstFile;
 			var destFile:File = new File( destDir + "/" + lstFile.name );
 			sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
@@ -210,12 +178,7 @@ public function CopyFolders( sourceDir:File, destDir:String, destDirRoot:String=
 	}	
 	return copySuccess;
 }
-//TODO remove if obsolete
-protected function fileCopyCompleteHandler(event:Event):void 
-{
-	Alert( "vpDude data folders are now copied to" + dbTextInput.text );
-	parentDocument.vpFolderPath = dbTextInput.text;
-}
+
 private function writeFolderXmlFile():void
 {
 	CONFIG_XML = <config> 

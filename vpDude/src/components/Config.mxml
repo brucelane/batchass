@@ -6,6 +6,8 @@
 					creationComplete="config_creationCompleteHandler(event)"
 					label="config" 
 					>
+			
+
 		<fx:Script source="TabConfig.as" />
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<s:HGroup>
@@ -23,7 +25,7 @@
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Password:" verticalAlign="bottom"/>
-				<s:TextInput width="{tiWidth}" text="{hiddenPassword}" id="pwdTextInput" change="pwdTextInput_changeHandler(event)"/>
+				<s:TextInput width="{tiWidth}" text="{hiddenPassword}" id="pwdTextInput" focusIn="pwdTextInput_focusInHandler(event)" change="pwdTextInput_changeHandler(event)"/>
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Local own videos path:" verticalAlign="bottom"/>

@@ -57,8 +57,26 @@ override public function set data( value:Object ) : void {
 		{	
 			//don't load from cache as it is local files
 			if ( data.urlthumb1 ) cachedThumbnail1 = data.urlthumb1;
+			var thumb1:File = new File( cachedThumbnail1 );
+			if ( !thumb1.exists ) 
+			{
+				Util.errorLog( cachedThumbnail1 + " does not exist" );
+			}
+
 			if ( data.urlthumb2 ) cachedThumbnail2 = data.urlthumb2;
+			var thumb2:File = new File( cachedThumbnail2 );
+			if ( !thumb2.exists ) 
+			{
+				Util.errorLog( cachedThumbnail2 + " does not exist" );
+				cachedThumbnail2 = cachedThumbnail1;
+			}
 			if ( data.urlthumb3 ) cachedThumbnail3 = data.urlthumb3;
+			var thumb3:File = new File( cachedThumbnail3 );
+			if ( !thumb3.exists ) 
+			{
+				Util.errorLog( cachedThumbnail3 + " does not exist" );
+				cachedThumbnail3 = cachedThumbnail1;
+			}
 			if ( data.@urllocal ) cachedVideo = data.@urllocal;
 		}
 		else
