@@ -28,11 +28,11 @@
 				  toolTip="Click to drag video"
 				  />	
 		
-		<s:Label text="{clipname}" horizontalCenter="center" width="100" height="28"/>
 		<s:HGroup>
 			<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
 			<mx:LinkButton id="moreClip" click="moreClip_clickHandler(event)" mouseOver="moreClip_mouseOverHandler(event)" label="More" visible.hovered="true" visible.selected="true" visible.normal="false" />			
 		</s:HGroup>
+		<s:Label text="{clipname}" horizontalCenter="center" width="100" height="28"/>
 		<!--<mx:LinkButton id="rateClip" click="rateClip_clickHandler(event)" mouseOver="rateClip_mouseOverHandler(event)" x="50"  y="76" label="Rate" visible.hovered="true" visible.selected="true" visible.normal="false" />-->
 		<!--<mx:LinkButton id="viewClip" click="viewClip_clickHandler(event)" x="0" y="51" toolTip="View in default app" label="View" visible.hovered="true" visible.selected="true" visible.normal="false" />-->
 	</s:VGroup>
