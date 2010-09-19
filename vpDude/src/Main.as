@@ -147,9 +147,9 @@ public function addTabs():void
 		tabNav.removeChildAt( 1 );//Quit
 		tabNav.removeChildAt( 0 );//Config
 		tabNav.addChild( new Search() );
-		tabNav.addChild( new Config() );	
 		tabNav.addChild( new Download() );
 		tabNav.addChild( new Upload() );
+		tabNav.addChild( new Config() );	
 		tabNav.addChild( new Quit() );	
 		// load tagsFile when config is done
 		var tags:Tags = Tags.getInstance();
@@ -218,8 +218,10 @@ private function onMonitor(event:StatusEvent):void
 			if ( tabNav.numChildren == 3 )
 			{
 				tabNav.removeChildAt( 2 );//Quit
+				tabNav.removeChildAt( 1 );//Config
 				tabNav.addChild( new Download() );
 				tabNav.addChild( new Upload() );
+				tabNav.addChild( new Config() );	
 				tabNav.addChild( new Quit() );	
 			}
 		}
@@ -228,8 +230,10 @@ private function onMonitor(event:StatusEvent):void
 			if ( tabNav.numChildren == 5 )
 			{
 				tabNav.removeChildAt( 4 );//Quit
-				tabNav.removeChildAt( 3 );//Upload
-				tabNav.removeChildAt( 2 );//Download
+				tabNav.removeChildAt( 3 );//Config
+				tabNav.removeChildAt( 2 );//Upload
+				tabNav.removeChildAt( 1 );//Download
+				tabNav.addChild( new Config() );	
 				tabNav.addChild( new Quit() );	
 			}
 			

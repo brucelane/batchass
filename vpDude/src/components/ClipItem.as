@@ -1,3 +1,5 @@
+import components.MoreWindowContent;
+
 import flash.display.BitmapData;
 import flash.display.Graphics;
 import flash.display.NativeWindow;
@@ -15,8 +17,10 @@ import mx.controls.LinkButton;
 import mx.core.Application;
 import mx.core.FlexGlobals;
 import mx.core.UIComponent;
+import mx.core.windowClasses.TitleBar;
 
 import spark.components.TextInput;
+import spark.components.Window;
 
 import videopong.*;
 
@@ -43,7 +47,7 @@ private var image:Bitmap;
 // url of clip
 private var cachedVideo:String;
 // container for more details
-private var moreContainer:NativeWindow;
+private var moreContainer:MoreWindow;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -152,7 +156,7 @@ private function deleteTagTextInput( event:FocusEvent=null ):void
 }
 protected function moreClip_mouseOverHandler(event:MouseEvent):void
 {
-	moreClip.toolTip = "Created by " + data.creator.@name + "\nClick for more details";
+	moreClip.toolTip = "Click for more details";
 }
 protected function moreClip_clickHandler(event:MouseEvent):void
 {
@@ -160,41 +164,45 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 	options.systemChrome	= NativeWindowSystemChrome.ALTERNATE;
 	options.transparent		= false;
 	options.type			= NativeWindowType.UTILITY;
-	moreContainer = new NativeWindow(options);
+	if ( moreContainer )
+	{
+		moreContainer.exit();
+	}
+	moreContainer = new MoreWindow(options);
 	moreContainer.width = 95;
-	moreContainer.height = 95;
-	moreContainer.x = event.localX;
-	moreContainer.y = event.localY;
+	moreContainer.height = 135;
+	moreContainer.x = event.stageX + FlexGlobals.topLevelApplication.nativeWindow.x - 100;
+	moreContainer.y = event.stageY + FlexGlobals.topLevelApplication.nativeWindow.y - 130;
+	moreContainer.stage.scaleMode = StageScaleMode.NO_SCALE;
+	moreContainer.stage.align = StageAlign.TOP_LEFT;
+	//moreContainer.TitleBar.lab
 	moreContainer.alwaysInFront	= true;
-
 	
-	var viewClipBtn:LinkButton = new LinkButton();
-	viewClipBtn.label = "View online";
-	viewClipBtn.width = 100;
-	viewClipBtn.y = 75;
-	viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
-	moreContainer.stage.addChild( viewClipBtn );
-	moreContainer.activate();
-	var viewCreatorBtn:LinkButton = new LinkButton();
-	viewCreatorBtn.label = "Creator page";
-	viewCreatorBtn.width = 100;
-	viewCreatorBtn.height = 30;
-	viewCreatorBtn.y = 95;
-	viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
+	var content:MoreWindowContent = new MoreWindowContent();
+	moreContainer.addChildControls(content);
+	content.creator.text="Created by:\n" + data.creator.@name;
+	 
+	content.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
+	//content.addElement( viewClipBtn );
+	
+	content.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
 	//moreContainer.addChild(viewCreatorBtn);
-	this.addElement( viewCreatorBtn );
+	//content.addElement( viewCreatorBtn );
 //	<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
+	/*var moreWindow:Window = new Window();
+	moreWindow.addElement( viewClipBtn );*/
+	moreContainer.activate();
 
 }
 protected function viewOnline_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/clip/detail/" + data.@id;
-	FlexGlobals.topLevelApplication.tabNav.selectedIndex=2;
+	FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
 }
 protected function creator_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/user/"+ data.creator.@id + "/" + data.creator.@name;
-	FlexGlobals.topLevelApplication.tabNav.selectedIndex=2;
+	FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
 }
 protected function rateClip_clickHandler(event:MouseEvent):void
 {
