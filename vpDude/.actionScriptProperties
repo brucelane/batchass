@@ -17,12 +17,10 @@
   <applications>
     <application path="vpDude.mxml">
       <airExcludes>
-        <airExclude path="components"/>
+        <airExclude path="css"/>
       </airExcludes>
     </application>
   </applications>
-  <modules>
-    <module application="src/vpDude.mxml" destPath="components/Quit.swf" optimize="true" sourcePath="src/components/Quit.mxml"/>
-  </modules>
+  <modules/>
   <buildCSSFiles/>
 </actionScriptProperties>
