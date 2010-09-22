@@ -109,6 +109,8 @@ package videopong
 			if ( foundNewTag )
 			{		
 				trace( tag + " is new tag, save in clip xml file");
+				// to lower case
+				tag = tag.toLowerCase();
 				var newTag:XML = <tag name={tag} creationdate={Util.nowDate}  />;
 				clipXml..tags.appendChild( newTag );
 				writeClipXmlFile( clipId, clipXml );
@@ -193,12 +195,12 @@ package videopong
 			// search for tag name attribute
 			for each ( var oneTag:XML in item..tag )
 			{
-				clipTags += oneTag.@name + "|";
+				clipTags += oneTag.@name.toString().toLowerCase() + "|";
 			}
 			// search for creator name attribute
-			clipTags += item..creator.@name + "|";
+			clipTags += item..creator.@name.toString().toLowerCase() + "|";
 			// search for clip name attribute
-			clipTags += item..clip.@name + "|";
+			clipTags += item..clip.@name.toString().toLowerCase() + "|";
 			
 			for each ( currentTag in _acFilter ) 
 			{

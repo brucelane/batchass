@@ -83,7 +83,7 @@ package videopong
 
 		public function addTagIfNew( tagToSearch:String ):void
 		{
-			
+			tagToSearch = tagToSearch.toLowerCase();
 			trace( TAGS_XML..tag.(@name==tagToSearch).length() );
 			if ( TAGS_XML..tag.(@name==tagToSearch).length() < 1 )
 			{

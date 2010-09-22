@@ -42,6 +42,9 @@ private var passwordChanged:Boolean = false;
 
 public static var CONFIG_XML:XML;
 private var OWN_CLIPS_XML:XML;
+private var validExtensions:Array = ["avi", "mov", "mp4"];
+
+
 
 private var startFFMpegProcess:NativeProcess;
 
@@ -285,9 +288,7 @@ public function ProcessAllFiles( selectedDir:File ):void
 		{
 			var clipPath:String = lstFile.nativePath;
 			//check if it is a video file
-			var myArray:Array = ["avi", "mov", "mp4"];
-
-			if ( lstFile.extension in myArray )
+			if ( lstFile.extension in validExtensions )
 			{
 				if ( clips.newClip( lstFile.nativePath ) )
 				{
