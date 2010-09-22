@@ -8,6 +8,7 @@ import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
 import flash.events.TimerEvent;
+import flash.utils.Timer;
 
 import flashx.textLayout.factory.TruncationOptions;
 
@@ -134,12 +135,31 @@ protected function rateClip_mouseOverHandler(event:MouseEvent):void
 }
 protected function tagClip_clickHandler(event:MouseEvent):void
 {
+	var timer:Timer = new Timer(120000,1);
+	timer.addEventListener(TimerEvent.TIMER, removeTagInput);
+	timer.start();
 	tagTextInput.text = tagList;
 	tagTextInput.width = 95;
 	tagTextInput.toolTip = "Edit tags values, separate with commas\nValidate with Enter key, cancel with Esc key.";
 	tagTextInput.addEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
 	this.addElement( tagTextInput );
 }
+private function removeTagInput(event:Event): void 
+{
+	var timer:Timer = event.currentTarget as Timer;
+	if ( timer )
+	{
+		timer.removeEventListener(TimerEvent.TIMER, checkTagInput);
+		timer.stop();
+		timer = null;	
+	}
+	//remove textInput
+	tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
+	this.removeElement( tagTextInput );
+
+}
+
+
 private function checkTagInput( event:KeyboardEvent ):void 
 {
 	if ( event.keyCode == Keyboard.ENTER )
@@ -150,11 +170,11 @@ private function checkTagInput( event:KeyboardEvent ):void
 			var newTag:XML;
 			tags = Tags.getInstance();
 			// if tag not already in global tags, add it
-			tags.addTagIfNew( tagArray[i] );
+			tags.addTagIfNew( tagArray[i].toString().toLowerCase() );
 			
 			clips = Clips.getInstance();
 			//test if tag is not already in clip
-			clips.addTagIfNew( tagArray[i], data.@id  );
+			clips.addTagIfNew( tagArray[i].toString().toLowerCase(), data.@id  );
 			
 		}
 		//remove textInput
