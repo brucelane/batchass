@@ -15,8 +15,8 @@ import mx.events.FlexEvent;
 
 import spark.events.TextOperationEvent;
 
-import videopong.Tags;
 import videopong.Clips;
+import videopong.Tags;
 
 [Bindable]
 private var ownFiles:ArrayCollection;
@@ -271,53 +271,59 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	
 }
 // Process all files in a directory structure including subdirectories.
-public function ProcessAllFiles( selectedDir:File ):String
+public function ProcessAllFiles( selectedDir:File ):void
 {
-	var str:String = "";
 	var clips:Clips = Clips.getInstance();
 	for each( var lstFile:File in selectedDir.getDirectoryListing() )
 	{
 		if( lstFile.isDirectory )
 		{
 			//recursively call function
-			str += ProcessAllFiles( lstFile );
+			ProcessAllFiles( lstFile );
 		}
 		else
 		{
-			if ( clips.newClip( lstFile.nativePath ) )
+			var clipPath:String = lstFile.nativePath;
+			//check if it is a video file
+			var myArray:Array = ["avi", "mov", "mp4"];
+
+			if ( lstFile.extension in myArray )
 			{
-				var clipId:String = Util.nowDate;
-				var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
-				var thumbsFolder:File = new File( thumbsPath );
-				// creates folder if it does not exists
-				if (!thumbsFolder.exists) 
+				if ( clips.newClip( lstFile.nativePath ) )
 				{
-					// create the directory
-					thumbsFolder.createDirectory();
+					var clipId:String = Util.nowDate;
+					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
+					var thumbsFolder:File = new File( thumbsPath );
+					// creates folder if it does not exists
+					if ( !thumbsFolder.exists ) 
+					{
+						// create the directory
+						thumbsFolder.createDirectory();
+					}
+					startFFMpegProcess = new NativeProcess();
+					execute( startFFMpegProcess, clipPath, thumbsPath, 1 );
+					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
+					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
+					//str+= clipPath + "\n";
+					OWN_CLIPS_XML = <video id={clipId} urllocal={clipPath}> 
+										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
+										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
+										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
+										<clip name="very new own clip from the top uploader"/>
+										<creator name={userName}/>
+										<tags>
+											<tag name="own"/>
+										</tags>
+									</video>;
+					clips.addNewClip( clipId, OWN_CLIPS_XML, clipPath );
+					
+					var tags:Tags = Tags.getInstance();
+					tags.addTagIfNew( "own" );
 				}
-				startFFMpegProcess = new NativeProcess();
-				execute( startFFMpegProcess, lstFile.nativePath, thumbsPath, 1 );
-				execute( startFFMpegProcess, lstFile.nativePath, thumbsPath, 2 );
-				execute( startFFMpegProcess, lstFile.nativePath, thumbsPath, 3 );
-				str+= lstFile.nativePath + "\n";
-				OWN_CLIPS_XML = <video id={clipId} urllocal={lstFile.nativePath}> 
-									<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
-									<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
-									<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
-									<clip name="very new own clip from the top uploader"/>
-									<creator name={userName}/>
-									<tags>
-										<tag name="own"/>
-									</tags>
-								</video>;
-				clips.addNewClip( clipId, OWN_CLIPS_XML, lstFile.nativePath );
 				
-				var tags:Tags = Tags.getInstance();
-				tags.addTagIfNew( "own" );
 			}
 		}
 	}	
-	return str;
 }
 private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
