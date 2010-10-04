@@ -11,21 +11,25 @@
 	<fx:Script source="TabSearch.as" />
 
 	<s:VGroup width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
-		<s:HGroup><!---->
+		<s:HGroup>
 			<components:AdvancedAutoComplete
 				id="autoComplete"
 				allowMultipleSelection="true"
 				allowNewValues="true"
+				autoSelectEnabled = "false"
 				showRemoveIcon = "true"
 				change="handleAutoCompleteChange()"
+				prompt="Use comma to separate tags, backspace to remove"
+				promptColor="0xAAAAAA"
 				width="400">
 				<components:inlineButton>
 					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>
 				</components:inlineButton>
 			</components:AdvancedAutoComplete>
 
-			<mx:HTML htmlText="Use comma to separate tags, backspace to remove" width="400"/>
+			<!--<s:Label text="Use comma to separate tags, backspace to remove" width="400"/>-->
 		</s:HGroup>
+		<s:HGroup id="tagHGroup" width="819" height="50" />
 		<s:List id="clipList" width="819" height="630" 
 				itemRenderer="components.ClipItemRenderer" 
 				labelField="@name"

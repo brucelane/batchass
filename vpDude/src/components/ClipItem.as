@@ -1,4 +1,9 @@
+import com.hillelcoren.components.AdvancedAutoComplete;
+import com.hillelcoren.components.AutoComplete;
+
 import components.MoreWindowContent;
+import components.Search;
+import components.TagEdit;
 
 import flash.display.BitmapData;
 import flash.display.Graphics;
@@ -7,15 +12,11 @@ import flash.display.NativeWindowInitOptions;
 import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
-import flash.events.TimerEvent;
-import flash.utils.Timer;
-
-import flashx.textLayout.factory.TruncationOptions;
 
 import fr.batchass.*;
 
+import mx.collections.XMLListCollection;
 import mx.controls.LinkButton;
-import mx.core.Application;
 import mx.core.FlexGlobals;
 import mx.core.UIComponent;
 import mx.core.windowClasses.TitleBar;
@@ -36,19 +37,23 @@ private var clipname:String;
 [Bindable]
 private var tagList:String;
 
-private var tagTextInput:TextInput = new TextInput();
 // get instance of Tags class
 [Bindable]
-private var tags:Tags;
+private var tags:Tags = Tags.getInstance();;
 // get instance of Clips class
 [Bindable]
 private var clips:Clips;
+// Collection of tags for this clip
+[Bindable]
+public var clipXmlTagList:XMLList;
 // drag icon of thumb
 private var image:Bitmap;
 // url of clip
 private var cachedVideo:String;
 // container for more details
 private var moreContainer:MoreWindow;
+//bottom panel component for tga input
+private var tagInput:TagEdit;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -94,11 +99,11 @@ override public function set data( value:Object ) : void {
 		loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
 		loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 		loader.load( req );
-		
 
 		data.clip.@name ? clipname = data.clip.@name : "...";
 		
-		var clipXmlTagList:XMLList = data..tags.tag as XMLList;
+		//tagsXMLList = new XMLListCollection(data..tags.tag.@name);
+		clipXmlTagList = data..tags.tag as XMLList;
 		var tagString:String = "";
 		for each ( var oneTag:XML in clipXmlTagList )
 		{
@@ -126,7 +131,6 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 }
 protected function tagClip_mouseOverHandler(event:MouseEvent):void
 {
-	
 	tagClip.toolTip = "Tags: " + tagList + "\nClick to edit tags";
 }
 
@@ -135,63 +139,15 @@ protected function rateClip_mouseOverHandler(event:MouseEvent):void
 }
 protected function tagClip_clickHandler(event:MouseEvent):void
 {
-	var timer:Timer = new Timer(120000,1);
-	timer.addEventListener(TimerEvent.TIMER, removeTagInput);
-	timer.start();
-	tagTextInput.text = tagList;
-	tagTextInput.width = 95;
-	tagTextInput.toolTip = "Edit tags values, separate with commas\nValidate with Enter key, cancel with Esc key.";
-	tagTextInput.addEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
-	this.addElement( tagTextInput );
-}
-private function removeTagInput(event:Event): void 
-{
-	var timer:Timer = event.currentTarget as Timer;
-	if ( timer )
+	tagInput = new TagEdit();
+	tagInput.data = data as XML;//clipXmlTagList;
+	if ( FlexGlobals.topLevelApplication.tabNav.selectedChild is components.Search )
 	{
-		timer.removeEventListener(TimerEvent.TIMER, checkTagInput);
-		timer.stop();
-		timer = null;	
+		FlexGlobals.topLevelApplication.tabNav.selectedChild.tagHGroup.addElement( tagInput );
 	}
-	//remove textInput
-	tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
-	this.removeElement( tagTextInput );
-
 }
 
 
-private function checkTagInput( event:KeyboardEvent ):void 
-{
-	if ( event.keyCode == Keyboard.ENTER )
-	{
-		var tagArray:Array = tagTextInput.text.split(",");
-		for ( var i:uint; i < tagArray.length; i++ ) 
-		{
-			var newTag:XML;
-			tags = Tags.getInstance();
-			// if tag not already in global tags, add it
-			tags.addTagIfNew( tagArray[i].toString().toLowerCase() );
-			
-			clips = Clips.getInstance();
-			//test if tag is not already in clip
-			clips.addTagIfNew( tagArray[i].toString().toLowerCase(), data.@id  );
-			
-		}
-		//remove textInput
-		tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
-		this.removeElement( tagTextInput );
-	}
-	if ( event.keyCode == Keyboard.ESCAPE )//27
-	{
-		//remove textInput
-		deleteTagTextInput();
-	}
-}
-private function deleteTagTextInput( event:FocusEvent=null ):void 
-{
-		tagTextInput.removeEventListener( KeyboardEvent.KEY_DOWN, checkTagInput );
-		this.removeElement( tagTextInput );
-}
 protected function moreClip_mouseOverHandler(event:MouseEvent):void
 {
 	moreClip.toolTip = "Click for more details";
@@ -213,7 +169,6 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 	moreContainer.y = event.stageY + FlexGlobals.topLevelApplication.nativeWindow.y - 130;
 	moreContainer.stage.scaleMode = StageScaleMode.NO_SCALE;
 	moreContainer.stage.align = StageAlign.TOP_LEFT;
-	//moreContainer.TitleBar.lab
 	moreContainer.alwaysInFront	= true;
 	
 	var content:MoreWindowContent = new MoreWindowContent();
@@ -221,14 +176,8 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 	content.creator.text="Created by:\n" + data.creator.@name;
 	 
 	content.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
-	//content.addElement( viewClipBtn );
 	
 	content.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
-	//moreContainer.addChild(viewCreatorBtn);
-	//content.addElement( viewCreatorBtn );
-//	<mx:LinkButton id="tagClip" click="tagClip_clickHandler(event)" mouseOver="tagClip_mouseOverHandler(event)" label="Tag" visible.hovered="true" visible.selected="true" visible.normal="false" />
-	/*var moreWindow:Window = new Window();
-	moreWindow.addElement( viewClipBtn );*/
 	moreContainer.activate();
 
 }
@@ -255,16 +204,12 @@ protected function rateClip_clickHandler(event:MouseEvent):void
 protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 {
 	var draggedObject:Clipboard = new Clipboard();
-	/*if ( !cachedVideo || cachedVideo.length = 0 ) 
-	{
-		
-	}*/
 	var fileToDrag:File = new File( cachedVideo );
 	var dragOptions : NativeDragOptions = new NativeDragOptions();
 	// we don't want the file to be moved
-		dragOptions.allowCopy = true;
-		dragOptions.allowLink = true;
-		dragOptions.allowMove = false;	
+	dragOptions.allowCopy = true;
+	dragOptions.allowLink = true;
+	dragOptions.allowMove = false;	
 	
 	draggedObject.setData( ClipboardFormats.FILE_LIST_FORMAT, new Array( fileToDrag ), false );
 	

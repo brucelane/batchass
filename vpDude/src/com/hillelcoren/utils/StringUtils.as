@@ -23,9 +23,9 @@ package com.hillelcoren.utils
 		
 		public static function contains( string:String, searchStr:String ):Boolean
 		{
-			var regExp:RegExp = new RegExp( searchStr, "i" );
+			var regExp:RegExp = new RegExp( searchStr.toLowerCase(), "i" );
 			
-			return regExp.test( string );			
+			return regExp.test( string.toLowerCase() );			
 		}
 				
 		public static function anyWordBeginsWith( string:String, pattern:String ):Boolean
@@ -34,6 +34,7 @@ package com.hillelcoren.utils
 			{
 				return false;
 			}
+			string  = string.toLowerCase();
 			
 			if (beginsWith( string, pattern ))
 			{
