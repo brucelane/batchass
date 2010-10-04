@@ -20,8 +20,7 @@
 				showRemoveIcon = "true"
 				change="handleAutoCompleteChange()"
 				prompt="Use comma to separate tags, backspace to remove"
-				promptColor="0xAAAAAA"
-				width="400">
+				width="650">
 				<components:inlineButton>
 					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>
 				</components:inlineButton>
