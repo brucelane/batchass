@@ -79,7 +79,7 @@
 				
 				if (!styleProp || styleProp=="promptColor") 
 				{
-					_promptColor = "0x00FF00";
+					_promptColor = "0xAAAAAA";
 					
 					if (_isPromptSet)
 					{
