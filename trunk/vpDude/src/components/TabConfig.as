@@ -270,7 +270,7 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	// Get directory listing
 	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
 	// read all files in the folder
-	trace ( ProcessAllFiles( selectedDirectory ) );
+	ProcessAllFiles( selectedDirectory );
 	
 }
 // Process all files in a directory structure including subdirectories.
@@ -288,10 +288,11 @@ public function ProcessAllFiles( selectedDir:File ):void
 		{
 			var clipPath:String = lstFile.nativePath;
 			//check if it is a video file
-			if ( lstFile.extension in validExtensions )
+			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
 				if ( clips.newClip( lstFile.nativePath ) )
 				{
+					log.text += "New clip: " + clipPath + "\n";
 					var clipId:String = Util.nowDate;
 					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
 					var thumbsFolder:File = new File( thumbsPath );
@@ -301,16 +302,16 @@ public function ProcessAllFiles( selectedDir:File ):void
 						// create the directory
 						thumbsFolder.createDirectory();
 					}
+					log.text += "Generating thumbs with ffmpeg\n";
 					startFFMpegProcess = new NativeProcess();
 					execute( startFFMpegProcess, clipPath, thumbsPath, 1 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
-					//str+= clipPath + "\n";
 					OWN_CLIPS_XML = <video id={clipId} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
 										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
-										<clip name="very new own clip from the top uploader"/>
+										<clip name="new own clip"/>
 										<creator name={userName}/>
 										<tags>
 											<tag name="own"/>
@@ -320,8 +321,7 @@ public function ProcessAllFiles( selectedDir:File ):void
 					
 					var tags:Tags = Tags.getInstance();
 					tags.addTagIfNew( "own" );
-				}
-				
+				}		
 			}
 		}
 	}	

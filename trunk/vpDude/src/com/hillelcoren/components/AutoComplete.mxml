@@ -911,6 +911,7 @@
 					selectedItems.removeItemAt( 0 );				
 				}
 				
+				if ( item is String ) item = item.toString().toLowerCase();
 				var isNew:Boolean = item is String && (!_dataProvider || _dataProvider.getItemIndex( item ) == -1);
 				
 				if (isNew)
