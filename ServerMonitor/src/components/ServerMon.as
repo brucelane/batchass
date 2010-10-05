@@ -8,7 +8,7 @@ private var httpUrl:String = "app://";
 
 protected function server_creationCompleteHandler(event:FlexEvent):void
 {
-	urlMonitor( intrapolisRootUrl );
+	urlMonitor( httpUrl );
 }
 protected function serverBtn_clickHandler(event:MouseEvent):void
 {
@@ -35,7 +35,7 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		console.text = intrapolisRootUrl +  ( monitor.available ? " est disponible" : " pas joignable" );
+		console.text = httpUrl +  ( monitor.available ? " est disponible" : " pas joignable" );
 		
 		if ( monitor.available ) 
 		{
