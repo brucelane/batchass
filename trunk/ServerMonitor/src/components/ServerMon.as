@@ -1,3 +1,6 @@
+import air.net.URLMonitor;
+
+import mx.core.FlexGlobals;
 import mx.events.FlexEvent;
 
 private var monitor:URLMonitor;
@@ -5,14 +8,25 @@ private var monitor:URLMonitor;
 [Bindable]
 private var httpUrl:String = "app://";
 
-
-protected function server_creationCompleteHandler(event:FlexEvent):void
-{
-	urlMonitor( httpUrl );
+override public function set data( value:Object ) : void {
+	super.data = value;
+	if ( data )
+	{
+		if ( data.attribute( "url" ).length() > 0 ) 
+		{	
+			if ( httpUrl != data.attribute( "url" ) )
+			{
+				httpUrl = data.attribute( "url" );
+				urlMonitor( httpUrl );
+				
+			}
+		}
+	}
 }
+
 protected function serverBtn_clickHandler(event:MouseEvent):void
 {
-	parentDocument.browserUrl = httpUrl;
+			FlexGlobals.topLevelApplication.browserUrl = httpUrl;
 }
 private function urlMonitor(url:String):void 
 {
@@ -35,15 +49,15 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		console.text = httpUrl +  ( monitor.available ? " est disponible" : " pas joignable" );
+		FlexGlobals.topLevelApplication.console.text = httpUrl +  ( monitor.available ? " est disponible" : " pas joignable" );
 		
 		if ( monitor.available ) 
 		{
-			casaAgglo.setStyle( "color", "0X00FF00" );
+			serverBtn.setStyle( "color", "0X55FF55" );
 		}
 		else
 		{
-			casaAgglo.setStyle( "color", "0XFF0000" );
+			serverBtn.setStyle( "color", "0XFF0000" );
 			
 			
 		}	
