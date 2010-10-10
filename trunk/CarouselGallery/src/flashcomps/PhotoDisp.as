@@ -10,6 +10,7 @@ package flashcomps {
 	import flash.filters.BlurFilter;
 	import flash.geom.*;
 	import flash.net.URLRequest;
+	import flash.text.TextField;
 	
 	public final class PhotoDisp extends Sprite {
 		
@@ -39,7 +40,6 @@ package flashcomps {
 			arrMtx.appendTranslation(0,0,-XMLManager.radius);		//Translation vers l'avant de la distance du rayon
 			prop.blur = 0;											//initialisation du blur
 			addEventListener(Event.ADDED_TO_STAGE, addedToStage);	//d�clenche la fonciton lors de l'ajout sur la sc�ne
-
 		}
 		public function urlPhoto():String
 		{
@@ -57,7 +57,9 @@ package flashcomps {
 		//Fonction de chargement de l'image donn�e
 		public function load(evt:TweenEvent=null):void {
 			loader = new Loader();														//cr�ation du loader
-			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, loadComplete);	//ajout de l'�v�nement de fin de chargement)
+			loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );	//ajout de l'�v�nement de fin de chargement)
+			loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler ) ; 
+			loader.contentLoaderInfo.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 			loader.load(new URLRequest(urlImg));										//lance le chargement de l'image
 		}
 		
@@ -253,7 +255,15 @@ package flashcomps {
 			}
 			return scale
 		}
-		
+		public function ioErrorHandler( event:IOErrorEvent ):void
+		{
+			trace(  "PhotoDisp, an IO Error has occured: " + event.text );
+		} 
+		public function securityErrorHandler( event:SecurityErrorEvent ):void
+		{
+			trace(  "PhotoDisp, securityErrorHandler: " + event.text );
+		}
+	
 	}
 	
 }

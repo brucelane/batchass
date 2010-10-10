@@ -40,9 +40,9 @@ package flashcomps {
 				var targ:PhotoDisp = imgTab[i];			//Cible l'image en cours
 				addChild(targ);							//Ajoute l'image au carrousel 
 				var mtx:Matrix3D = new Matrix3D;		//Matrice 3D servant au déplacement premier
-				mtx.appendRotation(-i*(360/imgTab.length)-90, Vector3D.Y_AXIS);											//oriente la photo dans la direction voulue
+				mtx.appendRotation(-i*(360/imgTab.length)-90, Vector3D.Y_AXIS);		//oriente la photo dans la direction voulue
+				mtx.appendTranslation(Math.cos(i*angBase)*radius, (stage.stageHeight/2+100), Math.sin(i*angBase)*radius);//place la photo sur son point dans le cercle
 				//mtx.appendTranslation(Math.cos(i*angBase)*radius, (stage.stageHeight/2-32), Math.sin(i*angBase)*radius);//place la photo sur son point dans le cercle
-				mtx.appendTranslation(Math.cos(i*angBase)*radius, (350/2-32), Math.sin(i*angBase)*radius);//place la photo sur son point dans le cercle
 				targ.transform.matrix3D = mtx;			//application de la matrice sur la photo
 			}
 			launchRot();								//lance la rotation du carrousel
