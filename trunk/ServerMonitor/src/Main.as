@@ -4,6 +4,7 @@ import flash.filesystem.File;
 
 import flashx.textLayout.formats.BackgroundColor;
 
+import fr.batchass.AIRUpdater;
 import fr.batchass.Util;
 import fr.batchass.readTextFile;
 
@@ -47,6 +48,8 @@ protected function windowedapplication1_preinitializeHandler(event:FlexEvent):vo
 
 protected function windowedapplication1_creationCompleteHandler(event:FlexEvent):void
 {
-	
+	//check for update or update if downloaded
+	AIRUpdater.checkForUpdate();
+
 }
 
