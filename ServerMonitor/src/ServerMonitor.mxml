@@ -4,14 +4,14 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   creationComplete="windowedapplication1_creationCompleteHandler(event)"
 					   preinitialize="windowedapplication1_preinitializeHandler(event)"
-					   width="960" height="700"
+					   width="1000" height="800"
 					   >
 
 	<fx:Script source="Main.as" />
 
 	<s:VGroup>
-
-		<s:List id="serverList" width="100%" height="130" 
+		<s:HGroup>
+			<s:List id="serverList" width="800" height="100" 
 				itemRenderer="components.ServerItemRenderer" 
 				labelField="@url"
 				dataProvider="{serverXMLList}"
@@ -19,11 +19,13 @@
 			<s:layout>
 				<s:TileLayout horizontalAlign="center" 
 							  verticalAlign="middle"
-							  columnWidth="210" rowHeight="140" />
+							  columnWidth="150" rowHeight="50" />
 			</s:layout>
-		</s:List>
-		<mx:HTML id="htmlBrowser" width="100%" height="400" location="{browserUrl}" />
-		<s:TextArea id="console" height="100%" y="0" width="100%" x="0"/>
+			</s:List>
+			<s:TextArea id="console" y="0" width="180" height="100" x="0"/>
+		</s:HGroup>
+		
+		<mx:HTML id="htmlBrowser" width="1000" height="100%" location="{browserUrl}" />
 		
 	</s:VGroup>
 

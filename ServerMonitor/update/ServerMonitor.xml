@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>  
+<update xmlns="http://ns.adobe.com/air/framework/update/description/1.0">  
+<version>0.2.0</version>  
+<url>http://www.batchass.fr/update/ServerMonitor.air</url>  
+<description><![CDATA[ 
+Nouveau dans la version 0.2.0: 
+* plein de trucs
+]]></description>  
+</update>

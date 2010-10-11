@@ -3,7 +3,7 @@
 				xmlns:s="library://ns.adobe.com/flex/spark" 
 				xmlns:mx="library://ns.adobe.com/flex/mx" 
 				autoDrawBackground="true"
-				width="200" height="50">
+				width="148" height="48">
 	<fx:Script source="ServerMon.as" />
 	<s:VGroup>
 		<!--<s:Label text="{data.@name}"/>-->
