@@ -55,13 +55,24 @@ private function e4xLoadComplete( event:Event ):void
 	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	clipXml.dlddate = Util.nowDate;
 	
+	// add originaltags
+	var clipOriginalTagList:XMLList = clipXml..tag as XMLList;
+	for each ( var originalClipTag:XML in clipOriginalTagList )
+	{
+		var clipOriginalXmlTag:XML = <originaltag name={originalClipTag.@name} creationdate={Util.nowDate}  />;
+		clipXml.tags.appendChild( clipOriginalXmlTag );	
+	}
 	// add clip name and creator name tags
 	var creatorTag:String = clipXml..creator.@name.toString().toLowerCase();
 	var creatorXmlTag:XML = <tag name={creatorTag} creationdate={Util.nowDate}  />;
+	var creatorAddedXmlTag:XML = <addedtag name={creatorTag} creationdate={Util.nowDate}  />;
 	clipXml..tags.appendChild( creatorXmlTag );
+	clipXml..tags.appendChild( creatorAddedXmlTag );
 	var clipTag:String = clipXml..clip.@name.toString().toLowerCase();
 	var clipXmlTag:XML = <tag name={clipTag} creationdate={Util.nowDate}  />;
+	var clipAddedXmlTag:XML = <addedtag name={clipTag} creationdate={Util.nowDate}  />;
 	clipXml..tags.appendChild( clipXmlTag );
+	clipXml..tags.appendChild( clipAddedXmlTag );
 	
 	// xml list of tags
 	var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;

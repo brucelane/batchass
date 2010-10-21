@@ -127,6 +127,32 @@ package videopong
 			}
 			
 		}
+		// remove all tags in clip xml and add originally added tags
+		public function removeTags( clipId:String ):void
+		{
+			//read clip xml file
+			var localClipXMLFile:String = _dbPath + File.separator + clipId + ".xml" ;
+			var clipXmlFile:File = new File( localClipXMLFile );
+			
+			var clipXml:XML = new XML( readTextFile( clipXmlFile ) );;					
+			
+			delete clipXml.tags.tag;
+			//remove tags from global CLIPS_XML file
+			delete CLIPS_XML..video.(@id==clipId).tags.tag;
+
+			//test for addedtag in clip xml
+			var clipTagList:XMLList = clipXml..addedtag as XMLList;
+			for each ( var clipTag:XML in clipTagList )
+			{
+				var clipOriginalXmlTag:XML = <tag name={clipTag.@name} creationdate={Util.nowDate}  />;
+				clipXml.tags.appendChild( clipOriginalXmlTag );	
+				CLIPS_XML..video.(@id==clipId).tags.appendChild( clipOriginalXmlTag );	
+			}
+			
+			writeClipXmlFile( clipId, clipXml );
+			writeClipsFile();
+			refreshClipsXMLList();
+		}
 		public function newClip( urllocal:String ):Boolean
 		{
 			var foundNewClip:Boolean = true;

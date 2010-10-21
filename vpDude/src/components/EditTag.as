@@ -62,31 +62,33 @@ protected function tagedit_creationCompleteHandler(event:FlexEvent):void
 	timer.addEventListener(TimerEvent.TIMER, removeTagInput);
 	timer.start();
 }
-private function removeTagInput(event:Event): void 
-{
-	//remove textInput
-	deleteTagTextInput();
-}
 
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	// write tags to clip and tags XML
 	trace(tagAutoComplete.selectedItems);
+	clips = Clips.getInstance();
+	//remove existing tags
+	clips.removeTags( _data.@id );
+	//loop in tags and add them to XML db
 	for each ( var oneTag:String in tagAutoComplete.selectedItems )
 	{
 		tags = Tags.getInstance();
 		// if tag not already in global tags, add it
 		tags.addTagIfNew( oneTag.toLowerCase() );
 		
-		clips = Clips.getInstance();
 		//test if tag is not already in clip
 		clips.addTagIfNew( oneTag.toLowerCase(), _data.@id  );
-	
 	}
 	//remove textInput
 	deleteTagTextInput();
 }	
 protected function cancelBtn_clickHandler(event:MouseEvent):void
+{
+	//remove textInput
+	deleteTagTextInput();
+}
+private function removeTagInput(event:Event): void 
 {
 	//remove textInput
 	deleteTagTextInput();
