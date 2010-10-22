@@ -9,6 +9,7 @@ package
 	import flash.events.TextEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
+	import flash.net.navigateToURL;
 	import flash.system.ApplicationDomain;
 	import flash.text.TextField;
 	
@@ -68,7 +69,7 @@ package
 			}
 			carrousel = new Carrousel(imgTab); 				//Crée le carrousel avec les images ainsi crées
 			carrousel.x = stage.stageWidth/2;				//place le carrousel au centre de la scène en X
-			carrousel.y = 100;				//place le carrousel au centre de la scène en Y
+			carrousel.y = XMLManager.y;				//place le carrousel au centre de la scène en Y
 			carrousel.z = XMLManager.radius;				//éloigne le carrousel de la scène, permettant de mettre les images à la tailel voulue en premier plan
 			addChild(carrousel)
 		}
@@ -100,6 +101,7 @@ package
 		private function showPhoto(evt:Event):void {
 			selectedImage = (evt.currentTarget as PhotoDisp).urlPhoto();
 			trace(selectedImage);
+			//navigateToURL( new URLRequest( selectedImage ), '_new' ); 
 			var tEvent:TextEvent = new TextEvent("imageSelect");
 			tEvent.text = selectedImage;
 			dispatchEvent(tEvent);

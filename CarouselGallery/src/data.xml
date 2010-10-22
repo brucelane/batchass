@@ -4,6 +4,7 @@
 		<rotate rad="400" dark="88" />      	<!-- rad:rayon du cercle(en pixel), dark:coeff de luminosite vers le fond(0 a 255) -->
 		<thumb wMax="192" hMax="192" />	    	<!-- wMax:largeur de la miniature, hMax:hauteur de la miniature -->
 		<view type="reduce" thumb="reScale"/> 	<!-- type: "noResize","reduce","fullView" - thumb: "noScale","reScale"","fullScale"-->
+		<carousel y="50"/> 						<!-- y of carousel from top of component-->
 	</config>
 	<images path="images/">
 		<img id="0" url="ablanc91.jpg" />
