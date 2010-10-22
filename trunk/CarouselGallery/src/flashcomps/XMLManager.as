@@ -8,20 +8,20 @@ package flashcomps {
 	
 	public final class XMLManager {
 		
-		public static var dataXML:XML; //XML dans lequel va être stocké le XML chargé
+		public static var dataXML:XML; //XML dans lequel va ï¿½tre stockï¿½ le XML chargï¿½
 		public static var loader:URLLoader; //Loader qui va charger le XML
 		
-		/*-- Fonctions de chargement des données --*/
+		/*-- Fonctions de chargement des donnï¿½es --*/
 		
 		//Fonction de chargement du XML de base
 		public static function load(url:String):void {
-			loader = new URLLoader(new URLRequest(url));			//création du loader et chargement des données
-			loader.addEventListener(Event.COMPLETE, loadComplete);	//déclenché à la fin du chargement du XML
+			loader = new URLLoader(new URLRequest(url));			//crï¿½ation du loader et chargement des donnï¿½es
+			loader.addEventListener(Event.COMPLETE, loadComplete);	//dï¿½clenchï¿½ ï¿½ la fin du chargement du XML
 		}
 		
-		//Fonction déclenchée à la fin du chargement du XML
+		//Fonction dï¿½clenchï¿½e ï¿½ la fin du chargement du XML
 		private static function loadComplete(evt:Event):void {
-			dataXML = new XML(evt.currentTarget.data);				//Stocke le XML chargé dans le XML prévu à cet effet
+			dataXML = new XML(evt.currentTarget.data);				//Stocke le XML chargï¿½ dans le XML prï¿½vu ï¿½ cet effet
 		}
 		
 		/*-- Fonctions publiques de configuration --*/
@@ -31,18 +31,22 @@ package flashcomps {
 			return dataXML.config.rotate.@rad
 		}
 		
-		//fonction renvoyant l'indice de luminosité des images
+		//fonction renvoyant l'indice de luminositï¿½ des images
 		public static function get dark():int {
 			return dataXML.config.rotate.@dark
 		}
 		
+		//fonction renvoyant l'indice de luminositï¿½ des images
+		public static function get y():int {
+			return dataXML.config.carousel.@y
+		}
 		
 		//fonction renvoyant la taille max des miniatures
 		public static function get thumbSize():Object {
 			return {w:int(dataXML.config.thumb.@wMax), h:int(dataXML.config.thumb.@hMax)}
 		}
 		
-		//fonction renvoyant le type d'affichage des images en plein écran
+		//fonction renvoyant le type d'affichage des images en plein ï¿½cran
 		public static function get viewType():String {
 			return dataXML.config.view.@type
 		}
@@ -52,7 +56,7 @@ package flashcomps {
 			return dataXML.config.view.@thumb
 		}
 		
-		/*-- Fonctions Publiques de Données d'images--*/
+		/*-- Fonctions Publiques de Donnï¿½es d'images--*/
 		
 		//fonction renvoyant le nombre d'images contenu dans le XML
 		public static function get imgs():int {
@@ -64,7 +68,7 @@ package flashcomps {
 			return dataXML.images.@path
 		}
 		
-		//fonction renvoyant l'url complète (path+url) de l'image
+		//fonction renvoyant l'url complï¿½te (path+url) de l'image
 		public static function getURL(nb:int):String {
 			return path + dataXML.images.img[nb].@url
 		}
