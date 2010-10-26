@@ -40,7 +40,7 @@ package fr.batchass
 		}
 		public function getThumbnailByURL( thumbnailUrl:String ):String
 		{
-			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + getFileName( thumbnailUrl ) ;
+			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileName( thumbnailUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getThumbnailByURL localUrl: " + localUrl );
@@ -58,7 +58,7 @@ package fr.batchass
 		}
 		public function getClipByURL( assetUrl:String, displayInDefaultApp:Boolean = false ):String
 		{
-			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( assetUrl ) ;
+			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileName( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getClipByURL localUrl: " + localUrl );
@@ -78,7 +78,7 @@ package fr.batchass
 		// download image for gallery
 		public function getGalleryImageByURL( url:String, width:int, height:int ):String
 		{
-			var fileName:String = width.toString() + 'x' + height.toString() + '_' + getFileName( url );
+			var fileName:String = width.toString() + 'x' + height.toString() + '_' + Util.getFileName( url );
 			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + fileName;
 			var cacheFile:File = new File( localUrl );
 			
@@ -154,7 +154,7 @@ package fr.batchass
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
 			
-			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + getFileName( url ) );
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileName( url ) );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
@@ -170,7 +170,7 @@ package fr.batchass
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
 			
-			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( url ) );
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileName( url ) );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
@@ -187,7 +187,7 @@ package fr.batchass
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
 			
-			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + getFileName( url ) );
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileName( url ) );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
@@ -209,7 +209,7 @@ package fr.batchass
 			var url:String = passedUrl.substr( indexOfUD + 1 );
 			var w:String = passedUrl.substr( 0, indexOfX );
 			var h:String = passedUrl.substr( indexOfX + 1, indexOfUD - indexOfX - 1 );
-			var fileName:String = w + 'x' + h + '_' + getFileName( url );
+			var fileName:String = w + 'x' + h + '_' + Util.getFileName( url );
 			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + fileName );
 			var stream:FileStream = new FileStream();
 			
@@ -236,20 +236,7 @@ package fr.batchass
 			var bytes:ByteArray = jpgEncoder.encode(bd);
 			return bytes;
 		} 
-		
-		
-		public function getFileName( url:String ):String
-		{
-			var fileName:String = "";
-			var lastSlash:uint = url.lastIndexOf( '/' );
-			var formerSlash:uint = url.substr( 0, lastSlash - 1).lastIndexOf( '/' );
-			if ( formerSlash > -1 )
-			{
-				fileName = url.substr( formerSlash + 1 );
-			}
-			return fileName;
-		}
-		
+				
 		public function errorEventErrorHandler(event:ErrorEvent):void
 		{
 			Util.log( 'An ErrorEvent has occured: ' + event.text );

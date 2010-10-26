@@ -71,7 +71,33 @@ package fr.batchass
 			return _sessionDate;
 		}
 
-
+		
+		public static function getFileName( url:String ):String
+		{
+			var fileName:String = url;
+			var lastSlash:int = url.lastIndexOf( '/' );
+			var lastBackSlash:int = url.lastIndexOf( '\\' );
+			var lastChar:int = Math.max( lastSlash, lastBackSlash );
+			if ( lastChar > -1 )
+			{
+				fileName = url.substr( lastChar + 1 );
+			}
+			/*var formerSlash:int = url.substr( 0, lastChar - 1).lastIndexOf( '/' );
+			
+			if ( formerSlash > -1 )
+			{
+				fileName = url.substr( formerSlash + 1 );
+			}*/
+			return fileName;
+		}
+		
+		public static function getFileNameWithoutExtension( url:String ):String
+		{
+			var fileName:String = getFileName( url );
+			var lastDot:int = fileName.lastIndexOf( '.' );
+			if ( lastDot > -1 ) fileName = fileName.substr( 0, lastDot );
+			return fileName;
+		}
 
 	}
 }
