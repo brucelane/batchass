@@ -323,7 +323,7 @@ public function ProcessAllFiles( selectedDir:File ):void
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
 										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
 										<urlpreview>{swfPath + clipGeneratedName + ".swf"}</urlpreview>
-										<clip name="new own clip"/>
+										<clip name={clipGeneratedName}/>
 										<creator name={userName}/>
 										<tags>
 											<tag name="own"/>

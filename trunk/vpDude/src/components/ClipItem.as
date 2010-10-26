@@ -52,6 +52,8 @@ private var image:Bitmap;
 private var cachedVideo:String;
 // container for more details
 private var moreContainer:MoreWindow;
+// container for preview
+private var previewContainer:PreviewWindow;
 //bottom panel component for tga input
 private var tagInput:TagEdit;
 
@@ -179,6 +181,41 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 	
 	content.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
 	moreContainer.activate();
+
+}
+protected function previewClip_mouseOverHandler(event:MouseEvent):void
+{
+	previewClip.toolTip = "Click to preview";
+}
+protected function previewClip_clickHandler(event:MouseEvent):void
+{
+	if ( data.urlpreview.length() > 0 )	
+	{
+		var options:NativeWindowInitOptions = new NativeWindowInitOptions();
+		options.systemChrome	= NativeWindowSystemChrome.ALTERNATE;
+		options.transparent		= false;
+		options.type			= NativeWindowType.UTILITY;
+		if ( previewContainer )
+		{
+			previewContainer.exit();
+		}
+		previewContainer = new PreviewWindow(options);
+		previewContainer.width = 340;
+		previewContainer.height = 320;
+		previewContainer.x = event.stageX + FlexGlobals.topLevelApplication.nativeWindow.x - 100;
+		previewContainer.y = event.stageY + FlexGlobals.topLevelApplication.nativeWindow.y - 130;
+		previewContainer.stage.scaleMode = StageScaleMode.NO_SCALE;
+		previewContainer.stage.align = StageAlign.TOP_LEFT;
+		previewContainer.alwaysInFront	= true;
+		
+		var content:PreviewWindowContent = new PreviewWindowContent();
+		previewContainer.addChildControls(content);
+		content.title.text = data.video.@id;
+		content.swfComp.source = data.urlpreview;
+		 
+		previewContainer.activate();
+		
+	}
 
 }
 protected function viewOnline_clickHandler(event:MouseEvent):void
