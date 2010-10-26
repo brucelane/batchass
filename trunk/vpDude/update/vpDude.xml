@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>  
 <update xmlns="http://ns.adobe.com/air/framework/update/description/1.0">  
-<version>0.9.3</version>  
+<version>0.9.4</version>  
 <url>http://www.videopong.net/vpdudefiles/vpDude.air</url>  
 <description><![CDATA[ 
-New in version 0.9.3: 
-* lowercase for search
-* better tags mgmt
+New in version 0.9.4: 
+* generates preview clip
 ]]></description>  
 </update>
