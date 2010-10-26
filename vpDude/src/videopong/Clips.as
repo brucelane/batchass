@@ -160,7 +160,7 @@ package videopong
 			{
 				for each ( var appClip:XML in clipsXMLList )
 				{
-					if ( appClip.@urllocal.toString()==urllocal )
+					if ( appClip.@urllocal.toString() == urllocal )
 					{
 						foundNewClip = false;
 					}
@@ -169,7 +169,7 @@ package videopong
 			}
 			return foundNewClip;
 		}
-		public function addNewClip( clipId:String, clipXml:XML, urllocal:String=null ):void
+		public function addNewClip( clipGeneratedName:String, clipXml:XML, urllocal:String=null ):void
 		{
 			var foundNewClip:Boolean = true;
 			if ( urllocal )
@@ -182,7 +182,7 @@ package videopong
 				// for downloaded clips, test if already in db
 				for each ( var appClip:XML in clipsXMLList )
 				{
-					if ( appClip.@clipid.toString()==clipId )//TO BE VERIFIED
+					if ( appClip.@clipid.toString() == clipGeneratedName )//TO BE VERIFIED
 					{
 						foundNewClip = false;
 					}
@@ -193,7 +193,7 @@ package videopong
 			{
 				CLIPS_XML.appendChild( clipXml );
 				writeClipsFile();	
-				writeClipXmlFile( clipId, clipXml );
+				writeClipXmlFile( clipGeneratedName, clipXml );
 			}
 		}
 		

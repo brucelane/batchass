@@ -130,7 +130,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	{
 		isChanged = true;
 		// Copy db to new location
-		CopyFolders( new File( parentDocument.vpFolderPath ), dbTextInput.text );
+		copyFolders( new File( parentDocument.vpFolderPath ), dbTextInput.text );
 	}
 	if ( isChanged ) parentDocument.statusText.text = "Configuration saved";
 	checkFolder( parentDocument.vpFolderPath );
@@ -146,7 +146,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 }
 
 // Copy all files in a directory structure including subdirectories.
-public function CopyFolders( sourceDir:File, destDir:String, destDirRoot:String="" ):Boolean
+public function copyFolders( sourceDir:File, destDir:String, destDirRoot:String="" ):Boolean
 {
 	var str:String = "";
 	var copySuccess:Boolean = true
@@ -159,7 +159,7 @@ public function CopyFolders( sourceDir:File, destDir:String, destDirRoot:String=
 			if ( destDirRoot == "") destDirRoot = destDir;
 			var newDestDir:String = destDirRoot + newSubdir;
 			//recursively call function
-			CopyFolders( lstFile, newDestDir, destDirRoot );
+			copyFolders( lstFile, newDestDir, destDirRoot );
 		}
 		else
 		{
@@ -292,9 +292,10 @@ public function ProcessAllFiles( selectedDir:File ):void
 			{
 				if ( clips.newClip( lstFile.nativePath ) )
 				{
-					log.text += "New clip: " + clipPath + "\n";
-					var clipId:String = Util.nowDate;
-					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipId + "/";
+					var clipGeneratedName:String = Util.getFileNameWithoutExtension( lstFile.nativePath );
+					log.text += "New clip: " + clipGeneratedName + "\n";
+					//var clipId:String = Util.nowDate;
+					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
 					var thumbsFolder:File = new File( thumbsPath );
 					// creates folder if it does not exists
 					if ( !thumbsFolder.exists ) 
@@ -302,22 +303,33 @@ public function ProcessAllFiles( selectedDir:File ):void
 						// create the directory
 						thumbsFolder.createDirectory();
 					}
-					log.text += "Generating thumbs with ffmpeg\n";
+					var swfPath:String = parentDocument.dldFolderPath + "/preview/" + clipGeneratedName + "/";
+					var previewFolder:File = new File( swfPath );
+					// creates folder if it does not exists
+					if ( !previewFolder.exists ) 
+					{
+						// create the directory
+						previewFolder.createDirectory();
+					}
+					log.text += "\nGenerating thumbs with ffmpeg for " + clipGeneratedName;
 					startFFMpegProcess = new NativeProcess();
 					execute( startFFMpegProcess, clipPath, thumbsPath, 1 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
-					OWN_CLIPS_XML = <video id={clipId} urllocal={clipPath}> 
+					log.text += "\nGenerating preview with ffmpeg" + clipGeneratedName;
+					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName );
+					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
 										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
+										<urlpreview>{swfPath + clipGeneratedName + ".swf"}</urlpreview>
 										<clip name="new own clip"/>
 										<creator name={userName}/>
 										<tags>
 											<tag name="own"/>
 										</tags>
 									</video>;
-					clips.addNewClip( clipId, OWN_CLIPS_XML, clipPath );
+					clips.addNewClip( clipGeneratedName, OWN_CLIPS_XML, clipPath );
 					
 					var tags:Tags = Tags.getInstance();
 					tags.addTagIfNew( "own" );
@@ -326,6 +338,37 @@ public function ProcessAllFiles( selectedDir:File ):void
 		}
 	}	
 }
+private function generatePreview( process:NativeProcess, ownVideoPath:String, swfPath:String, clipGeneratedName:String ):void
+{
+	// Start the process
+	try
+	{
+		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		var processArgs:Vector.<String> = new Vector.<String>();
+		processArgs[0] = "-i";
+		processArgs[1] = ownVideoPath;
+		processArgs[2] = "-b";
+		processArgs[3] = "400k";
+		processArgs[4] = "-an";
+		processArgs[5] = "-f";
+		processArgs[6] = "avm2";
+		processArgs[7] = "-s";
+		processArgs[8] =  "320x240";
+		processArgs[9] = swfPath + clipGeneratedName + ".swf";
+		nativeProcessStartupInfo.arguments = processArgs;
+		startFFMpegProcess = new NativeProcess();
+		startFFMpegProcess.start(nativeProcessStartupInfo);
+		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
+			outputDataHandler);
+		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
+			errorOutputDataHandler);
+	}
+	catch (e:Error)
+	{
+		Util.log( "NativeProcess Error: " + e.message );
+	}
+}
 private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
 	// Start the process
@@ -333,7 +376,6 @@ private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath
 	{
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
-		//nativeProcessStartupInfo.workingDirectory = thumbsdir;
 		var processArgs:Vector.<String> = new Vector.<String>();
 		processArgs[0] = "-i";
 		processArgs[1] = ownVideoPath;
