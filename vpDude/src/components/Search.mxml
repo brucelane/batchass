@@ -37,7 +37,7 @@
 			<s:layout>
 				<s:TileLayout horizontalAlign="center" 
 							  verticalAlign="middle"
-							  columnWidth="110" rowHeight="140" />
+							  columnWidth="110" rowHeight="160" />
 			</s:layout>
 		</s:List>
 	</s:VGroup>

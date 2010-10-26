@@ -7,25 +7,5 @@
 	<s:Label id="creator" height="25" />
 	<mx:LinkButton id="viewClipBtn" label="View online" width="100"/>
 	<mx:LinkButton id="viewCreatorBtn" label="Creator page" width="100"/>
-	<!--<s:Button id="closeButton"
-			   x="0" 
-			   y="70" 
-			   label="Close"
-			   click="closeButton_clickHandler(event)">
-	</s:Button>
-	
-	<fx:Script>
-		<![CDATA[
-			import mx.events.CloseEvent;
-
-			//* Send a close event to close the NativeWindow
-			protected function closeButton_clickHandler(event:MouseEvent):void
-			{
-				dispatchEvent(new CloseEvent(CloseEvent.CLOSE)); 
-				
-			}
-
-		]]>
-	</fx:Script>-->
 	
 </s:VGroup>
