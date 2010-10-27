@@ -71,7 +71,18 @@ package fr.batchass
 			return _sessionDate;
 		}
 
-		
+		public static function getFileNameFromFormerSlash( url:String ):String
+		{
+			var fileName:String = "";
+			var lastSlash:uint = url.lastIndexOf( '/' );
+			var formerSlash:uint = url.substr( 0, lastSlash - 1).lastIndexOf( '/' );
+			if ( formerSlash > -1 )
+			{
+				fileName = url.substr( formerSlash + 1 );
+			}
+			return fileName;
+		}
+				
 		public static function getFileName( url:String ):String
 		{
 			var fileName:String = url;
@@ -82,12 +93,6 @@ package fr.batchass
 			{
 				fileName = url.substr( lastChar + 1 );
 			}
-			/*var formerSlash:int = url.substr( 0, lastChar - 1).lastIndexOf( '/' );
-			
-			if ( formerSlash > -1 )
-			{
-				fileName = url.substr( formerSlash + 1 );
-			}*/
 			return fileName;
 		}
 		

@@ -40,7 +40,7 @@ package fr.batchass
 		}
 		public function getThumbnailByURL( thumbnailUrl:String ):String
 		{
-			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileName( thumbnailUrl ) ;
+			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileNameFromFormerSlash( thumbnailUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getThumbnailByURL localUrl: " + localUrl );
@@ -58,7 +58,7 @@ package fr.batchass
 		}
 		public function getClipByURL( assetUrl:String, displayInDefaultApp:Boolean = false ):String
 		{
-			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileName( assetUrl ) ;
+			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getClipByURL localUrl: " + localUrl );
@@ -154,7 +154,7 @@ package fr.batchass
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
 			
-			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileName( url ) );
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileNameFromFormerSlash( url ) );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
@@ -170,7 +170,7 @@ package fr.batchass
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
 			
-			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileName( url ) );
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( url ) );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
@@ -187,7 +187,7 @@ package fr.batchass
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
 			
-			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileName( url ) );
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( url ) );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
