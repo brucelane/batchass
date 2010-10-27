@@ -270,11 +270,11 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	// Get directory listing
 	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
 	// read all files in the folder
-	ProcessAllFiles( selectedDirectory );
+	processAllFiles( selectedDirectory );
 	
 }
 // Process all files in a directory structure including subdirectories.
-public function ProcessAllFiles( selectedDir:File ):void
+public function processAllFiles( selectedDir:File ):void
 {
 	var clips:Clips = Clips.getInstance();
 	for each( var lstFile:File in selectedDir.getDirectoryListing() )
@@ -282,17 +282,17 @@ public function ProcessAllFiles( selectedDir:File ):void
 		if( lstFile.isDirectory )
 		{
 			//recursively call function
-			ProcessAllFiles( lstFile );
+			processAllFiles( lstFile );
 		}
 		else
 		{
 			var clipPath:String = lstFile.nativePath;
+			var clipGeneratedName:String = Util.getFileNameWithoutExtension( lstFile.nativePath );
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
 				if ( clips.newClip( lstFile.nativePath ) )
 				{
-					var clipGeneratedName:String = Util.getFileNameWithoutExtension( lstFile.nativePath );
 					log.text += "New clip: " + clipGeneratedName + "\n";
 					//var clipId:String = Util.nowDate;
 					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
@@ -333,7 +333,15 @@ public function ProcessAllFiles( selectedDir:File ):void
 					
 					var tags:Tags = Tags.getInstance();
 					tags.addTagIfNew( "own" );
-				}		
+				}
+				else
+				{
+					log.text += "Clip already in db: " + clipGeneratedName + "\n";
+				}
+			}
+			else
+			{
+				log.text += "File extension not in permitted list: " + clipGeneratedName + "\n";
 			}
 		}
 	}	
