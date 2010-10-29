@@ -3,6 +3,8 @@ package
 	import flash.display.DisplayObject;
 	
 	import org.papervision3d.core.proto.MaterialObject3D;
+	import org.papervision3d.events.InteractiveScene3DEvent;
+	import org.papervision3d.materials.BitmapFileMaterial;
 	import org.papervision3d.materials.ColorMaterial;
 	import org.papervision3d.materials.MovieMaterial;
 	import org.papervision3d.materials.special.CompositeMaterial;
@@ -16,12 +18,29 @@ package
 		
 		public var movieMaterial : MaterialObject3D; 
 		
-		public function SpringyPlaneMovieClip(width:Number, height:Number, texture : DisplayObject)
+		public function SpringyPlaneMovieClip(width:Number, height:Number, fileUrl: String )
 		{
+			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( fileUrl );
+			photoMaterial.interactive = true;
+			this.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, planeOver );
+			this.addEventListener( InteractiveScene3DEvent.OBJECT_OUT, planeOut );
+			this.addEventListener( InteractiveScene3DEvent.OBJECT_CLICK, planeClick );
 			
-			movieMaterial = new MovieMaterial(texture);
-				
-			super(movieMaterial, width, height);
+			super(photoMaterial, width, height);
+		}
+		public function planeOver( e:InteractiveScene3DEvent ):void
+		{
+			trace("mouse over");
+		}
+		public function planeOut( e:InteractiveScene3DEvent ):void
+		{
+			trace("mouse out");
+		}
+		public function planeClick( e:InteractiveScene3DEvent ):void
+		{
+			trace("mouse click");
+			var selectedPlane:Plane = e.displayObject3D as Plane;
+			selectedPlane.alpha = .3;
 		}
 		
 		public function update(mousex:Number, mousey:Number): void
