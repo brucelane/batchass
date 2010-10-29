@@ -1,16 +1,21 @@
 // Author : Seb Lee-Delisle
 // Blog : sebleedelisle.com
 
-package {
+package 
+{
 	import components.XMLManager;
 	
+	import flash.display.Bitmap;
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
+	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.net.URLRequest;
 	
 	import org.papervision3d.cameras.CameraType;
+	import org.papervision3d.materials.BitmapFileMaterial;
 	import org.papervision3d.materials.ColorMaterial;
 	import org.papervision3d.view.BasicView;
 	
@@ -21,14 +26,18 @@ package {
 		
 		public var planes : Array; 
 		
-		public var planeCols : int = 7; 	
+		public var planeCols : int = 5; 	
 		public var planeRows : int = 4; 
-		
+		public var rows : int = 0;
+		public var cols : int = 0;	
 		public var gridWidth : Number = 1000;
 		public var gridHeight : Number = 400; 
 		
 		private var loader:Loader;
 		private var xmlFile:String;
+		private var counter:int = 0;			
+		private var selectedImage:String;
+		private var spr:Sprite;
 		
 		public function WallGallery( sourceXmlFile:String = "data.xml")
 		{
@@ -45,13 +54,7 @@ package {
 			
 			loadXML( xmlFile ); 
 			
-			//makePlanes(); 
-			
-			//reflectionview: surfaceHeight = -400; 
-			
 			addEventListener(Event.ENTER_FRAME, enterFrame); 
-			
-			
 		}
 		public function loadXML(urlXml:String):void
 		{
@@ -62,57 +65,52 @@ package {
 		}
 		private function loadComplete(evt:Event):void 
 		{
-			imgTab = new Vector.<PhotoDisp>();							
+			//imgTab = new Vector.<PhotoDisp>();							
 			for (var i:int=0; i<XMLManager.imgs; i++) 
-			{								
-				var photoTmp:PhotoDisp = new PhotoDisp(XMLManager.getURL(i));		
-				photoTmp.name = "photo"+i;											
-				imgTab.push(photoTmp);		
-				if (i==0) 
-				{ 
-					photoTmp.addEventListener(Event.COMPLETE, imgLoader); 
-				}	
+			{	
+				var plane : SpringyPlaneMovieClip;
+				//plane = new SpringyPlaneMovieClip(texture.width*0.35, texture.height*0.35,  XMLManager.getURL(i) ); 
+				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getURL(i) ); 
+					
+				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
+				plane.y = gridHeight * ( ( rows + 0.5 ) / planeRows) - ( gridHeight / 2 ); 
+				
+				planes.push(plane);  
+				
+				scene.addChild(plane); 
+				if ( rows++ >= planeRows - 1 ) 
+				{
+					rows = 0;
+					cols++;
+				}
 			}
-			carrousel = new Carrousel(imgTab); 				
-			carrousel.x = stage.stageWidth/2;				
-			carrousel.y = 100;				
-			carrousel.z = XMLManager.radius;
-			addChild(carrousel);
 		}
 		
-		public function makePlanes() : void
+		/*private function imgLoader(evt:Event):void 
 		{
 			
-			var plane : SpringyPlaneMovieClip; 
-			
-			var counter : int = 0; 
-			
-			var allPhotos : AllPhotos = new AllPhotos(); 
-			
-			for(var rows : int = 0; rows<planeRows ; rows++)
-			{
-				for(var cols : int = 0; cols<planeCols; cols++)
-				{
-					
-					var texture : DisplayObject = allPhotos.getChildAt(counter);
-					
-					plane = new SpringyPlaneMovieClip(texture.width*0.35, texture.height*0.35, texture); 
-					
-					counter++; 
-					
-					plane.x = gridWidth * ((cols+0.5)/planeCols) - (gridWidth/2); 
-					plane.y = gridHeight * ((rows+0.5)/planeRows) - (gridHeight/2); 
-					
-					planes.push(plane);  
-					
-					scene.addChild(plane); 
-				}	
-				
+			counter++;
+			evt.currentTarget.addEventListener("MouseThumb", showPhoto);		//Ajoute l'écouteur de clic à la souris
+			evt.currentTarget.addEventListener("MouseView", hidePhoto);			//Ajoute l'écouteur de clic à la souris
+			evt.currentTarget.removeEventListener(Event.COMPLETE, imgLoader);	//Détruit l'écouteur d'évènement
+			if (counter<imgTab.length) {										//S'il reste des images à charger
+				imgTab[counter].load();											//Lance le chargement de l'image suivante
+				imgTab[counter].addEventListener(Event.COMPLETE, imgLoader);	//ajoute l'écouteur de fin de chargement
 			}
 			
-			
+		}*/
+		//Fonction déclenchée lors du clic sur une Miniature
+		private function showPhoto(evt:Event):void {
+			//selectedImage = (evt.currentTarget as PhotoDisp).urlPhoto();
+			trace(selectedImage);			
+			loader.load( new URLRequest(selectedImage) ) ;
 		}
 		
+		//Fonction déclenchée lors du clic sur une Photo plein écran
+		private function hidePhoto(evt:Event):void {
+			trace("hidePhoto");
+			//carrousel.deselectPhoto(evt.currentTarget as PhotoDisp);	//Lance la sélection de la photo dans le carrousel
+		}		
 		
 		public function enterFrame(e:Event) : void
 		{
@@ -141,13 +139,13 @@ package {
 		{
 			if (evt) 
 			{
-				/*var _bData:Bitmap = evt.target.content as Bitmap;
+				var _bData:Bitmap = evt.target.content as Bitmap;
 				spr.graphics.clear();
 				spr.graphics.beginBitmapFill(_bData.bitmapData);
 				spr.graphics.drawRect(0, 0, _bData.width, _bData.height);
 				spr.graphics.endFill();
 				spr.x = stage.stageWidth/2 - _bData.width/2;	
-				spr.y = 5;*/
+				spr.y = 5;
 			}
 		}	
 		public function ioErrorHandler( event:IOErrorEvent ):void
