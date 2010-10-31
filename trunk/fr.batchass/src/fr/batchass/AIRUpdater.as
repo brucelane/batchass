@@ -20,6 +20,7 @@ package fr.batchass
 		{ 
 			// set the URL for the xml file
 			appUpdater.updateURL = updateUrl + getApplicationName() + ".xml"; // Server-side XML file describing update  
+			Util.log( "appUpdater,checkForUpdate, updateUrl: " + appUpdater.updateURL );  
 			appUpdater.addEventListener(UpdateEvent.INITIALIZED, onUpdate);
 			appUpdater.addEventListener(ErrorEvent.ERROR, onUpdaterError);
 			// Hide the dialog asking for permission for checking for a new update.
@@ -34,13 +35,14 @@ package fr.batchass
 			appUpdater.removeEventListener(UpdateEvent.INITIALIZED, onUpdate);
 			appUpdater.removeEventListener(ErrorEvent.ERROR, onUpdaterError);
 			// start the process of checking for a new update and to install
+			Util.log( "appUpdater,onUpdate, checkNow" );  
 			appUpdater.checkNow();
 		}
 		
 		// Handler function for error events triggered by the ApplicationUpdater.initialize
 		protected static function onUpdaterError(event:ErrorEvent):void
 		{
-			trace( "appUpdater,onError: " + event.toString() );  		
+			Util.log( "appUpdater,onError: " + event.toString() );  		
 		}
 		
 		private static function getApplicationName():String
