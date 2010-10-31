@@ -1,3 +1,5 @@
+
+// based on code from:
 // Author : Seb Lee-Delisle
 // Blog : sebleedelisle.com
 
@@ -12,11 +14,13 @@ package
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.events.TextEvent;
 	import flash.net.URLRequest;
 	
 	import org.papervision3d.cameras.CameraType;
 	import org.papervision3d.materials.BitmapFileMaterial;
 	import org.papervision3d.materials.ColorMaterial;
+	import org.papervision3d.objects.primitives.Plane;
 	import org.papervision3d.view.BasicView;
 	
 	[SWF (width="800",height="480", backgroundColor="0x000000", frameRate="30")]
@@ -38,9 +42,13 @@ package
 		private var counter:int = 0;			
 		private var selectedImage:String;
 		private var spr:Sprite;
+		private var picPlane:Plane;
 		
-		public function WallGallery( sourceXmlFile:String = "data.xml")
+		public const PLANE_CHANGED:String = "planeChanged";
+
+		public function WallGallery( photoPlane:Plane, sourceXmlFile:String = "data.xml")
 		{
+			picPlane = photoPlane;
 			xmlFile = sourceXmlFile;
 			loader = new Loader ( ) ;
 			loader.contentLoaderInfo.addEventListener ( Event.COMPLETE, onImageLoaded ) ;
@@ -53,7 +61,7 @@ package
 			planes = new Array(); 
 			
 			loadXML( xmlFile ); 
-			
+		
 			addEventListener(Event.ENTER_FRAME, enterFrame); 
 		}
 		public function loadXML(urlXml:String):void
@@ -74,6 +82,7 @@ package
 					
 				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
 				plane.y = gridHeight * ( ( rows + 0.5 ) / planeRows) - ( gridHeight / 2 ); 
+				plane.addEventListener( SpringyPlaneMovieClip.PLANE_CHANGE, planeChanged );
 				
 				planes.push(plane);  
 				
@@ -85,7 +94,14 @@ package
 				}
 			}
 		}
-		
+		private function planeChanged( evt:TextEvent ):void
+		{
+			trace("gall plane chg" + evt.text);
+			//picPlane.
+			var tEvent:TextEvent = new TextEvent( PLANE_CHANGED );
+			tEvent.text = evt.text;
+			dispatchEvent(tEvent);
+		}
 		/*private function imgLoader(evt:Event):void 
 		{
 			
