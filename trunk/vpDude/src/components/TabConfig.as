@@ -266,6 +266,11 @@ private function checkFolder( folderPath:String ):void
 
 protected function resyncBtn_clickHandler(event:MouseEvent):void
 {
+	if ( parentDocument.ownFolderPath != ownTextInput.text ) 
+	{
+		parentDocument.ownFolderPath = ownTextInput.text;
+	}
+	
 	var selectedDirectory:File = new File( parentDocument.ownFolderPath );
 	// Get directory listing
 	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
@@ -287,7 +292,18 @@ public function processAllFiles( selectedDir:File ):void
 		else
 		{
 			var clipPath:String = lstFile.nativePath;
-			var clipGeneratedName:String = Util.getFileNameWithoutExtension( lstFile.nativePath );
+			var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
+			var lastSlash:int = clipRelativePath.lastIndexOf( File.separator );
+			if ( lastSlash == -1 )
+			{
+				clipRelativePath = "";
+			}
+			else
+			{
+				clipRelativePath = clipRelativePath.substr( 0, lastSlash );
+			}
+			
+			var clipGeneratedName:String = Util.getFileNameWithoutExtension( clipPath );
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
@@ -311,12 +327,12 @@ public function processAllFiles( selectedDir:File ):void
 						// create the directory
 						previewFolder.createDirectory();
 					}
-					log.text += "\nGenerating thumbs with ffmpeg for " + clipGeneratedName;
+					log.text += "\nGenerating thumbs with ffmpeg for " + clipPath;
 					startFFMpegProcess = new NativeProcess();
 					execute( startFFMpegProcess, clipPath, thumbsPath, 1 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
-					log.text += "\nGenerating preview with ffmpeg" + clipGeneratedName;
+					log.text += "\nGenerating preview with ffmpeg" + clipPath;
 					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName );
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
@@ -329,10 +345,20 @@ public function processAllFiles( selectedDir:File ):void
 											<tag name="own"/>
 										</tags>
 									</video>;
-					clips.addNewClip( clipGeneratedName, OWN_CLIPS_XML, clipPath );
-					
 					var tags:Tags = Tags.getInstance();
 					tags.addTagIfNew( "own" );
+					if ( clipRelativePath.length > 0 )
+					{
+						var folders:Array = clipRelativePath.split( File.separator );
+						
+						for each (var folder:String in folders)
+						{
+							tags.addTagIfNew( folder );
+							var folderXmlTag:XML = <tag name={folder} creationdate={Util.nowDate} />;
+							OWN_CLIPS_XML.tags.appendChild( folderXmlTag );
+						}
+					}
+					clips.addNewClip( clipGeneratedName, OWN_CLIPS_XML, clipPath );
 				}
 				else
 				{
