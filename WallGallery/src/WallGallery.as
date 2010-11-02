@@ -22,6 +22,7 @@ package
 	import org.papervision3d.materials.ColorMaterial;
 	import org.papervision3d.objects.primitives.Plane;
 	import org.papervision3d.view.BasicView;
+	import org.papervision3d.view.layer.ViewportLayer;
 	
 	[SWF (width="800",height="480", backgroundColor="0x000000", frameRate="30")]
 	
@@ -82,12 +83,15 @@ package
 					
 				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
 				plane.y = gridHeight * ( ( rows + 0.5 ) / planeRows) - ( gridHeight / 2 ); 
+				plane.z = 4000;
 				plane.addEventListener( SpringyPlaneMovieClip.PLANE_CHANGE, planeChanged );
 				//plane.useOwnContainer = true;
 				
 				planes.push(plane);  
 				
 				scene.addChild(plane); 
+
+				
 				if ( rows++ >= planeRows - 1 ) 
 				{
 					rows = 0;
