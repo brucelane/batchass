@@ -11,6 +11,8 @@ package
 	import org.papervision3d.materials.MovieMaterial;
 	import org.papervision3d.materials.special.CompositeMaterial;
 	import org.papervision3d.objects.primitives.Plane;
+	import org.papervision3d.view.Viewport3D;
+	import org.papervision3d.view.layer.ViewportLayer;
 
 	//[Event(name="planeChanged", type="flash.events.TextEvent")]
 	
@@ -22,12 +24,16 @@ package
 		
 		public var movieMaterial : MaterialObject3D; 
 		private var assetUrl:String;
+
+		private var picPlane:Plane;
 		
-		public function SpringyPlaneMovieClip(width:Number, height:Number, fileUrl: String )
+		public function SpringyPlaneMovieClip(width:Number, height:Number, fileUrl: String, planeForAssetDisplay:Plane )
 		{
+			picPlane = planeForAssetDisplay;
 			assetUrl = fileUrl;
 			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( fileUrl );
 			photoMaterial.interactive = true;
+			
 			this.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, planeOver );
 			this.addEventListener( InteractiveScene3DEvent.OBJECT_OUT, planeOut );
 			this.addEventListener( InteractiveScene3DEvent.OBJECT_CLICK, planeClick );
@@ -50,7 +56,9 @@ package
 			var tEvent:TextEvent = new TextEvent( PLANE_CHANGE );
 			tEvent.text = assetUrl;
 			dispatchEvent(tEvent);
-		
+			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( assetUrl );
+			picPlane.material = photoMaterial;
+			picPlane.alpha = 1;
 		}
 		
 		public function update(mousex:Number, mousey:Number): void
