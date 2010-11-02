@@ -18,12 +18,16 @@ package
 		
 		public function Main( sourceXmlFile:String = "data.xml")
 		{
-			scene.addChild( plane );
+			//gallery
 			gallery = new WallGallery( plane );
 			addChild( gallery );
+			//plane
+			plane.useOwnContainer = true;
+			plane.alpha = 0.1;
 			addEventListener( gallery.PLANE_CHANGED, planeChanged );
 			//addChildAt( new WallGallery(), 0 );
 			addChild( new StatsView(renderer));
+			scene.addChild( plane );
 			startRendering();
 		}
 		private function planeChanged( evt:TextEvent ):void

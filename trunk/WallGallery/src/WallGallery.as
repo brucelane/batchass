@@ -78,11 +78,12 @@ package
 			{	
 				var plane : SpringyPlaneMovieClip;
 				//plane = new SpringyPlaneMovieClip(texture.width*0.35, texture.height*0.35,  XMLManager.getURL(i) ); 
-				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getURL(i) ); 
+				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getURL(i), picPlane ); 
 					
 				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
 				plane.y = gridHeight * ( ( rows + 0.5 ) / planeRows) - ( gridHeight / 2 ); 
 				plane.addEventListener( SpringyPlaneMovieClip.PLANE_CHANGE, planeChanged );
+				//plane.useOwnContainer = true;
 				
 				planes.push(plane);  
 				
