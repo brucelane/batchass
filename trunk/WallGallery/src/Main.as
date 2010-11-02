@@ -1,3 +1,7 @@
+
+// based on code from:
+// Author : Seb Lee-Delisle
+// Blog : sebleedelisle.com
 package 
 {
 	import flash.display.Sprite;
@@ -5,6 +9,7 @@ package
 	
 	import org.papervision3d.objects.primitives.Plane;
 	import org.papervision3d.view.BasicView;
+	import org.papervision3d.view.layer.ViewportLayer;
 	import org.papervision3d.view.stats.StatsView;
 
 	
@@ -15,6 +20,7 @@ package
 		
 		private var plane:Plane = new Plane();
 		private var gallery:WallGallery ;
+		private var vpl:ViewportLayer;
 		
 		public function Main( sourceXmlFile:String = "data.xml")
 		{
@@ -24,10 +30,16 @@ package
 			//plane
 			plane.useOwnContainer = true;
 			plane.alpha = 0.1;
+			
 			addEventListener( gallery.PLANE_CHANGED, planeChanged );
 			//addChildAt( new WallGallery(), 0 );
 			addChild( new StatsView(renderer));
 			scene.addChild( plane );
+			//viewportlayer
+			vpl = viewport.getChildLayer( plane );
+			vpl.forceDepth = true;
+			vpl.screenDepth = 2000;
+			
 			startRendering();
 		}
 		private function planeChanged( evt:TextEvent ):void

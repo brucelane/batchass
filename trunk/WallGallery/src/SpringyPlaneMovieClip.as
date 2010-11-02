@@ -1,3 +1,7 @@
+
+// based on code from:
+// Author : Seb Lee-Delisle
+// Blog : sebleedelisle.com
 package
 {
 	import flash.display.DisplayObject;
@@ -52,7 +56,7 @@ package
 		{
 			trace("mouse click");
 			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
-			trace(this +"_" + this.parent +"_" +this.parentContainer);
+			trace(this);
 			var tEvent:TextEvent = new TextEvent( PLANE_CHANGE );
 			tEvent.text = assetUrl;
 			dispatchEvent(tEvent);
