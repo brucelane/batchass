@@ -48,6 +48,10 @@ package components
 			return dataXML.images.@path
 		}
 		
+		public static function getThumbURL(nb:int):String {
+			return path + dataXML.images.img[nb].@thumbnail
+		}
+
 		public static function getURL(nb:int):String {
 			return path + dataXML.images.img[nb].@url
 		}
