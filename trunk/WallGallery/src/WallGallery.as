@@ -24,7 +24,7 @@ package
 	import org.papervision3d.view.BasicView;
 	import org.papervision3d.view.layer.ViewportLayer;
 	
-	[SWF (width="800",height="480", backgroundColor="0x000000", frameRate="30")]
+	[SWF (width="1000",height="600", backgroundColor="0x000000", frameRate="30")]
 	
 	public class WallGallery extends BasicView
 	{
@@ -73,24 +73,18 @@ package
 			XMLManager.loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 		}
 		private function loadComplete(evt:Event):void 
-		{
-			//imgTab = new Vector.<PhotoDisp>();							
+		{							
 			for (var i:int=0; i<XMLManager.imgs; i++) 
 			{	
 				var plane : SpringyPlaneMovieClip;
-				//plane = new SpringyPlaneMovieClip(texture.width*0.35, texture.height*0.35,  XMLManager.getURL(i) ); 
-				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getURL(i), picPlane ); 
+				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getThumbURL(i),  XMLManager.getURL(i), picPlane ); 
 					
 				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
 				plane.y = gridHeight * ( ( rows + 0.5 ) / planeRows) - ( gridHeight / 2 ); 
 				plane.z = 4000;
-				plane.addEventListener( SpringyPlaneMovieClip.PLANE_CHANGE, planeChanged );
-				//plane.useOwnContainer = true;
-				
 				planes.push(plane);  
 				
 				scene.addChild(plane); 
-
 				
 				if ( rows++ >= planeRows - 1 ) 
 				{
@@ -99,40 +93,7 @@ package
 				}
 			}
 		}
-		private function planeChanged( evt:TextEvent ):void
-		{
-			trace("gall plane chg" + evt.text);
-			//picPlane.
-			var tEvent:TextEvent = new TextEvent( PLANE_CHANGED );
-			tEvent.text = evt.text;
-			dispatchEvent(tEvent);
-		}
-		/*private function imgLoader(evt:Event):void 
-		{
-			
-			counter++;
-			evt.currentTarget.addEventListener("MouseThumb", showPhoto);		//Ajoute l'écouteur de clic à la souris
-			evt.currentTarget.addEventListener("MouseView", hidePhoto);			//Ajoute l'écouteur de clic à la souris
-			evt.currentTarget.removeEventListener(Event.COMPLETE, imgLoader);	//Détruit l'écouteur d'évènement
-			if (counter<imgTab.length) {										//S'il reste des images à charger
-				imgTab[counter].load();											//Lance le chargement de l'image suivante
-				imgTab[counter].addEventListener(Event.COMPLETE, imgLoader);	//ajoute l'écouteur de fin de chargement
-			}
-			
-		}*/
-		//Fonction déclenchée lors du clic sur une Miniature
-		private function showPhoto(evt:Event):void {
-			//selectedImage = (evt.currentTarget as PhotoDisp).urlPhoto();
-			trace(selectedImage);			
-			loader.load( new URLRequest(selectedImage) ) ;
-		}
-		
-		//Fonction déclenchée lors du clic sur une Photo plein écran
-		private function hidePhoto(evt:Event):void {
-			trace("hidePhoto");
-			//carrousel.deselectPhoto(evt.currentTarget as PhotoDisp);	//Lance la sélection de la photo dans le carrousel
-		}		
-		
+				
 		public function enterFrame(e:Event) : void
 		{
 			
