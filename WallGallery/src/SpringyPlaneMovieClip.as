@@ -73,11 +73,14 @@ package
 		{
 			var bmpFileMaterial:BitmapFileMaterial = BitmapFileMaterial(event.target);
 			bmpFileMaterial.interactive = true;
+			bmpFileMaterial.doubleSided = true;
 			
 			//trace(bmpFileMaterial.bitmap.height);
 			var plane:Plane = new Plane( bmpFileMaterial, 0, 0 );
 			plane.scale = 1500 / bmpFileMaterial.bitmap.height;
 			plane.addEventListener( MouseEvent.CLICK, pictureClick );
+			plane.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, onOver ); 
+
 			
 			picPlane.scene.addChild( plane, "picturePlane" );
 		}
@@ -86,6 +89,10 @@ package
 			trace("mouse click");
 			//var selectedPlane:Plane = e.displayObject3D as Plane;
 			picPlane.scene.removeChildByName( "picturePlane" );
+		}
+		private function onOver ( e:InteractiveScene3DEvent ):void 
+		{
+			trace("mouse over picture");
 		}
 		public function update(mousex:Number, mousey:Number): void
 		{
