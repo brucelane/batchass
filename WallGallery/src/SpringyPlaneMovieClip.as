@@ -5,10 +5,12 @@
 package
 {
 	import flash.display.DisplayObject;
+	import flash.events.MouseEvent;
 	import flash.events.TextEvent;
 	import flash.system.ApplicationDomain;
 	
 	import org.papervision3d.core.proto.MaterialObject3D;
+	import org.papervision3d.events.FileLoadEvent;
 	import org.papervision3d.events.InteractiveScene3DEvent;
 	import org.papervision3d.materials.BitmapFileMaterial;
 	import org.papervision3d.materials.ColorMaterial;
@@ -28,14 +30,16 @@ package
 		
 		public var movieMaterial : MaterialObject3D; 
 		private var assetUrl:String;
+		private var thumbUrl:String;
 
 		private var picPlane:Plane;
 		
-		public function SpringyPlaneMovieClip(width:Number, height:Number, fileUrl: String, planeForAssetDisplay:Plane )
+		public function SpringyPlaneMovieClip(width:Number, height:Number, thumbnailUrl: String, fileUrl: String, planeForAssetDisplay:Plane )
 		{
 			picPlane = planeForAssetDisplay;
 			assetUrl = fileUrl;
-			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( fileUrl );
+			thumbUrl = thumbnailUrl;
+			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( thumbUrl );
 			photoMaterial.interactive = true;
 			
 			this.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, planeOver );
@@ -60,11 +64,29 @@ package
 			var tEvent:TextEvent = new TextEvent( PLANE_CHANGE );
 			tEvent.text = assetUrl;
 			dispatchEvent(tEvent);
-			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( assetUrl );
-			picPlane.material = photoMaterial;
 			picPlane.alpha = 1;
+			picPlane.scene.removeChildByName( "picturePlane" );
+			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( assetUrl );
+			photoMaterial.addEventListener( FileLoadEvent.LOAD_COMPLETE, photoLoadCompleteHandler );
 		}
-		
+		private function photoLoadCompleteHandler( event:FileLoadEvent ):void
+		{
+			var bmpFileMaterial:BitmapFileMaterial = BitmapFileMaterial(event.target);
+			bmpFileMaterial.interactive = true;
+			
+			//trace(bmpFileMaterial.bitmap.height);
+			var plane:Plane = new Plane( bmpFileMaterial, 0, 0 );
+			plane.scale = 1500 / bmpFileMaterial.bitmap.height;
+			plane.addEventListener( MouseEvent.CLICK, pictureClick );
+			
+			picPlane.scene.addChild( plane, "picturePlane" );
+		}
+		public function pictureClick( e:MouseEvent ):void
+		{
+			trace("mouse click");
+			//var selectedPlane:Plane = e.displayObject3D as Plane;
+			picPlane.scene.removeChildByName( "picturePlane" );
+		}
 		public function update(mousex:Number, mousey:Number): void
 		{
 			
