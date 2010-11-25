@@ -14,9 +14,7 @@ package
 	import org.papervision3d.view.layer.ViewportLayer;
 	import org.papervision3d.view.stats.StatsView;
 
-	
-	[SWF (width="1000",height="600", backgroundColor="0x000000", frameRate="30")]
-	
+	[SWF (width="850",height="340", backgroundColor="0x000000", frameRate="30")]	
 	public class Main extends BasicView
 	{
 		
@@ -26,7 +24,7 @@ package
 		
 		public function Main( sourceXmlFile:String = "data.xml")
 		{
-			super(1000,600,true,false,CameraType.FREE);
+			super(850,340,true,false,CameraType.FREE);
 			//gallery
 			//gallery = new WallGallery( plane );
 			gallery = new WallGallery(  );

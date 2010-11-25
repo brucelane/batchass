@@ -25,8 +25,7 @@ package
 	import org.papervision3d.view.BasicView;
 	import org.papervision3d.view.layer.ViewportLayer;
 	
-	[SWF (width="1000",height="600", backgroundColor="0x000000", frameRate="30")]
-	
+	[SWF (width="850",height="340", backgroundColor="0x000000", frameRate="30")]	
 	public class WallGallery extends BasicView
 	{
 		
@@ -36,37 +35,36 @@ package
 		public var planeRows : int = 4; 
 		public var rows : int = 0;
 		public var cols : int = 0;	
-		public var gridWidth : Number = 1000;
-		public var gridHeight : Number = 400; 
+		public var gridWidth : Number = 850;
+		public var gridHeight : Number = 340; 
 		
 		private var loader:Loader;
 		private var xmlFile:String;
 		private var counter:int = 0;			
 		private var selectedImage:String;
 		private var spr:Sprite;
-		private var defCameraZ:int = -500;
+		private var defZoomedInCameraZ:int = -150;
 		private var targetCameraZ:int = -500;
 		private var currentCameraZ:int = -500;
 		private var targetCameraX:int = 0;
 		private var targetCameraY:int = 0;
+		private var currentCameraX:int = 0;
+		private var currentCameraY:int = 0;
+		private var cameraIncrement:int = 10;
 		private var zoomedIn:Boolean = false;
-		//private var picPlane:Plane;
-		
-		public const PLANE_CHANGED:String = "planeChanged";
+		private var planeId:int = -1;
 
-		//public function WallGallery( photoPlane:Plane, sourceXmlFile:String = "data.xml")
 		public function WallGallery( sourceXmlFile:String = "data.xml")
 		{
-			//picPlane = photoPlane;
 			xmlFile = sourceXmlFile;
 			loader = new Loader ( ) ;
 			loader.contentLoaderInfo.addEventListener ( Event.COMPLETE, onImageLoaded ) ;
 			loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler ) ; 
 			loader.contentLoaderInfo.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 			
-			super(800,480,false,true, CameraType.FREE); 
+			super(850,340,false,true, CameraType.FREE); 
 			
-			camera.z = defCameraZ; 
+			camera.z = currentCameraZ; 
 			planes = new Array(); 
 			
 			loadXML( xmlFile ); 
@@ -85,7 +83,6 @@ package
 			for (var i:int=0; i<XMLManager.imgs; i++) 
 			{	
 				var plane : SpringyPlaneMovieClip;
-				//plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getThumbURL(i),  XMLManager.getURL(i) ); 
 				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getURL(i) ); 
 					
 				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
@@ -107,7 +104,11 @@ package
 		public function planeOver( e:InteractiveScene3DEvent ):void
 		{
 			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
-			trace("mouse over"+selectedPlane.materialsList());
+			if ( !zoomedIn )
+			{
+				targetCameraX = viewport.containerSprite.mouseX*1;
+				targetCameraY = 0;
+			}
 		}
 		public function planeOut( e:InteractiveScene3DEvent ):void
 		{
@@ -116,11 +117,22 @@ package
 		public function planeClick( e:InteractiveScene3DEvent ):void
 		{
 			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
-			if ( targetCameraZ == -500 ) targetCameraZ = -100 else targetCameraZ = -500;
 			targetCameraX = selectedPlane.x; 
 			targetCameraY = selectedPlane.y; 
-
-			trace("selectedPlane:"+selectedPlane.x);
+			camera.rotationY = 0;
+			if ( ( planeId != selectedPlane.id ) && zoomedIn )
+			{
+				planeId = selectedPlane.id;
+				currentCameraZ += -20;
+			
+				targetCameraZ = defZoomedInCameraZ;
+			}
+			else
+			{
+				if ( targetCameraZ == -500 ) targetCameraZ = defZoomedInCameraZ else targetCameraZ = -500;
+			}
+			
+			trace("selectedPlane:"+selectedPlane.id);
 		}		
 		public function enterFrame(e:Event) : void
 		{
@@ -128,36 +140,52 @@ package
 			if ( currentCameraZ < targetCameraZ )
 			{
 				// zoom in on selected plane
-				currentCameraZ +=10;
+				currentCameraZ += cameraIncrement;
 				camera.z = currentCameraZ;
-				camera.x = targetCameraX;
-				camera.y = targetCameraY;
 				zoomedIn = true;
 			}
 			else
 			{
 				if ( currentCameraZ == targetCameraZ )
 				{
-					if ( !zoomedIn )
-					{
-						camera.x = viewport.containerSprite.mouseX*1; 
-						camera.rotationY = viewport.containerSprite.mouseX* -0.06; 
-						
-					}
-					
 				}
 				else
 				{
 					// zoom out off selected plane
-					currentCameraZ -= 1;
+					currentCameraZ -= cameraIncrement;
 					camera.z = currentCameraZ;
 					zoomedIn = false;
-					
 				}
-				
 			}
+			if ( zoomedIn )
+			{
+				// zoomed in
+				if ( currentCameraX - targetCameraX <= cameraIncrement ) currentCameraX = targetCameraX;
+				if ( currentCameraY - targetCameraY <= cameraIncrement ) currentCameraY = targetCameraY;
+				if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
+				if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
+				
+				camera.x = currentCameraX;
+				camera.y = currentCameraY;
 			
-			updatePlanes(viewport.containerSprite.mouseX, -viewport.containerSprite.mouseY); 
+			}
+			else
+			{
+				// zoomed out
+				targetCameraX = viewport.containerSprite.mouseX*1;
+				targetCameraY = 0;
+				if ( currentCameraX - targetCameraX <= cameraIncrement ) currentCameraX = targetCameraX;
+				if ( currentCameraY - targetCameraY <= cameraIncrement ) currentCameraY = targetCameraY;
+				if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
+				if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
+				
+				
+				camera.x = currentCameraX; 
+				camera.y = currentCameraY; 
+				camera.rotationY = viewport.containerSprite.mouseX* -0.06; 
+				updatePlanes(viewport.containerSprite.mouseX, -viewport.containerSprite.mouseY); 		
+			}	
+			
 			
 			singleRender(); 
 		}
