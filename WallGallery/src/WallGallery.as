@@ -13,6 +13,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.events.MouseEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.events.TextEvent;
 	import flash.net.URLRequest;
@@ -51,8 +52,13 @@ package
 		private var currentCameraX:int = 0;
 		private var currentCameraY:int = 0;
 		private var cameraIncrement:int = 10;
-		private var zoomedIn:Boolean = false;
+		//private var zoomedIn:Boolean = false;
 		private var planeId:int = -1;
+		private var state:uint = 0;
+		private const zoomedOut:uint = 0;
+		private const zoomingIn:uint = 1;
+		private const zoomedIn:uint = 2;
+		private const zoomingOut:uint = 3;
 
 		public function WallGallery( sourceXmlFile:String = "data.xml")
 		{
@@ -62,14 +68,15 @@ package
 			loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler ) ; 
 			loader.contentLoaderInfo.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 			
-			super(850,340,false,true, CameraType.FREE); 
+			super( 850, 340, false, true, CameraType.FREE ); 
 			
 			camera.z = currentCameraZ; 
 			planes = new Array(); 
 			
 			loadXML( xmlFile ); 
 		
-			addEventListener(Event.ENTER_FRAME, enterFrame); 
+			addEventListener( Event.ENTER_FRAME, enterFrame ); 
+			addEventListener( MouseEvent.CLICK, mouseClick ); 
 		}
 		public function loadXML(urlXml:String):void
 		{
@@ -104,11 +111,6 @@ package
 		public function planeOver( e:InteractiveScene3DEvent ):void
 		{
 			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
-			if ( !zoomedIn )
-			{
-				targetCameraX = viewport.containerSprite.mouseX*1;
-				targetCameraY = 0;
-			}
 		}
 		public function planeOut( e:InteractiveScene3DEvent ):void
 		{
@@ -117,27 +119,113 @@ package
 		public function planeClick( e:InteractiveScene3DEvent ):void
 		{
 			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
-			targetCameraX = selectedPlane.x; 
-			targetCameraY = selectedPlane.y; 
-			camera.rotationY = 0;
-			if ( ( planeId != selectedPlane.id ) && zoomedIn )
+			switch ( state )
+			{
+				case zoomedOut:
+					state = zoomingIn;
+					targetCameraX = selectedPlane.x; 
+					targetCameraY = selectedPlane.y; 
+					camera.rotationY = 0;
+					if ( targetCameraZ == -500 ) targetCameraZ = defZoomedInCameraZ else targetCameraZ = -500;
+					break;
+				case zoomingIn:
+					if ( planeId != selectedPlane.id )
+					{
+						planeId = selectedPlane.id;
+						targetCameraX = selectedPlane.x; 
+						targetCameraY = selectedPlane.y; 
+					}
+					break;
+				case zoomedIn:
+					if ( planeId != selectedPlane.id )
+					{
+						planeId = selectedPlane.id;
+						targetCameraX = selectedPlane.x; 
+						targetCameraY = selectedPlane.y; 
+					}
+					currentCameraZ += -20;
+					targetCameraZ = defZoomedInCameraZ;
+					break;
+				case zoomingOut:
+					targetCameraX = selectedPlane.x; 
+					targetCameraY = selectedPlane.y; 
+					camera.rotationY = 0;
+					break;
+			}
+			/*if ( ( planeId != selectedPlane.id ) && zoomedIn )
 			{
 				planeId = selectedPlane.id;
 				currentCameraZ += -20;
-			
 				targetCameraZ = defZoomedInCameraZ;
 			}
 			else
 			{
 				if ( targetCameraZ == -500 ) targetCameraZ = defZoomedInCameraZ else targetCameraZ = -500;
-			}
+			}*/
 			
 			trace("selectedPlane:"+selectedPlane.id);
 		}		
+		public function mouseClick(e:MouseEvent) : void
+		{
+			trace("mouseClick"+mouseX);
+		}
 		public function enterFrame(e:Event) : void
 		{
+			if ( currentCameraX - targetCameraX <= cameraIncrement ) currentCameraX = targetCameraX;
+			if ( currentCameraY - targetCameraY <= cameraIncrement ) currentCameraY = targetCameraY;
+			switch ( state )
+			{
+				case zoomedOut:
+					targetCameraX = viewport.containerSprite.mouseX*1;
+					targetCameraY = 0;
+					if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
+					if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
+					
+					camera.x = currentCameraX; 
+					camera.y = currentCameraY; 
+					camera.rotationY = viewport.containerSprite.mouseX* -0.06; 
+					updatePlanes(viewport.containerSprite.mouseX, -viewport.containerSprite.mouseY); 		
+					break;
+				case zoomingIn:
+					if ( currentCameraZ < targetCameraZ )
+					{
+						// zoom in on selected plane
+						currentCameraZ += cameraIncrement;
+						camera.z = currentCameraZ;
+						
+					}
+					else
+					{
+						currentCameraZ = targetCameraZ;
+						state = zoomedIn;
+					}
+					if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
+					if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
+					
+					camera.x = currentCameraX;
+					camera.y = currentCameraY;
+					break;
+				case zoomedIn:
+					if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
+					if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
+					
+					camera.x = currentCameraX;
+					camera.y = currentCameraY;
+					break;
+				case zoomingOut:
+					// zoom out off selected plane
+					currentCameraZ -= cameraIncrement;
+					camera.z = currentCameraZ;
+					if ( currentCameraZ > targetCameraZ )
+					{
+						currentCameraZ = targetCameraZ;
+						state = zoomedOut;
+					}
+					
+					break;
+			}
 			//trace("currentCameraZ:"+currentCameraZ+" targetCameraZ:"+targetCameraZ);
-			if ( currentCameraZ < targetCameraZ )
+			/*if ( currentCameraZ < targetCameraZ )
 			{
 				// zoom in on selected plane
 				currentCameraZ += cameraIncrement;
@@ -156,12 +244,12 @@ package
 					camera.z = currentCameraZ;
 					zoomedIn = false;
 				}
-			}
+			}*/
+			/*if ( currentCameraX - targetCameraX <= cameraIncrement ) currentCameraX = targetCameraX;
+			if ( currentCameraY - targetCameraY <= cameraIncrement ) currentCameraY = targetCameraY;
 			if ( zoomedIn )
 			{
 				// zoomed in
-				if ( currentCameraX - targetCameraX <= cameraIncrement ) currentCameraX = targetCameraX;
-				if ( currentCameraY - targetCameraY <= cameraIncrement ) currentCameraY = targetCameraY;
 				if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
 				if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
 				
@@ -174,25 +262,20 @@ package
 				// zoomed out
 				targetCameraX = viewport.containerSprite.mouseX*1;
 				targetCameraY = 0;
-				if ( currentCameraX - targetCameraX <= cameraIncrement ) currentCameraX = targetCameraX;
-				if ( currentCameraY - targetCameraY <= cameraIncrement ) currentCameraY = targetCameraY;
 				if ( currentCameraX > targetCameraX) currentCameraX -= cameraIncrement else if ( currentCameraX != targetCameraX) currentCameraX += cameraIncrement;
 				if ( currentCameraY > targetCameraY) currentCameraY -= cameraIncrement else if ( currentCameraY != targetCameraY) currentCameraY += cameraIncrement;
-				
 				
 				camera.x = currentCameraX; 
 				camera.y = currentCameraY; 
 				camera.rotationY = viewport.containerSprite.mouseX* -0.06; 
 				updatePlanes(viewport.containerSprite.mouseX, -viewport.containerSprite.mouseY); 		
-			}	
-			
+			}	*/	
 			
 			singleRender(); 
 		}
 		
 		public function updatePlanes(mousex:Number, mousey:Number) : void
 		{
-			
 			mousex*=1.4; 
 			mousey*=1.4; 
 			
