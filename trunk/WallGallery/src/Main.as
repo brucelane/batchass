@@ -7,6 +7,7 @@ package
 	import flash.display.Sprite;
 	import flash.events.TextEvent;
 	
+	import org.papervision3d.cameras.CameraType;
 	import org.papervision3d.objects.primitives.Plane;
 	import org.papervision3d.scenes.Scene3D;
 	import org.papervision3d.view.BasicView;
@@ -19,35 +20,24 @@ package
 	public class Main extends BasicView
 	{
 		
-		private var plane:Plane = new Plane( null, 1000, 600 );
+		//private var plane:Plane = new Plane( null, 1000, 600 );
 		private var gallery:WallGallery ;
 		private var vpl:ViewportLayer;
-		//public var mainScene:Scene3D;
 		
 		public function Main( sourceXmlFile:String = "data.xml")
 		{
+			super(1000,600,true,false,CameraType.FREE);
 			//gallery
-			gallery = new WallGallery( plane );
+			//gallery = new WallGallery( plane );
+			gallery = new WallGallery(  );
 			addChildAt( gallery, 0 );
 			//plane
-			plane.useOwnContainer = true;
-			plane.alpha = 0.1;
+			/*plane.useOwnContainer = true;
+			plane.alpha = 0.1;*/
 			
-			//addEventListener( gallery.PLANE_CHANGED, planeChanged );
-			addChild( new StatsView(renderer));
-			scene.addChild( plane, "picturePlane" );
-			//mainScene = scene;
-			//viewportlayer
-			/*vpl = viewport.getChildLayer( plane );
-			vpl.forceDepth = true;
-			vpl.screenDepth = 2000;*/
-			
+			//if ( DEBUG::SHOWDEBUG == 1 ) addChild( new StatsView(renderer));
+			//scene.addChild( plane, "picturePlane" );
 			startRendering();
 		}
-		/*private function planeChanged( evt:TextEvent ):void
-		{
-			trace("main plane chg" + evt.text);
-			//plane.setChildMaterial( 
-		}*/
 	}
 }

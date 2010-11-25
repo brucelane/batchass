@@ -18,6 +18,7 @@ package
 	import flash.net.URLRequest;
 	
 	import org.papervision3d.cameras.CameraType;
+	import org.papervision3d.events.InteractiveScene3DEvent;
 	import org.papervision3d.materials.BitmapFileMaterial;
 	import org.papervision3d.materials.ColorMaterial;
 	import org.papervision3d.objects.primitives.Plane;
@@ -43,13 +44,20 @@ package
 		private var counter:int = 0;			
 		private var selectedImage:String;
 		private var spr:Sprite;
-		private var picPlane:Plane;
+		private var defCameraZ:int = -500;
+		private var targetCameraZ:int = -500;
+		private var currentCameraZ:int = -500;
+		private var targetCameraX:int = 0;
+		private var targetCameraY:int = 0;
+		private var zoomedIn:Boolean = false;
+		//private var picPlane:Plane;
 		
 		public const PLANE_CHANGED:String = "planeChanged";
 
-		public function WallGallery( photoPlane:Plane, sourceXmlFile:String = "data.xml")
+		//public function WallGallery( photoPlane:Plane, sourceXmlFile:String = "data.xml")
+		public function WallGallery( sourceXmlFile:String = "data.xml")
 		{
-			picPlane = photoPlane;
+			//picPlane = photoPlane;
 			xmlFile = sourceXmlFile;
 			loader = new Loader ( ) ;
 			loader.contentLoaderInfo.addEventListener ( Event.COMPLETE, onImageLoaded ) ;
@@ -58,7 +66,7 @@ package
 			
 			super(800,480,false,true, CameraType.FREE); 
 			
-			camera.z = -500; 
+			camera.z = defCameraZ; 
 			planes = new Array(); 
 			
 			loadXML( xmlFile ); 
@@ -77,7 +85,8 @@ package
 			for (var i:int=0; i<XMLManager.imgs; i++) 
 			{	
 				var plane : SpringyPlaneMovieClip;
-				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getThumbURL(i),  XMLManager.getURL(i), picPlane ); 
+				//plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getThumbURL(i),  XMLManager.getURL(i) ); 
+				plane = new SpringyPlaneMovieClip( XMLManager.thumbSize.w * 0.35, XMLManager.thumbSize.h * 0.35,  XMLManager.getURL(i) ); 
 					
 				plane.x = gridWidth * ( ( cols + 0.5 ) / planeCols) - ( gridWidth / 2 ); 
 				plane.y = gridHeight * ( ( rows + 0.5 ) / planeRows) - ( gridHeight / 2 ); 
@@ -85,7 +94,9 @@ package
 				planes.push(plane);  
 				
 				scene.addChild(plane); 
-				
+				plane.addEventListener( InteractiveScene3DEvent.OBJECT_CLICK, planeClick );
+				plane.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, planeOver );
+				plane.addEventListener( InteractiveScene3DEvent.OBJECT_OUT, planeOut );				
 				if ( rows++ >= planeRows - 1 ) 
 				{
 					rows = 0;
@@ -93,12 +104,58 @@ package
 				}
 			}
 		}
-				
+		public function planeOver( e:InteractiveScene3DEvent ):void
+		{
+			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
+			trace("mouse over"+selectedPlane.materialsList());
+		}
+		public function planeOut( e:InteractiveScene3DEvent ):void
+		{
+			trace("mouse out");
+		}
+		public function planeClick( e:InteractiveScene3DEvent ):void
+		{
+			var selectedPlane:SpringyPlaneMovieClip = e.displayObject3D as SpringyPlaneMovieClip;
+			if ( targetCameraZ == -500 ) targetCameraZ = -100 else targetCameraZ = -500;
+			targetCameraX = selectedPlane.x; 
+			targetCameraY = selectedPlane.y; 
+
+			trace("selectedPlane:"+selectedPlane.x);
+		}		
 		public function enterFrame(e:Event) : void
 		{
-			
-			camera.x = viewport.containerSprite.mouseX*1; 
-			camera.rotationY = viewport.containerSprite.mouseX* -0.06; 
+			//trace("currentCameraZ:"+currentCameraZ+" targetCameraZ:"+targetCameraZ);
+			if ( currentCameraZ < targetCameraZ )
+			{
+				// zoom in on selected plane
+				currentCameraZ +=10;
+				camera.z = currentCameraZ;
+				camera.x = targetCameraX;
+				camera.y = targetCameraY;
+				zoomedIn = true;
+			}
+			else
+			{
+				if ( currentCameraZ == targetCameraZ )
+				{
+					if ( !zoomedIn )
+					{
+						camera.x = viewport.containerSprite.mouseX*1; 
+						camera.rotationY = viewport.containerSprite.mouseX* -0.06; 
+						
+					}
+					
+				}
+				else
+				{
+					// zoom out off selected plane
+					currentCameraZ -= 1;
+					camera.z = currentCameraZ;
+					zoomedIn = false;
+					
+				}
+				
+			}
 			
 			updatePlanes(viewport.containerSprite.mouseX, -viewport.containerSprite.mouseY); 
 			
@@ -132,11 +189,11 @@ package
 		}	
 		public function ioErrorHandler( event:IOErrorEvent ):void
 		{
-			trace( "Carousel, an IO Error has occured: " + event.text );
+			trace( "WallGallery, an IO Error has occured: " + event.text );
 		} 
 		public function securityErrorHandler( event:SecurityErrorEvent ):void
 		{
-			trace( "Carousel, securityErrorHandler: " + event.text );
+			trace( "WallGallery, securityErrorHandler: " + event.text );
 		}
 
 	}

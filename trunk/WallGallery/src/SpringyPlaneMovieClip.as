@@ -30,25 +30,26 @@ package
 		
 		public var movieMaterial : MaterialObject3D; 
 		private var assetUrl:String;
-		private var thumbUrl:String;
+		//private var thumbUrl:String;
 
-		private var picPlane:Plane;
+		//private var picPlane:Plane;
 		
-		public function SpringyPlaneMovieClip(width:Number, height:Number, thumbnailUrl: String, fileUrl: String, planeForAssetDisplay:Plane )
+		//public function SpringyPlaneMovieClip(width:Number, height:Number, thumbnailUrl: String, fileUrl: String, planeForAssetDisplay:Plane )
+		public function SpringyPlaneMovieClip(width:Number, height:Number, fileUrl: String )
 		{
-			picPlane = planeForAssetDisplay;
+			//picPlane = planeForAssetDisplay;
 			assetUrl = fileUrl;
-			thumbUrl = thumbnailUrl;
-			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( thumbUrl );
+			//thumbUrl = thumbnailUrl;
+			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( assetUrl );
 			photoMaterial.interactive = true;
 			
-			this.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, planeOver );
-			this.addEventListener( InteractiveScene3DEvent.OBJECT_OUT, planeOut );
-			this.addEventListener( InteractiveScene3DEvent.OBJECT_CLICK, planeClick );
+			//this.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, planeOver );
+			//this.addEventListener( InteractiveScene3DEvent.OBJECT_OUT, planeOut );
+			//this.addEventListener( InteractiveScene3DEvent.OBJECT_CLICK, planeClick );
 			
 			super(photoMaterial, width, height);
 		}
-		public function planeOver( e:InteractiveScene3DEvent ):void
+		/*public function planeOver( e:InteractiveScene3DEvent ):void
 		{
 			trace("mouse over");
 		}
@@ -64,12 +65,16 @@ package
 			var tEvent:TextEvent = new TextEvent( PLANE_CHANGE );
 			tEvent.text = assetUrl;
 			dispatchEvent(tEvent);
-			picPlane.alpha = 1;
-			picPlane.scene.removeChildByName( "picturePlane" );
-			var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( assetUrl );
-			photoMaterial.addEventListener( FileLoadEvent.LOAD_COMPLETE, photoLoadCompleteHandler );
-		}
-		private function photoLoadCompleteHandler( event:FileLoadEvent ):void
+			//trace("scene.numChildren:"+scene.numChildren);
+			//trace("scene.childrenList:"+scene.childrenList());
+			
+			//camera.z = -100;
+			//picPlane.alpha = 1;
+			//picPlane.scene.removeChildByName( "picturePlane" );
+			//var photoMaterial:BitmapFileMaterial = new BitmapFileMaterial( assetUrl );
+			//photoMaterial.addEventListener( FileLoadEvent.LOAD_COMPLETE, photoLoadCompleteHandler );
+		}*/
+		/*private function photoLoadCompleteHandler( event:FileLoadEvent ):void
 		{
 			var bmpFileMaterial:BitmapFileMaterial = BitmapFileMaterial(event.target);
 			bmpFileMaterial.interactive = true;
@@ -82,13 +87,13 @@ package
 			plane.addEventListener( InteractiveScene3DEvent.OBJECT_OVER, onOver ); 
 
 			
-			picPlane.scene.addChild( plane, "picturePlane" );
-		}
+			//picPlane.scene.addChild( plane, "picturePlane" );
+		}*/
 		public function pictureClick( e:MouseEvent ):void
 		{
 			trace("mouse click");
 			//var selectedPlane:Plane = e.displayObject3D as Plane;
-			picPlane.scene.removeChildByName( "picturePlane" );
+			//picPlane.scene.removeChildByName( "picturePlane" );
 		}
 		private function onOver ( e:InteractiveScene3DEvent ):void 
 		{
