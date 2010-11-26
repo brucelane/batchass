@@ -131,10 +131,10 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 	var cachedThumbUrl:String = FlexGlobals.topLevelApplication.cache.getThumbnailByURL( thumbnailUrl );
 	return cachedThumbUrl;
 }
-protected function tagClip_mouseOverHandler(event:MouseEvent):void
+/*protected function tagClip_mouseOverHandler(event:MouseEvent):void
 {
 	tagClip.toolTip = "Tags: " + tagList + "\nClick to edit tags";
-}
+}*/
 
 protected function rateClip_mouseOverHandler(event:MouseEvent):void
 {
@@ -150,7 +150,7 @@ protected function tagClip_clickHandler(event:MouseEvent):void
 }
 
 
-protected function moreClip_mouseOverHandler(event:MouseEvent):void
+/*protected function moreClip_mouseOverHandler(event:MouseEvent):void
 {
 	moreClip.toolTip = "Click for more details";
 }
@@ -182,8 +182,8 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 	content.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
 	moreContainer.activate();
 
-}
-protected function previewClip_mouseOverHandler(event:MouseEvent):void
+}*/
+/*protected function previewClip_mouseOverHandler(event:MouseEvent):void
 {
 	previewClip.toolTip = "Click to preview";
 }
@@ -217,7 +217,7 @@ protected function previewClip_clickHandler(event:MouseEvent):void
 		
 	}
 
-}
+}*/
 protected function viewOnline_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/clip/detail/" + data.@id;
