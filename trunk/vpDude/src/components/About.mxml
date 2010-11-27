@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:NavigatorContent xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					xmlns:s="library://ns.adobe.com/flex/spark" 
+					xmlns:mx="library://ns.adobe.com/flex/mx" 
+					label="about" 
+					width="824" height="461"
+					>
+	<s:VGroup width="820" paddingLeft="3" paddingRight="3" paddingTop="3" paddingBottom="3">
+	
+				<s:Label text="vpDude is developed by Bruce Lane for Videopong" />
+
+				<mx:LinkButton label="Visit Bruce Lane's page http://www.batchass.fr" click="navigateToURL(new URLRequest('http://www.batchass.fr'))"/>
+
+	</s:VGroup>
+</s:NavigatorContent>
