@@ -5,7 +5,7 @@
 					xmlns:components="com.hillelcoren.components.*"
 					label="search" 
 					creationComplete="search_creationCompleteHandler(event)" 
-					width="824" height="461"
+					width="824" height="461" xmlns:components1="components.*"
 					>
 
 	<fx:Script source="TabSearch.as" />
@@ -38,12 +38,34 @@
 				<s:layout>
 					<s:TileLayout horizontalAlign="justify" horizontalGap="10"
 								  verticalAlign="justify" verticalGap="10"
-								  
 								  columnWidth="100" rowHeight="75" />
 				</s:layout>
 			</s:List>
 			<s:VGroup width="219" height="630">
-				
+				<s:Label text="Name:" height="25"  />
+				<s:Label id="clipName" paddingLeft="10" height="25"  />
+				<s:Label text="Created by:" height="25"  />
+				<s:Label id="creator" paddingLeft="10" height="25"  />
+				<mx:LinkButton id="viewClipBtn" label="View online" width="100"/>
+				<mx:LinkButton id="viewCreatorBtn" label="Creator page" width="100"/>
+		
+				<s:Label text="Local url:" height="25"  />
+				<s:Label id="localUrl" paddingLeft="10" height="25"  />
+				<mx:Spacer height="3"/>
+				<components:AdvancedAutoComplete
+					id="tagAutoComplete"
+					allowMultipleSelection="true"
+					allowNewValues="true"
+					showRemoveIcon = "true"
+					autoSelectEnabled = "false"
+					width="240">
+					<components:inlineButton>
+						<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleTagButtonClick()"/>
+					</components:inlineButton>
+				</components:AdvancedAutoComplete>
+				<s:Button id="applyBtn" label="Apply" click="applyBtn_clickHandler(event)" />
+				<!--<s:Button id="cancelBtn" label="Cancel" click="cancelBtn_clickHandler(event)" />-->
+				<mx:SWFLoader id="swfComp" width="240" height="180"/>
 			</s:VGroup>
 		</s:HGroup>
 	</s:VGroup>

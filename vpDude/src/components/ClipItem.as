@@ -15,6 +15,7 @@ import flash.events.MouseEvent;
 
 import fr.batchass.*;
 
+import mx.collections.ArrayCollection;
 import mx.collections.XMLListCollection;
 import mx.controls.LinkButton;
 import mx.core.FlexGlobals;
@@ -54,8 +55,14 @@ private var cachedVideo:String;
 private var moreContainer:MoreWindow;
 // container for preview
 private var previewContainer:PreviewWindow;
-//bottom panel component for tga input
-private var tagInput:TagEdit;
+//bottom panel component for tag input
+//private var tagInput:TagEdit;
+//store search component
+private var searchComp:Search;
+// for tagAutoComplete
+private var ac:ArrayCollection;
+private var tagArray:Array = [];
+
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -112,7 +119,8 @@ override public function set data( value:Object ) : void {
 			if ( tagString.length > 0 ) tagString += ",";
 			tagString += oneTag.@name;
 		}
-		tagList = tagString;		
+		tagList = tagString;
+		
 	}
 }
 private function loadComplete(event:Event):void
@@ -136,7 +144,7 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 	tagClip.toolTip = "Tags: " + tagList + "\nClick to edit tags";
 }*/
 
-protected function rateClip_mouseOverHandler(event:MouseEvent):void
+/*protected function rateClip_mouseOverHandler(event:MouseEvent):void
 {
 }
 protected function tagClip_clickHandler(event:MouseEvent):void
@@ -147,7 +155,7 @@ protected function tagClip_clickHandler(event:MouseEvent):void
 	{
 		FlexGlobals.topLevelApplication.tabNav.selectedChild.tagHGroup.addElement( tagInput );
 	}
-}
+}*/
 
 
 /*protected function moreClip_mouseOverHandler(event:MouseEvent):void
@@ -240,6 +248,34 @@ protected function rateClip_clickHandler(event:MouseEvent):void
 
 protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 {
+	if ( FlexGlobals.topLevelApplication.search ) 
+	{
+		searchComp = FlexGlobals.topLevelApplication.search;
+		searchComp.clipName.text = data.clip.@name;
+		searchComp.creator.text = data.creator.@name;
+		if (searchComp.viewClipBtn.hasEventListener( MouseEvent.CLICK ) )
+			searchComp.viewClipBtn.removeEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
+		if (searchComp.viewCreatorBtn.hasEventListener( MouseEvent.CLICK ) )
+			searchComp.viewCreatorBtn.removeEventListener( MouseEvent.CLICK, creator_clickHandler );
+		searchComp.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
+		searchComp.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
+		var urlPreview:String = data.urlpreview;
+		if ( urlPreview ) searchComp.swfComp.source = data.urlpreview else searchComp.swfComp.source = null;
+		searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
+		searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
+		data..tags.tag.
+			(
+				tagArray.push( attribute("name") )
+			);
+		ac = new ArrayCollection( tagArray );
+		searchComp.tagAutoComplete.selectedItems = ac;
+
+		if ( data.attribute( "urllocal" ).length() > 0 ) 
+		{	
+			searchComp.localUrl.text = data.attribute( "urllocal" );
+		}
+	}
+
 	var draggedObject:Clipboard = new Clipboard();
 	var fileToDrag:File = new File( cachedVideo );
 	var dragOptions : NativeDragOptions = new NativeDragOptions();

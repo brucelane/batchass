@@ -505,7 +505,7 @@
             override public function set data( value:Object ):void
             {
                 super.data = value;
-				
+				if ( !_listData ) return;//BL
 				if (!data || !data[ _listData.dataField ])
 				{
 					return;
@@ -516,6 +516,7 @@
             
             private function _setData():void
             {
+				if ( !_listData ) return;//BL
             	var value:Object = data[ _listData.dataField ];
             	
             	if (value is Array)
