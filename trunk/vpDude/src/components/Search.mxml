@@ -28,7 +28,6 @@
 
 			<!--<s:Label text="Use comma to separate tags, backspace to remove" width="400"/>-->
 		</s:HGroup>
-		<s:HGroup id="tagHGroup" width="819" height="50" />
 		<s:HGroup width="819" height="630" >
 			<s:List id="clipList" width="570" height="520"
 					itemRenderer="components.ClipItemRenderer" 
@@ -36,12 +35,12 @@
 					dataProvider="{clips.clipsXMLList}"
 					>
 				<s:layout>
-					<s:TileLayout horizontalAlign="justify" horizontalGap="10"
+					<s:TileLayout horizontalAlign="justify" horizontalGap="3"
 								  verticalAlign="justify" verticalGap="10"
 								  columnWidth="100" rowHeight="75" />
 				</s:layout>
 			</s:List>
-			<s:VGroup width="219" height="630">
+			<s:VGroup width="240" height="630">
 				<s:Label text="Name:" height="25"  />
 				<s:Label id="clipName" paddingLeft="10" height="25"  />
 				<s:Label text="Created by:" height="25"  />
@@ -50,7 +49,7 @@
 				<mx:LinkButton id="viewCreatorBtn" label="Creator page" width="100"/>
 		
 				<s:Label text="Local url:" height="25"  />
-				<s:Label id="localUrl" paddingLeft="10" height="25"  />
+				<s:Label id="localUrl" paddingLeft="10" height="25"  width="240" />
 				<mx:Spacer height="3"/>
 				<components:AdvancedAutoComplete
 					id="tagAutoComplete"

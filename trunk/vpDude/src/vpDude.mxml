@@ -4,7 +4,7 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   preinitialize="vpDude_preinitializeHandler(event)"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
-					   width="840" height="830"
+					   width="840" height="670"
 					   xmlns:components="components.*">
 
 	<fx:Script source="Main.as" />

@@ -1,7 +1,6 @@
 import com.hillelcoren.components.AdvancedAutoComplete;
 import com.hillelcoren.components.AutoComplete;
 
-import components.MoreWindowContent;
 import components.Search;
 import components.TagEdit;
 
@@ -51,12 +50,6 @@ public var clipXmlTagList:XMLList;
 private var image:Bitmap;
 // url of clip
 private var cachedVideo:String;
-// container for more details
-private var moreContainer:MoreWindow;
-// container for preview
-private var previewContainer:PreviewWindow;
-//bottom panel component for tag input
-//private var tagInput:TagEdit;
 //store search component
 private var searchComp:Search;
 // for tagAutoComplete
@@ -142,10 +135,6 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 /*protected function tagClip_mouseOverHandler(event:MouseEvent):void
 {
 	tagClip.toolTip = "Tags: " + tagList + "\nClick to edit tags";
-}*/
-
-/*protected function rateClip_mouseOverHandler(event:MouseEvent):void
-{
 }
 protected function tagClip_clickHandler(event:MouseEvent):void
 {
@@ -155,10 +144,8 @@ protected function tagClip_clickHandler(event:MouseEvent):void
 	{
 		FlexGlobals.topLevelApplication.tabNav.selectedChild.tagHGroup.addElement( tagInput );
 	}
-}*/
-
-
-/*protected function moreClip_mouseOverHandler(event:MouseEvent):void
+}
+protected function moreClip_mouseOverHandler(event:MouseEvent):void
 {
 	moreClip.toolTip = "Click for more details";
 }
@@ -190,8 +177,8 @@ protected function moreClip_clickHandler(event:MouseEvent):void
 	content.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
 	moreContainer.activate();
 
-}*/
-/*protected function previewClip_mouseOverHandler(event:MouseEvent):void
+}
+protected function previewClip_mouseOverHandler(event:MouseEvent):void
 {
 	previewClip.toolTip = "Click to preview";
 }
@@ -220,11 +207,8 @@ protected function previewClip_clickHandler(event:MouseEvent):void
 		previewContainer.addChildControls(content);
 		content.title.text = data.video.@id;
 		content.swfComp.source = data.urlpreview;
-		 
 		previewContainer.activate();
-		
 	}
-
 }*/
 protected function viewOnline_clickHandler(event:MouseEvent):void
 {
