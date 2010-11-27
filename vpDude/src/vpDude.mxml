@@ -13,6 +13,7 @@
 		
 		<mx:TabNavigator id="tabNav" width="830" height="600" change="tabNav_changeHandler(event)" >
 			<components:Config  />
+			<components:About  />
 			<components:Quit/>
 		</mx:TabNavigator>
 	</s:VGroup>
