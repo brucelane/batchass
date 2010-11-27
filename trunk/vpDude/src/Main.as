@@ -38,6 +38,7 @@ public var dldFolderPath:String;
 public var dbFolderPath:String;
 
 public var cache:CacheManager;
+public var search:Search;
 
 // path to vpDude folder
 private var _vpFolderPath:String;
@@ -147,7 +148,8 @@ public function addTabs():void
 	{
 		tabNav.removeChildAt( 1 );//Quit
 		tabNav.removeChildAt( 0 );//Config
-		tabNav.addChild( new Search() );
+		search = new Search();
+		tabNav.addChild( search );
 		tabNav.addChild( new Download() );
 		tabNav.addChild( new Upload() );
 		tabNav.addChild( new Config() );	
