@@ -1,22 +1,32 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<main>
-	<config>
-		<rotate rad="400" dark="88" />      	<!-- rad:rayon du cercle(en pixel), dark:coeff de luminosite vers le fond(0 a 255) -->
-		<thumb wMax="192" hMax="192" />	    	<!-- wMax:largeur de la miniature, hMax:hauteur de la miniature -->
-		<view type="reduce" thumb="reScale"/> 	<!-- type: "noResize","reduce","fullView" - thumb: "noScale","reScale"","fullScale"-->
-	</config>
-	<images path="images/">
-		<img id="0" url="ablanc91.jpg" />
-		<img id="1" url="ax01.jpg" />
-		<img id="2" url="anoir88.jpg" />
-		<img id="3" url="ax66.jpg" />
-		<img id="4" url="x72.jpg" />
-		<img id="5" url="xtop81.jpg" />
-		<img id="6" url="ax71.jpg" />
-		<img id="7" url="ax04.jpg" />
-		<img id="8" url="bruce36.jpg" />
-		<img id="9" url="xtop85.jpg" />
-		<img id="10" url="x49.jpg" />
-		<img id="11" url="x46.jpg" />
-	</images>
+<main imageWidth="351" thumbWidth="151" imageHeight="103" thumbHeight="73">
+  <config>
+    <rotate rad="400" dark="88"/>
+    <thumb wMax="192" hMax="192"/>
+    <view type="reduce" thumb="reScale"/>
+    <carousel y="50"/>
+  </config>
+  <images path="images/">
+    <img id="0" thumbnail="151x73_thumb_36207.jpg" url="351x103_2_samoura_.jpg"/>
+    <img id="1" thumbnail="151x73_thumb_36208.jpg" url="351x103_argent_e.jpg"/>
+    <img id="2" thumbnail="151x73_thumb_36209.jpg" url="351x103_bo_te_l_ventail.jpg"/>
+    <img id="3" thumbnail="151x73_thumb_36210.jpg" url="351x103_bo_te_avec_anse.jpg"/>
+    <img id="4" thumbnail="151x73_thumb_36211.jpg" url="351x103_bouclier_suspendu.jpg"/>
+    <img id="5" thumbnail="151x73_thumb_36212.jpg" url="351x103_cinq_pyra.jpg"/>
+    <img id="6" thumbnail="151x73_thumb_36213.jpg" url="351x103_cubicornue.jpg"/>
+    <img id="7" thumbnail="151x73_thumb_36214.jpg" url="351x103_d_tail_2_bleue.jpg"/>
+    <img id="8" thumbnail="151x73_thumb_36215.jpg" url="351x103_d_tail_belle_pyramide.jpg"/>
+    <img id="9" thumbnail="151x73_thumb_36216.jpg" url="351x103_d_tail_bleue.jpg"/>
+    <img id="10" thumbnail="151x73_thumb_36217.jpg" url="351x103_d_tail_ventail.jpg"/>
+    <img id="11" thumbnail="151x73_thumb_36218.jpg" url="351x103_d_tail.jpg"/>
+    <img id="12" thumbnail="151x73_thumb_36219.jpg" url="351x103_empreintes.jpg"/>
+    <img id="13" thumbnail="151x73_thumb_36220.jpg" url="351x103_grande_l_vantail.jpg"/>
+    <img id="14" thumbnail="151x73_thumb_36221.jpg" url="351x103_grande_bleue.jpg"/>
+    <img id="15" thumbnail="151x73_thumb_36222.jpg" url="351x103_ovale_blanche.jpg"/>
+    <img id="16" thumbnail="151x73_thumb_36223.jpg" url="351x103_petite_pyra.jpg"/>
+    <img id="17" thumbnail="151x73_thumb_36224.jpg" url="351x103_ronde_blanche.jpg"/>
+    <img id="18" thumbnail="151x73_thumb_36225.jpg" url="351x103_samoura_.jpg"/>
+    <img id="19" thumbnail="151x73_thumb_36226.jpg" url="351x103_sev_signature.jpg"/>
+    <img id="20" thumbnail="151x73_thumb_36227.jpg" url="351x103_traces.jpg"/>
+    <img id="21" thumbnail="151x73_thumb_36228.jpg" url="351x103_trio_belles_bo_tes.jpg"/>
+  </images>
 </main>
