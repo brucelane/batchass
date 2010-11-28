@@ -23,6 +23,7 @@ package fr.batchass
 		private var pendingDictionaryByURL:Dictionary = new Dictionary();
 		private const THUMBS_PATH:String = "thumbs";
 		private const CLIPS_PATH:String = "clips";
+		private const SWF_PATH:String = "preview";
 		
 		public function CacheManager( cacheDir:String )
 		{
@@ -72,6 +73,24 @@ package fr.batchass
 			{
 				Util.log( "CacheManager, getClipByURL cacheFile does not exist: " + assetUrl );
 				addAssetToCache( assetUrl, displayInDefaultApp );
+				return assetUrl;
+			}
+		}
+		public function getSwfByURL( assetUrl:String ):String
+		{
+			var localUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
+			var cacheFile:File = new File( localUrl );
+			
+			Util.log( "CacheManager, getSwfByURL localUrl: " + localUrl );
+			if( cacheFile.exists )
+			{
+				Util.log( "CacheManager, getSwfByURL cacheFile exists: " + cacheFile.url );
+				return cacheFile.url;
+			} 
+			else 
+			{
+				Util.log( "CacheManager, getSwfByURL cacheFile does not exist: " + assetUrl );
+				addSwfToCache( assetUrl );
 				return assetUrl;
 			}
 		}
@@ -134,6 +153,22 @@ package fr.batchass
 				pendingDictionaryByURL[url] = true;
 			} 
 		}
+		private function addSwfToCache( url:String ):void
+		{
+			if(!pendingDictionaryByURL[url]){
+				var req:URLRequest = new URLRequest(url);
+				var loader:URLLoader = new URLLoader();
+				loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+				loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
+				loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
+				loader.addEventListener( Event.COMPLETE, swfLoadComplete );
+				loader.dataFormat = URLLoaderDataFormat.BINARY;
+				loader.load(req);
+				pendingDictionaryByLoader[loader] = url;
+				pendingDictionaryByURL[url] = true;
+			} 
+		}
 		private function addGalleryImageToCache( url:String, width:Number, height:int ):void
 		{
 			var localUrlPath:String = width.toString() + 'x' + height.toString() + '_' + url;
@@ -161,6 +196,23 @@ package fr.batchass
 			stream.open(cacheFile,FileMode.WRITE);
 			stream.writeBytes(loader.data);
 			stream.close();
+			
+			delete pendingDictionaryByLoader[loader]
+			delete pendingDictionaryByURL[url];
+		}
+		private function swfLoadComplete( event:Event ):void
+		{
+			var loader:URLLoader = event.target as URLLoader;
+			var url:String = pendingDictionaryByLoader[loader];
+			
+			var cacheFile:File = new File( _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( url ) );
+			var stream:FileStream = new FileStream();
+			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			stream.open(cacheFile,FileMode.WRITE);
+			stream.writeBytes(loader.data);
+			stream.close();
+			//cacheFile.openWithDefaultApplication();
 			
 			delete pendingDictionaryByLoader[loader]
 			delete pendingDictionaryByURL[url];
