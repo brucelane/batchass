@@ -333,7 +333,7 @@ public function processAllFiles( selectedDir:File ):void
 					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
-					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName, false );
+					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName, true );
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
@@ -387,12 +387,19 @@ private function generatePreview( process:NativeProcess, ownVideoPath:String, sw
 		processArgs[i++] = "400k";
 		if ( sound )
 		{
-			processArgs[i++] = "-acodec";
-			processArgs[i++] = "mp3";
 			processArgs[i++] = "-ar";
 			processArgs[i++] = "44100";
 			processArgs[i++] = "-ab";
 			processArgs[i++] = "128k";
+			//-ar 22050 -ab 56k
+			/*processArgs[i++] = "-acodec";
+			processArgs[i++] = "libfaac";
+			processArgs[i++] = "-ar";
+			processArgs[i++] = "44100";
+			processArgs[i++] = "-ab";
+			processArgs[i++] = "128k";
+			processArgs[i++] = "-ac";
+			processArgs[i++] = "2";*/
 		}
 		else
 		{
