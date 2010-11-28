@@ -52,8 +52,8 @@ private function e4xLoadComplete( event:Event ):void
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb1 );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb2 );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb3 );
-	parentDocument.cache.getSwfByURL( clipXml..urlpreview );
 	parentDocument.cache.getClipByURL( clipXml..urldownload );
+	parentDocument.cache.getSwfByURL( clipXml..urlpreview );
 	clipXml.dlddate = Util.nowDate;
 	
 	// add originaltags

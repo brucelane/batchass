@@ -50,6 +50,8 @@ public var clipXmlTagList:XMLList;
 private var image:Bitmap;
 // url of clip
 private var cachedVideo:String;
+// url of swf
+private var cachedSwf:String;
 //store search component
 private var searchComp:Search;
 // for tagAutoComplete
@@ -94,6 +96,7 @@ override public function set data( value:Object ) : void {
 			if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
 			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
 			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload );
+			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview );
 		}
 		//load image for drag n drop
 		var req:URLRequest = new URLRequest( cachedThumbnail1 );
@@ -125,6 +128,12 @@ private function getCachedVideo( videoUrl:String ):String
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
 	var cachedVideoUrl:String = FlexGlobals.topLevelApplication.cache.getClipByURL( videoUrl );
 	return cachedVideoUrl;
+}
+private function getCachedSwf( swfUrl:String ):String
+{
+	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
+	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl );
+	return cachedSwfUrl;
 }
 private function getCachedThumbnail( thumbnailUrl:String ):String
 {
