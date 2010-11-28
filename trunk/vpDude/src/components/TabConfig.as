@@ -333,7 +333,7 @@ public function processAllFiles( selectedDir:File ):void
 					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
-					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName );
+					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName, false );
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
@@ -372,7 +372,7 @@ public function processAllFiles( selectedDir:File ):void
 		}
 	}	
 }
-private function generatePreview( process:NativeProcess, ownVideoPath:String, swfPath:String, clipGeneratedName:String ):void
+private function generatePreview( process:NativeProcess, ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
 {
 	// Start the process
 	try
@@ -380,16 +380,29 @@ private function generatePreview( process:NativeProcess, ownVideoPath:String, sw
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
 		var processArgs:Vector.<String> = new Vector.<String>();
-		processArgs[0] = "-i";
-		processArgs[1] = ownVideoPath;
-		processArgs[2] = "-b";
-		processArgs[3] = "400k";
-		processArgs[4] = "-an";
-		processArgs[5] = "-f";
-		processArgs[6] = "avm2";
-		processArgs[7] = "-s";
-		processArgs[8] =  "320x240";
-		processArgs[9] = swfPath + clipGeneratedName + ".swf";
+		var i:int = 0;
+		processArgs[i++] = "-i";
+		processArgs[i++] = ownVideoPath;
+		processArgs[i++] = "-b";
+		processArgs[i++] = "400k";
+		if ( sound )
+		{
+			processArgs[i++] = "-acodec";
+			processArgs[i++] = "mp3";
+			processArgs[i++] = "-ar";
+			processArgs[i++] = "44100";
+			processArgs[i++] = "-ab";
+			processArgs[i++] = "128k";
+		}
+		else
+		{
+			processArgs[i++] = "-an";
+		}
+		processArgs[i++] = "-f";
+		processArgs[i++] = "avm2";
+		processArgs[i++] = "-s";
+		processArgs[i++] =  "320x240";
+		processArgs[i++] = swfPath + clipGeneratedName + ".swf";
 		nativeProcessStartupInfo.arguments = processArgs;
 		startFFMpegProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);
