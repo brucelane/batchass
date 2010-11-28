@@ -28,6 +28,7 @@ package
 		
 		public var movieMaterial : MaterialObject3D; 
 		private var assetUrl:String;
+		private var maxDistance:int = 70;
 
 		public function SpringyPlaneMovieClip(width:Number, height:Number, fileUrl: String )
 		{
@@ -45,13 +46,13 @@ package
 			
 			var distance : Number = Math.sqrt((xdiff*xdiff)+(ydiff*ydiff)) * 0.4; 
 			
-			if(distance>150) distance = 150; 
+			if(distance>maxDistance) distance = maxDistance; 
 			
 			//scale = 1-(distance/450)+(100/450); 
 			
 			targetZ = distance-100;
 			
-			var brightness : Number = distance/=150; 
+			var brightness : Number = distance/=maxDistance; 
 			
 			zVel*=0.6; 
 			if(targetZ!=z)
