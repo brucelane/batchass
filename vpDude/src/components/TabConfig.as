@@ -42,7 +42,7 @@ private var passwordChanged:Boolean = false;
 
 public static var CONFIG_XML:XML;
 private var OWN_CLIPS_XML:XML;
-private var validExtensions:Array = ["avi", "mov", "mp4"];
+private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "mpeg", "mpg", "h264"];
 
 
 
@@ -333,7 +333,7 @@ public function processAllFiles( selectedDir:File ):void
 					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
 					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
-					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName, true );
+					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName, false );
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
