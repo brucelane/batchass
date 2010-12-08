@@ -35,9 +35,9 @@
 					dataProvider="{clips.clipsXMLList}"
 					>
 				<s:layout>
-					<s:TileLayout horizontalAlign="justify" horizontalGap="3"
-								  verticalAlign="justify" verticalGap="10"
-								  columnWidth="100" rowHeight="75" />
+					<s:TileLayout columnWidth="110" rowHeight="120" />
+					<!--horizontalAlign="justify" horizontalGap="10"
+					verticalAlign="justify" verticalGap="10"-->
 				</s:layout>
 			</s:List>
 			<s:VGroup width="240" height="630">
