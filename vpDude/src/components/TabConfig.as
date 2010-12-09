@@ -377,8 +377,12 @@ private function generatePreview( process:NativeProcess, ownVideoPath:String, sw
 	// Start the process
 	try
 	{
+		var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		nativeProcessStartupInfo.executable = ffMpegExecutable;
+		//nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
 		var processArgs:Vector.<String> = new Vector.<String>();
 		var i:int = 0;
 		processArgs[i++] = "-i";
