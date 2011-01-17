@@ -39,16 +39,11 @@
 				</s:layout>
 			</s:List>
 			<s:VGroup width="240" height="630">
-				<s:Label text="Name:" height="25"  />
-				<s:Label id="clipName" paddingLeft="10" height="25"  />
-				<s:Label text="Created by:" height="25"  />
-				<s:Label id="creator" paddingLeft="10" height="25"  />
-				<mx:LinkButton id="viewClipBtn" label="View online" width="100"/>
-				<mx:LinkButton id="viewCreatorBtn" label="Creator page" width="100"/>
-		
-				<s:Label text="Local url:" height="25"  />
+				<mx:SWFLoader id="swfComp" width="240" height="180"/>
+				<mx:LinkButton id="viewClipBtn" label="" width="240"/>
+				<mx:LinkButton id="viewCreatorBtn" label="" width="240"/>			
 				<s:Label id="localUrl" paddingLeft="10" height="25"  width="240" />
-				<mx:Spacer height="3"/>
+				<mx:Spacer height="30"/>
 				<components:AdvancedAutoComplete
 					id="tagAutoComplete"
 					allowMultipleSelection="true"
@@ -60,9 +55,7 @@
 						<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleTagButtonClick()"/>
 					</components:inlineButton>
 				</components:AdvancedAutoComplete>
-				<s:Button id="applyBtn" label="Apply" click="applyBtn_clickHandler(event)" />
-				<!--<s:Button id="cancelBtn" label="Cancel" click="cancelBtn_clickHandler(event)" />-->
-				<mx:SWFLoader id="swfComp" width="240" height="180"/>
+				<s:Button id="applyBtn" label="Apply" click="applyBtn_clickHandler(event)" />				
 			</s:VGroup>
 		</s:HGroup>
 	</s:VGroup>

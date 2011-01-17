@@ -244,8 +244,8 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 	if ( FlexGlobals.topLevelApplication.search ) 
 	{
 		searchComp = FlexGlobals.topLevelApplication.search;
-		searchComp.clipName.text = data.clip.@name;
-		searchComp.creator.text = data.creator.@name;
+		searchComp.viewClipBtn.label = data.clip.@name;
+		searchComp.viewCreatorBtn.label = "created by: " + data.creator.@name;
 		if (searchComp.viewClipBtn.hasEventListener( MouseEvent.CLICK ) )
 			searchComp.viewClipBtn.removeEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
 		if (searchComp.viewCreatorBtn.hasEventListener( MouseEvent.CLICK ) )
