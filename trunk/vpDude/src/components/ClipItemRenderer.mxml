@@ -11,9 +11,10 @@
 		<s:State name="hovered"/>
 		<s:State name="selected" />
 	</s:states>
-	<s:BorderContainer borderStyle="inset" borderColor="#c0c0c0" borderColor.selected="#474746"
-					   borderWeight="5"  
-					   width="110" height="84">
+	<s:BorderContainer borderStyle="inset" borderColor="#ffffff" borderColor.hovered="#c0c0c0" borderColor.selected="#474746"
+					   borderWeight.normal="1" borderWeight="3"
+					   width.normal="105" height.normal="79" 
+					   width="106" height="80">
 		<mx:Image id="imgUrl" alpha.hovered=".7" 
 				  source.normal="{cachedThumbnail1}" 
 				  source.hovered="{cachedThumbnail2}" 
