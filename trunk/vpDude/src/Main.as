@@ -42,6 +42,7 @@ public var search:Search;
 
 // path to vpDude folder
 private var _vpFolderPath:String;
+
 [Bindable]
 public function get vpFolderPath():String
 {
