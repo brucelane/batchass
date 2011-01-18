@@ -8,10 +8,67 @@
 					   xmlns:components="components.*">
 
 	<fx:Script source="Main.as" />
+	<fx:Style>
+		.a1{
+			background-color: black;
+			cornerRadius: 6;
+			color: black;
+			firstTabStyleName: "MyFirstTab";
+			lastTabStyleName: "MyLastTab";
+			selectedTabTextStyleName: "MySelectedTab";
+			
+			/* up-skin: ClassReference(“TabSkin”);
+			down-skin: ClassReference(“TabSkin”);
+			over-skin: ClassReference(“TabSkin”);
+			selected-up-skin: ClassReference(“SelectedTabSkin”);
+			selected-down-skin: ClassReference(“SelectedTabSkin”);
+			selected-over-skin: ClassReference(“SelectedTabSkin”); */
+			
+			background-color: #FF22FF;
+			fontSize: 16pt;
+			font-weight: normal;
+			color: #00FF00;
+			text-roll-over-color: #0000FF;
+			
+			corner-radius: 3;
+			
+			border-style: solid;
+			border-thickness: 1;
+			border-color: #000000;
+		
+		}
+		TabNavigator {
+		backgroundColor: black;
+		cornerRadius: 3;
+		tabStyleName: "MyTabs";
+		firstTabStyleName: "MyFirstTab";
+		lastTabStyleName: "MyLastTab";
+		selectedTabTextStyleName: "MySelectedTab";
+		}
+		
+		.MyTabs {
+		backgroundColor: haloBlue;
+		cornerRadius: 8;
+		color: haloBlue;
+		}
+		
+		.MyFirstTab,
+		.MyLastTab {
+		backgroundColor: black;
+		cornerRadius: 2;
+		color: black;
+		}
+		
+		.MySelectedTab {
+		backgroundColor: haloBlue;
+		color: haloBlue;
+		textRollOverColor: haloBlue;
+		}
+	</fx:Style>
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
 		<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
 		
-		<mx:TabNavigator id="tabNav"  width="830" height="600" change="tabNav_changeHandler(event)" >
+		<mx:TabNavigator id="tabNav" includeInLayout="false" tabStyleName="a1" width="830" height="600" change="tabNav_changeHandler(event)" >
 			<components:Config  />
 			<components:About  />
 			<components:Quit/>
