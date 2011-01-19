@@ -3,8 +3,10 @@ import components.*;
 import flash.desktop.NativeApplication;
 import flash.desktop.NativeProcess;
 import flash.events.ProgressEvent;
+import flash.events.TimerEvent;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
+import flash.utils.Timer;
 
 import fr.batchass.Util;
 import fr.batchass.readTextFile;
@@ -44,9 +46,10 @@ public static var CONFIG_XML:XML;
 private var OWN_CLIPS_XML:XML;
 private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "mpeg", "mpg", "h264"];
 
-
-
-private var startFFMpegProcess:NativeProcess;
+private var moviesToConvert:Array = new Array();
+private var thumbsToConvert:Array = new Array();
+private var timer:Timer;
+private var busy:Boolean = false;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -88,7 +91,10 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 	}
 	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
 	parentDocument.vpUploadUrl = parentDocument.vpUpUrl + "?login=" + userName + "&password=" + password;
-	
+	timer = new Timer(1000);
+	timer.addEventListener(TimerEvent.TIMER, processConvert);
+	timer.start();
+
 }
 protected function config_creationCompleteHandler(event:FlexEvent):void
 {
@@ -328,12 +334,18 @@ public function processAllFiles( selectedDir:File ):void
 						previewFolder.createDirectory();
 					}
 					log.text += "\nGenerating thumbs with ffmpeg for " + clipPath;
-					startFFMpegProcess = new NativeProcess();
-					execute( startFFMpegProcess, clipPath, thumbsPath, 1 );
-					execute( startFFMpegProcess, clipPath, thumbsPath, 2 );
-					execute( startFFMpegProcess, clipPath, thumbsPath, 3 );
+					//startFFMpegProcess = new NativeProcess();
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:1,frame:1});
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:1});
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:1});
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:2});
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:3});
+					/*execute( clipPath, thumbsPath, 1 );
+					execute( clipPath, thumbsPath, 2 );
+					execute( clipPath, thumbsPath, 3 );*/
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
-					generatePreview( startFFMpegProcess, clipPath, swfPath, clipGeneratedName, false );
+					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
+					//generatePreview( clipPath, swfPath, clipGeneratedName, false );
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
@@ -372,7 +384,28 @@ public function processAllFiles( selectedDir:File ):void
 		}
 	}	
 }
-private function generatePreview( process:NativeProcess, ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
+private function processConvert(event:Event): void 
+{
+	if ( !busy )
+	{
+		if ( thumbsToConvert.length > 0 )
+		{
+			busy = true;
+			execute(  thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber, thumbsToConvert[0].frame );
+			thumbsToConvert.shift();
+		}
+		else
+		{	
+			if ( moviesToConvert.length > 0 )
+			{
+				busy = true;
+				generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].snd );
+				moviesToConvert.shift();
+			}
+		}
+	}
+}
+private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
 {
 	// Start the process
 	try
@@ -415,19 +448,20 @@ private function generatePreview( process:NativeProcess, ownVideoPath:String, sw
 		processArgs[i++] =  "320x240";
 		processArgs[i++] = swfPath + clipGeneratedName + ".swf";
 		nativeProcessStartupInfo.arguments = processArgs;
-		startFFMpegProcess = new NativeProcess();
+		var startFFMpegProcess:NativeProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
 			outputDataHandler);
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
-			errorOutputDataHandler);
+			errorMovieDataHandler);
+		
 	}
 	catch (e:Error)
 	{
 		Util.log( "NativeProcess Error: " + e.message );
 	}
 }
-private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
+private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint, frameNumber:uint ):void
 {
 	// Start the process
 	try
@@ -446,10 +480,12 @@ private function execute( process:NativeProcess, ownVideoPath:String, thumbsPath
 		processArgs[8] =  "-s";
 		processArgs[9] = "100x74"; //Frame size must be a multiple of 2
 		processArgs[10] =  "-ss";
-		processArgs[11] = thumbNumber.toString();
+		processArgs[11] = frameNumber.toString();
 		processArgs[12] = thumbsPath + "thumb" + thumbNumber + ".jpg";
+		processArgs[13] = "-y";
 		nativeProcessStartupInfo.arguments = processArgs;
-		startFFMpegProcess = new NativeProcess();
+
+		var startFFMpegProcess:NativeProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
 			outputDataHandler);
@@ -466,7 +502,7 @@ private function outputDataHandler(event:ProgressEvent):void
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardOutput.readUTFBytes(process.standardOutput.bytesAvailable);
 	log.text += data;
-	Util.log( "NativeProcess outputDataHandler: " + data );
+	Util.ffMpegOutputLog( "NativeProcess outputDataHandler: " + data );
 }
 
 private function errorOutputDataHandler(event:ProgressEvent):void
@@ -474,7 +510,16 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
 	log.text += data;
-	Util.errorLog( "NativeProcess errorOutputDataHandler: " + data );
+	if (data.indexOf("muxing overhead")>-1) busy = false;
+	Util.ffMpegErrorLog( "NativeProcess errorOutputDataHandler: " + data );
+}
+private function errorMovieDataHandler(event:ProgressEvent):void
+{
+	var process:NativeProcess = event.target as NativeProcess;
+	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
+	log.text += data;
+	if (data.indexOf("muxing overhead")>-1) busy = false;
+	Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
