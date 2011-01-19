@@ -45,7 +45,48 @@ package fr.batchass
 			trace( text );
 			
 		} 
-
+		public static function ffMpegOutputLog( text:String, clear:Boolean=false ):void
+		{
+			
+			var file:File = File.applicationStorageDirectory.resolvePath( "ffmpegoutput-" + sessionDate + ".log" );
+			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( file, fileMode );
+			
+			fileStream.writeMultiByte( text + "\n", File.systemCharset );
+			fileStream.close();
+			trace( text );
+			
+		} 
+		public static function ffMpegErrorLog( text:String, clear:Boolean=false ):void
+		{
+			
+			var file:File = File.applicationStorageDirectory.resolvePath( "ffmpegerror-" + sessionDate + ".log" );
+			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( file, fileMode );
+			
+			fileStream.writeMultiByte( text + "\n", File.systemCharset );
+			fileStream.close();
+			trace( text );
+			
+		} 
+		public static function ffMpegMovieErrorLog( text:String, clear:Boolean=false ):void
+		{
+			
+			var file:File = File.applicationStorageDirectory.resolvePath( "ffmpegmovieerror-" + sessionDate + ".log" );
+			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( file, fileMode );
+			
+			fileStream.writeMultiByte( text + "\n", File.systemCharset );
+			fileStream.close();
+			trace( text );
+			
+		} 
 		public static function get nowDate():String
 		{
 			if ( !millisDateFormatter )
