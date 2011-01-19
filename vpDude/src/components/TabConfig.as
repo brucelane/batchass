@@ -48,6 +48,8 @@ private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "m
 
 private var moviesToConvert:Array = new Array();
 private var thumbsToConvert:Array = new Array();
+private var newClips:Array = new Array();
+
 private var timer:Timer;
 private var busy:Boolean = false;
 
@@ -370,7 +372,8 @@ public function processAllFiles( selectedDir:File ):void
 							OWN_CLIPS_XML.tags.appendChild( folderXmlTag );
 						}
 					}
-					clips.addNewClip( clipGeneratedName, OWN_CLIPS_XML, clipPath );
+					newClips.push({clipName:clipGeneratedName,ownXml:OWN_CLIPS_XML,cPath:clipPath});
+					//clips.addNewClip( clipGeneratedName, OWN_CLIPS_XML, clipPath );
 				}
 				else
 				{
@@ -396,11 +399,20 @@ private function processConvert(event:Event): void
 		}
 		else
 		{	
-			if ( moviesToConvert.length > 0 )
+			if ( newClips.length > 0 )
 			{
-				busy = true;
-				generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].snd );
-				moviesToConvert.shift();
+				var clips:Clips = Clips.getInstance();
+				clips.addNewClip( newClips[0].clipName, newClips[0].ownXml, newClips[0].cPath );
+				newClips.shift();
+			}
+			else
+			{	
+				if ( moviesToConvert.length > 0 )
+				{
+					busy = true;
+					generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].snd );
+					moviesToConvert.shift();
+				}
 			}
 		}
 	}
