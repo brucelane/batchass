@@ -541,8 +541,8 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 			try 
 			{
 				sourceFile.copyTo( destFile );
-				var destFile:File = new File( tPath + "thumb3.jpg" );
-				sourceFile.copyTo( destFile );
+				var destFile2:File = new File( tPath + "thumb3.jpg" );
+				sourceFile.copyTo( destFile2 );
 			}
 			catch (error:Error)
 			{
