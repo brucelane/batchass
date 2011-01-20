@@ -52,6 +52,8 @@ private var newClips:Array = new Array();
 
 private var timer:Timer;
 private var busy:Boolean = false;
+private var thumb1:String;
+private var tPath:String;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -338,8 +340,8 @@ public function processAllFiles( selectedDir:File ):void
 					log.text += "\nGenerating thumbs with ffmpeg for " + clipPath;
 					//startFFMpegProcess = new NativeProcess();
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:1,frame:1});
-					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:1});
-					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:1});
+					//thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:1});
+					//thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:1});
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:2});
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:3});
 					/*execute( clipPath, thumbsPath, 1 );
@@ -401,6 +403,7 @@ private function processConvert(event:Event): void
 		{	
 			if ( newClips.length > 0 )
 			{
+				busy = true;
 				var clips:Clips = Clips.getInstance();
 				clips.addNewClip( newClips[0].clipName, newClips[0].ownXml, newClips[0].cPath );
 				newClips.shift();
@@ -478,8 +481,11 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 	// Start the process
 	try
 	{
+		tPath = thumbsPath;
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		
+		if (thumbNumber == 1) thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg";
 		var processArgs:Vector.<String> = new Vector.<String>();
 		processArgs[0] = "-i";
 		processArgs[1] = ownVideoPath;
@@ -522,7 +528,29 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
 	log.text += data;
-	if (data.indexOf("muxing overhead")>-1) busy = false;
+	if (data.indexOf("muxing overhead")>-1) 
+	{
+		busy = false;
+		if (thumb1)
+		{
+			//file: copy
+			var sourceFile:File = new File(thumb1);
+			var destFile:File = new File( tPath + "thumb2.jpg" );
+			sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+			sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+			try 
+			{
+				sourceFile.copyTo( destFile );
+				var destFile:File = new File( tPath + "thumb3.jpg" );
+				sourceFile.copyTo( destFile );
+			}
+			catch (error:Error)
+			{
+				Util.errorLog( "CopyFolders Error:" + error.message );
+			}
+		}
+	}
+
 	Util.ffMpegErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function errorMovieDataHandler(event:ProgressEvent):void
