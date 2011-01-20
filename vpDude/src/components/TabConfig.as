@@ -54,6 +54,7 @@ private var timer:Timer;
 private var busy:Boolean = false;
 private var thumb1:String;
 private var tPath:String;
+private var currentThumb:int;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -338,18 +339,11 @@ public function processAllFiles( selectedDir:File ):void
 						previewFolder.createDirectory();
 					}
 					log.text += "\nGenerating thumbs with ffmpeg for " + clipPath;
-					//startFFMpegProcess = new NativeProcess();
-					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:1,frame:1});
-					//thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:1});
-					//thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:1});
-					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2,frame:2});
-					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3,frame:3});
-					/*execute( clipPath, thumbsPath, 1 );
-					execute( clipPath, thumbsPath, 2 );
-					execute( clipPath, thumbsPath, 3 );*/
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:1});
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2});
+					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3});
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
 					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
-					//generatePreview( clipPath, swfPath, clipGeneratedName, false );
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
@@ -396,14 +390,15 @@ private function processConvert(event:Event): void
 		if ( thumbsToConvert.length > 0 )
 		{
 			busy = true;
-			execute(  thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber, thumbsToConvert[0].frame );
+			currentThumb = thumbsToConvert[0].tNumber;
+			execute(  thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber );
 			thumbsToConvert.shift();
 		}
 		else
 		{	
 			if ( newClips.length > 0 )
 			{
-				busy = true;
+				//busy = true;
 				var clips:Clips = Clips.getInstance();
 				clips.addNewClip( newClips[0].clipName, newClips[0].ownXml, newClips[0].cPath );
 				newClips.shift();
@@ -476,7 +471,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		Util.log( "NativeProcess Error: " + e.message );
 	}
 }
-private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint, frameNumber:uint ):void
+private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
 	// Start the process
 	try
@@ -485,7 +480,7 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
 		
-		if (thumbNumber == 1) thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg";
+		if (thumbNumber == 1) thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg" else thumb1 = "";
 		var processArgs:Vector.<String> = new Vector.<String>();
 		processArgs[0] = "-i";
 		processArgs[1] = ownVideoPath;
@@ -498,7 +493,7 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 		processArgs[8] =  "-s";
 		processArgs[9] = "100x74"; //Frame size must be a multiple of 2
 		processArgs[10] =  "-ss";
-		processArgs[11] = frameNumber.toString();
+		processArgs[11] = thumbNumber.toString();
 		processArgs[12] = thumbsPath + "thumb" + thumbNumber + ".jpg";
 		processArgs[13] = "-y";
 		nativeProcessStartupInfo.arguments = processArgs;
@@ -530,11 +525,10 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 	log.text += data;
 	if (data.indexOf("muxing overhead")>-1) 
 	{
-		busy = false;
-		if (thumb1)
+		if ( thumb1.length > 0 )
 		{
 			//file: copy
-			var sourceFile:File = new File(thumb1);
+			var sourceFile:File = new File( thumb1 );
 			var destFile:File = new File( tPath + "thumb2.jpg" );
 			sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
@@ -549,6 +543,7 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 				Util.errorLog( "CopyFolders Error:" + error.message );
 			}
 		}
+		busy = false;
 	}
 
 	Util.ffMpegErrorLog( "NativeProcess errorOutputDataHandler: " + data );
