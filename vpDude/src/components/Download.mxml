@@ -3,7 +3,7 @@
 					xmlns:s="library://ns.adobe.com/flex/spark" 
 					xmlns:mx="library://ns.adobe.com/flex/mx" 
 					label="download" 
-					width="824" height="461">
+					width="100%" height="100%">
 	<fx:Script source="TabBrowser.as" />
 	
 	
@@ -16,7 +16,7 @@
 				<s:Button label="Reload" height="18" click="htmlBrowser.reload()"/>
 				
 			</s:HGroup>
-			<mx:HTML id="htmlBrowser" width="815" height="640" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
+			<mx:HTML id="htmlBrowser" width="815" height="520" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />
 			
 		</s:VGroup>
 	

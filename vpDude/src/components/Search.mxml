@@ -5,7 +5,7 @@
 					xmlns:components="com.hillelcoren.components.*"
 					label="search" 
 					creationComplete="search_creationCompleteHandler(event)" 
-					width="824" height="461" xmlns:components1="components.*"
+					width="100%" height="100%" xmlns:components1="components.*"
 					>
 
 	<fx:Script source="TabSearch.as" />
@@ -20,7 +20,7 @@
 				showRemoveIcon = "true"
 				change="handleAutoCompleteChange()"
 				prompt="Use comma to separate tags, backspace to remove"
-				width="650">
+				width="590">
 				<components:inlineButton>
 					<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleButtonClick()"/>
 				</components:inlineButton>
@@ -28,29 +28,30 @@
 
 			<!--<s:Label text="Use comma to separate tags, backspace to remove" width="400"/>-->
 		</s:HGroup>
-		<s:HGroup width="819" height="630" >
-			<s:List id="clipList" width="570" height="520"
+		<s:HGroup >
+			<s:List id="clipList" width="490" height="520"
 					itemRenderer="components.ClipItemRenderer" 
 					labelField="@name"
 					dataProvider="{clips.clipsXMLList}"
 					>
 				<s:layout>
-					<s:TileLayout columnAlign="justifyUsingWidth" horizontalGap="0" horizontalAlign="justify" verticalAlign="middle" />
+					<s:TileLayout columnAlign="justifyUsingWidth" />
+<!--					<s:TileLayout columnAlign="justifyUsingWidth" horizontalGap="0" horizontalAlign="justify" verticalAlign="middle" />-->
 				</s:layout>
 			</s:List>
-			<s:VGroup width="240" height="630">
-				<mx:SWFLoader id="swfComp" width="240" height="180"/>
-				<mx:LinkButton id="viewClipBtn" label="" width="240"/>
-				<mx:LinkButton id="viewCreatorBtn" label="" width="240"/>			
-				<s:Label id="localUrl" paddingLeft="10" height="25"  width="240" />
-				<mx:Spacer height="30"/>
+			<s:VGroup width="330" height="630">
+				<mx:SWFLoader id="swfComp" width="320" height="240"/>
+				<mx:LinkButton id="viewClipBtn" label="" width="320"/>
+				<mx:LinkButton id="viewCreatorBtn" label="" width="320"/>			
+				<s:Label id="localUrl" paddingLeft="10" height="25"  width="320" />
+				<mx:Spacer height="100"/>
 				<components:AdvancedAutoComplete
 					id="tagAutoComplete"
 					allowMultipleSelection="true"
 					allowNewValues="true"
 					showRemoveIcon = "true"
 					autoSelectEnabled = "false"
-					width="240">
+					width="320">
 					<components:inlineButton>
 						<mx:Button icon="@Embed(source='/com/hillelcoren/assets/icons/down.png')" click="handleTagButtonClick()"/>
 					</components:inlineButton>
