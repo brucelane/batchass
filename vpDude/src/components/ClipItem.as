@@ -267,6 +267,10 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 		{	
 			searchComp.localUrl.text = data.attribute( "urllocal" );
 		}
+		else
+		{
+			searchComp.localUrl.text = "";
+		}
 	}
 
 	var draggedObject:Clipboard = new Clipboard();
