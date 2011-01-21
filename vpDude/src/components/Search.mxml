@@ -35,7 +35,7 @@
 					dataProvider="{clips.clipsXMLList}"
 					>
 				<s:layout>
-					<s:TileLayout columnAlign="justifyUsingWidth" />
+					<s:TileLayout horizontalGap="10" />
 <!--					<s:TileLayout columnAlign="justifyUsingWidth" horizontalGap="0" horizontalAlign="justify" verticalAlign="middle" />-->
 				</s:layout>
 			</s:List>
@@ -43,8 +43,8 @@
 				<mx:SWFLoader id="swfComp" width="320" height="240"/>
 				<mx:LinkButton id="viewClipBtn" label="" width="320"/>
 				<mx:LinkButton id="viewCreatorBtn" label="" width="320"/>			
-				<s:Label id="localUrl" paddingLeft="10" height="25"  width="320" />
-				<mx:Spacer height="100"/>
+				<s:Label id="localUrl" paddingLeft="10" height="45"  width="320" />
+				<mx:Spacer height="90"/>
 				<components:AdvancedAutoComplete
 					id="tagAutoComplete"
 					allowMultipleSelection="true"
