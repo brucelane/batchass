@@ -345,6 +345,7 @@ public function processAllFiles( selectedDir:File ):void
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
 					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
+										<dategenerated>{clipGeneratedName.substr(0,18)}</dategenerated>
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
 										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
