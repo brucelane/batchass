@@ -144,6 +144,20 @@ package fr.batchass
 			if ( lastDot > -1 ) fileName = fileName.substr( 0, lastDot );
 			return fileName;
 		}
+		
+		public static function getFileNameWithoutExtensionWithDate( url:String ):String
+		{
+			var fileName:String = getFileName( url );
+			var lastDot:int = fileName.lastIndexOf( '.' );
+			if ( lastDot > -1 ) fileName = fileName.substr( 0, lastDot );
+			
+			var millisecs:DateFormatter = new DateFormatter();
+			millisecs.formatString = "YYYYMMDD-HHNNSSQQQ-";
+			
+			fileName = millisecs.format(new Date()) + fileName;
+			
+			return fileName;
+		}
 
 	}
 }
