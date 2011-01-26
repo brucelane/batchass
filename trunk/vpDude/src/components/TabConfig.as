@@ -314,7 +314,7 @@ public function processAllFiles( selectedDir:File ):void
 				clipRelativePath = clipRelativePath.substr( 0, lastSlash );
 			}
 			
-			var clipGeneratedName:String = Util.getFileNameWithoutExtension( clipPath );
+			var clipGeneratedName:String = Util.getFileNameWithoutExtensionWithDate( clipPath );
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
