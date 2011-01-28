@@ -49,10 +49,10 @@ private function e4xLoadComplete( event:Event ):void
 	
 	// download thumbs and video if not in cache
 	if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );
+	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb1 );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb2 );
 	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb3 );
-	parentDocument.cache.getClipByURL( clipXml..urldownload );
 	parentDocument.cache.getSwfByURL( clipXml..urlpreview );
 	clipXml.dlddate = Util.nowDate;
 	
