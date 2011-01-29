@@ -133,6 +133,7 @@ private function getCachedSwf( swfUrl:String ):String
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
 	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl );
+	Util.log( "getCachedSwf, cachedSwfUrl: " + cachedSwfUrl );
 	return cachedSwfUrl;
 }
 private function getCachedThumbnail( thumbnailUrl:String ):String
@@ -253,7 +254,18 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 		searchComp.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
 		searchComp.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
 		var urlPreview:String = data.urlpreview;
-		if ( urlPreview ) searchComp.swfComp.source = data.urlpreview else searchComp.swfComp.source = null;
+		Util.log( "imgUrl_mouseDownHandler, urlPreview: " + urlPreview );
+		if ( urlPreview ) 
+		{
+			var cachedUrl:String = getCachedSwf( urlPreview );
+			Util.log( "imgUrl_mouseDownHandler, cachedUrl: " + cachedUrl );
+			searchComp.swfComp.source = cachedUrl;
+		}
+		else
+		{
+			Util.log( "imgUrl_mouseDownHandler, urlPreview null" );
+			searchComp.swfComp.source = null;
+		}
 		searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
 		searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
 		data..tags.tag.
