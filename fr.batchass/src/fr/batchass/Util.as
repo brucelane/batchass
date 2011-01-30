@@ -105,7 +105,7 @@ package fr.batchass
 				if ( !dateFormatter )
 				{
 					dateFormatter = new DateFormatter();
-					dateFormatter.formatString = "YYYYMMDD-HHhNN";
+					dateFormatter.formatString = "HH";
 				}
 				_sessionDate = dateFormatter.format(new Date());	
 			}
