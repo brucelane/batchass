@@ -41,72 +41,83 @@ public var launchE4X:Function = function( e4xResult : String ) : void
 private function e4xLoadComplete( event:Event ):void
 {
 	var loader:URLLoader = event.target as URLLoader;
+	var clips:Clips = Clips.getInstance();
+	var tags:Tags = Tags.getInstance();
 	
-	trace(loader.data);
 	// downloaded one clip xml
 	var clipXml:XML = XML( loader.data );
 	var clipId:String = clipXml.@id;
-	
-	// download thumbs and video if not in cache
-	if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );
-	parentDocument.cache.getClipByURL( clipXml..urldownload );
-	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb1 );
-	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb2 );
-	parentDocument.cache.getThumbnailByURL( clipXml..urlthumb3 );
-	parentDocument.cache.getSwfByURL( clipXml..urlpreview );
-	clipXml.dlddate = Util.nowDate;
-	
-	// add originaltags
-	var clipOriginalTagList:XMLList = clipXml..tag as XMLList;
-	for each ( var originalClipTag:XML in clipOriginalTagList )
-	{
-		var clipOriginalXmlTag:XML = <originaltag name={originalClipTag.@name} creationdate={Util.nowDate}  />;
-		clipXml.tags.appendChild( clipOriginalXmlTag );	
-	}
-	// add clip name and creator name tags
-	var creatorTag:String = clipXml..creator.@name.toString().toLowerCase();
-	var creatorXmlTag:XML = <tag name={creatorTag} creationdate={Util.nowDate}  />;
-	var creatorAddedXmlTag:XML = <addedtag name={creatorTag} creationdate={Util.nowDate}  />;
-	clipXml..tags.appendChild( creatorXmlTag );
-	clipXml..tags.appendChild( creatorAddedXmlTag );
-	var clipTag:String = clipXml..clip.@name.toString().toLowerCase();
-	var clipXmlTag:XML = <tag name={clipTag} creationdate={Util.nowDate}  />;
-	var clipAddedXmlTag:XML = <addedtag name={clipTag} creationdate={Util.nowDate}  />;
-	clipXml..tags.appendChild( clipXmlTag );
-	clipXml..tags.appendChild( clipAddedXmlTag );
-	
-	// xml list of tags
-	var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;
-	var newTag:Boolean = false;
-	var foundNewTag:Boolean;
-	
-	var clips:Clips = Clips.getInstance();
-	var tags:Tags = Tags.getInstance();
+	// if clip exists
+	Util.log( 'e4xLoadComplete, clipExists: ' + clips.clipIsNew( clipId ) );
 
-	//add new clip if exists
-	clips.addNewClip( clipId, clipXml );
-	
-	//TODO optimize
-	for each ( var oneTag:XML in clipXmlTagList )
+	if ( clips.clipIsNew( clipId ) )
 	{
-		foundNewTag = true;
-		var appTagList:XMLList = tags.TAGS_XML..tag as XMLList;
-		for each ( var appTag:XML in appTagList )
+		Util.log( 'e4xLoadComplete, clip does not exist' );
+		// download thumbs and video if not in cache
+		if ( !parentDocument.cache ) parentDocument.cache = new CacheManager( parentDocument.dldFolderPath );
+		parentDocument.cache.getClipByURL( clipXml..urldownload );
+		parentDocument.cache.getThumbnailByURL( clipXml..urlthumb1 );
+		parentDocument.cache.getThumbnailByURL( clipXml..urlthumb2 );
+		parentDocument.cache.getThumbnailByURL( clipXml..urlthumb3 );
+		parentDocument.cache.getSwfByURL( clipXml..urlpreview );
+		clipXml.dlddate = Util.nowDate;
+		
+		// add originaltags
+		var clipOriginalTagList:XMLList = clipXml..tag as XMLList;
+		for each ( var originalClipTag:XML in clipOriginalTagList )
 		{
-			if ( appTag.@name==oneTag.@name )
+			var clipOriginalXmlTag:XML = <originaltag name={originalClipTag.@name} creationdate={Util.nowDate}  />;
+			clipXml.tags.appendChild( clipOriginalXmlTag );	
+		}
+		// add clip name and creator name tags
+		var creatorTag:String = clipXml..creator.@name.toString().toLowerCase();
+		var creatorXmlTag:XML = <tag name={creatorTag} creationdate={Util.nowDate}  />;
+		var creatorAddedXmlTag:XML = <addedtag name={creatorTag} creationdate={Util.nowDate}  />;
+		clipXml..tags.appendChild( creatorXmlTag );
+		clipXml..tags.appendChild( creatorAddedXmlTag );
+		var clipTag:String = clipXml..clip.@name.toString().toLowerCase();
+		var clipXmlTag:XML = <tag name={clipTag} creationdate={Util.nowDate}  />;
+		var clipAddedXmlTag:XML = <addedtag name={clipTag} creationdate={Util.nowDate}  />;
+		clipXml..tags.appendChild( clipXmlTag );
+		clipXml..tags.appendChild( clipAddedXmlTag );
+		
+		// xml list of tags
+		var clipXmlTagList:XMLList = clipXml..tags.tag as XMLList;
+		var newTag:Boolean = false;
+		var foundNewTag:Boolean;
+		
+	
+		//add new clip if exists
+		clips.addNewClip( clipId, clipXml );
+		
+		//TODO optimize
+		for each ( var oneTag:XML in clipXmlTagList )
+		{
+			foundNewTag = true;
+			var appTagList:XMLList = tags.TAGS_XML..tag as XMLList;
+			for each ( var appTag:XML in appTagList )
 			{
-				foundNewTag = false;
+				if ( appTag.@name==oneTag.@name )
+				{
+					foundNewTag = false;
+				}
+			}
+			if ( foundNewTag )
+			{
+				tags.TAGS_XML.appendChild( oneTag );
+				newTag = true;	
 			}
 		}
-		if ( foundNewTag )
+		if ( newTag )
 		{
-			tags.TAGS_XML.appendChild( oneTag );
-			newTag = true;	
+			tags.writeTagsFile();
 		}
+		
 	}
-	if ( newTag )
+	else
 	{
-		tags.writeTagsFile();
+		Util.log( 'e4xLoadComplete, clip exists' );
+
 	}
 }
 
