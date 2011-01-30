@@ -21,6 +21,7 @@ import mx.core.FlexGlobals;
 import mx.core.UIComponent;
 import mx.core.windowClasses.TitleBar;
 
+import spark.components.Application;
 import spark.components.TextInput;
 import spark.components.Window;
 

@@ -169,6 +169,28 @@ package videopong
 			}
 			return foundNewClip;
 		}
+		public function clipIsNew( clipGeneratedName:String, urllocal:String=null ):Boolean
+		{
+			var foundNewClip:Boolean = true;
+			if ( urllocal )
+			{
+				// for own clips, test if already in db
+				foundNewClip = newClip( urllocal );
+			}
+			else
+			{
+				// for downloaded clips, test if already in db
+				for each ( var appClip:XML in clipsXMLList )
+				{
+					if ( appClip.@id.toString() == clipGeneratedName )
+					{
+						foundNewClip = false;
+					}
+				}
+				
+			}
+			return foundNewClip;
+		}
 		public function addNewClip( clipGeneratedName:String, clipXml:XML, urllocal:String=null ):void
 		{
 			var foundNewClip:Boolean = true;
@@ -182,7 +204,7 @@ package videopong
 				// for downloaded clips, test if already in db
 				for each ( var appClip:XML in clipsXMLList )
 				{
-					if ( appClip.@clipid.toString() == clipGeneratedName )//TO BE VERIFIED
+					if ( appClip.@id.toString() == clipGeneratedName )
 					{
 						foundNewClip = false;
 					}

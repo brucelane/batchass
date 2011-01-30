@@ -82,7 +82,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener( NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize );
 
-	Util.log( "NativeProcess.isSupported:" + NativeProcess.isSupported );
+	Util.log( "NativeProcess.isSupported:" + NativeProcess.isSupported, true );
 	urlMonitor( vpRootUrl );
 	checkFFMpeg();
 }
