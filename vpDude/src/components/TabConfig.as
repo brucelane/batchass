@@ -77,12 +77,12 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			{
 				hiddenPassword += "*";
 			}
-			
-			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
+			parentDocument.vpFolderPath = File.applicationStorageDirectory.nativePath;
+/*			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
 			if ( !parentDocument.vpFolderPath || parentDocument.vpFolderPath.length == 0 )
 			{
-				parentDocument.vpFolderPath = File.documentsDirectory.resolvePath( "vpdude/" ).nativePath;
-			}
+				parentDocument.vpFolderPath = File.applicationStorageDirectory.nativePath;
+			}*/			
 			vpDbPath = parentDocument.vpFolderPath;
 			parentDocument.ownFolderPath = CONFIG_XML..own[0].toString();
 			isConfigured = true;
@@ -137,12 +137,12 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 		isChanged = true;
 		password = pwdTextInput.text;
 	}
-	if ( parentDocument.vpFolderPath != dbTextInput.text ) 
+	/*if ( parentDocument.vpFolderPath != dbTextInput.text ) 
 	{
 		isChanged = true;
 		// Copy db to new location
 		copyFolders( new File( parentDocument.vpFolderPath ), dbTextInput.text );
-	}
+	}*/
 	if ( isChanged ) parentDocument.statusText.text = "Configuration saved";
 	checkFolder( parentDocument.vpFolderPath );
 	writeFolderXmlFile();
