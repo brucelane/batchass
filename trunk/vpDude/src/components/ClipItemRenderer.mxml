@@ -16,9 +16,7 @@
 					   width.normal="105" height.normal="79" 
 					   width="106" height="80">
 		<mx:Image id="imgUrl" alpha.hovered=".7" 
-				  source.normal="{cachedThumbnail1}" 
-				  source.hovered="{cachedThumbnail2}" 
-				  source.selected="{cachedThumbnail3}" 
+				  source="{cachedThumbnail1}" 
 				  scaleContent="false"
 				  mouseDown="imgUrl_mouseDownHandler(event)"
 				  toolTip="Click to drag video"
