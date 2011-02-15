@@ -158,6 +158,17 @@ package fr.batchass
 			
 			return fileName;
 		}
+		public static function getFileNameWithSafePath( url:String ):String
+		{
+			var patternBackslash:RegExp = /\\/g;  
+			var patternForwardslash:RegExp = /\//g;  
+			var patternColon:RegExp = /:/g;  
+			var fileName:String = url.replace(patternBackslash,"-");
+				
+			fileName = fileName.replace(patternForwardslash,"-");
+			fileName = fileName.replace(patternColon,"");
 
+			return fileName;
+		}
 	}
 }
