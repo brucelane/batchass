@@ -29,10 +29,12 @@ import videopong.*;
 
 [Bindable]
 private var cachedThumbnail1:String;
+/*
 [Bindable]
 private var cachedThumbnail2:String;
 [Bindable]
 private var cachedThumbnail3:String;
+*/
 [Bindable]
 private var clipname:String;
 [Bindable]
@@ -74,7 +76,7 @@ override public function set data( value:Object ) : void {
 				Util.errorLog( cachedThumbnail1 + " does not exist" );
 			}
 
-			if ( data.urlthumb2 ) cachedThumbnail2 = data.urlthumb2;
+			/*if ( data.urlthumb2 ) cachedThumbnail2 = data.urlthumb2;
 			var thumb2:File = new File( cachedThumbnail2 );
 			if ( !thumb2.exists ) 
 			{
@@ -87,15 +89,15 @@ override public function set data( value:Object ) : void {
 			{
 				Util.errorLog( cachedThumbnail3 + " does not exist" );
 				cachedThumbnail3 = cachedThumbnail1;
-			}
+			}*/
 			if ( data.@urllocal ) cachedVideo = data.@urllocal;
 		}
 		else
 		{
 			// get urls from cached files
 			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
-			if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
-			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );
+			/*if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
+			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );*/
 			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload );
 			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview );
 		}
