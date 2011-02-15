@@ -530,6 +530,7 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 {
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
+	if ( log.text.length > 100 ) log.text = "";
 	log.text += data;
 	if (data.indexOf("muxing overhead")>-1) 
 	{
