@@ -136,6 +136,12 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	{
 		isChanged = true;
 		password = pwdTextInput.text;
+		hiddenPassword = "";
+		for ( var i:uint = 0; i < password.length; i++ )
+		{
+			hiddenPassword += "*";
+		}
+		pwdTextInput.text = hiddenPassword;
 	}
 	/*if ( parentDocument.vpFolderPath != dbTextInput.text ) 
 	{
