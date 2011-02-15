@@ -522,6 +522,7 @@ private function outputDataHandler(event:ProgressEvent):void
 {
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardOutput.readUTFBytes(process.standardOutput.bytesAvailable);
+	resetConsole();
 	log.text += data;
 	Util.ffMpegOutputLog( "NativeProcess outputDataHandler: " + data );
 }
@@ -530,7 +531,7 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 {
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
-	if ( log.text.length > 100 ) log.text = "";
+	resetConsole();
 	log.text += data;
 	if (data.indexOf("muxing overhead")>-1) 
 	{
@@ -561,9 +562,14 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 {
 	var process:NativeProcess = event.target as NativeProcess;
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
+	resetConsole();
 	log.text += data;
 	if (data.indexOf("muxing overhead")>-1) busy = false;
 	Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
+}
+private function resetConsole():void
+{
+	if ( log.text.length > 100 ) log.text = "";
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
