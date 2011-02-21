@@ -60,10 +60,11 @@ private var searchComp:Search;
 // for tagAutoComplete
 private var ac:ArrayCollection;
 private var tagArray:Array = [];
-
+private const minFileSize:int = 10000;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
+	var reLoad:Boolean = false;
 	if ( data )
 	{
 		if ( data.attribute( "urllocal" ).length() > 0 ) 
@@ -93,13 +94,29 @@ override public function set data( value:Object ) : void {
 			if ( data.@urllocal ) cachedVideo = data.@urllocal;
 		}
 		else
-		{
+		{	
 			// get urls from cached files
 			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
 			/*if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
 			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );*/
-			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload );
-			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview );
+			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload ) else cachedVideo = "";
+			if ( data.urlpreview )
+			{
+				cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );//calls getClipByURL
+				var swfPreview:File = new File( cachedSwf );
+				if ( !swfPreview.exists ) 
+				{
+					Util.errorLog( cachedSwf + " does not exist" );
+				}
+				else
+				{
+					if ( swfPreview.size < minFileSize )
+					{
+						Util.errorLog( cachedSwf + " size < " + minFileSize.toString());
+
+					}
+				}
+			}
 		}
 		//load image for drag n drop
 		var req:URLRequest = new URLRequest( cachedThumbnail1 );
@@ -132,10 +149,10 @@ private function getCachedVideo( videoUrl:String ):String
 	var cachedVideoUrl:String = FlexGlobals.topLevelApplication.cache.getClipByURL( videoUrl );
 	return cachedVideoUrl;
 }
-private function getCachedSwf( swfUrl:String ):String
+private function getCachedSwf( swfUrl:String, videoUrl:String ):String
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl );
+	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl, videoUrl );
 	Util.log( "getCachedSwf, cachedSwfUrl: " + cachedSwfUrl );
 	return cachedSwfUrl;
 }
@@ -260,7 +277,7 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 		Util.log( "imgUrl_mouseDownHandler, urlPreview: " + urlPreview );
 		if ( urlPreview ) 
 		{
-			var cachedUrl:String = getCachedSwf( urlPreview );
+			var cachedUrl:String = getCachedSwf( urlPreview, "" );
 			Util.log( "imgUrl_mouseDownHandler, cachedUrl: " + cachedUrl );
 			searchComp.swfComp.source = cachedUrl;
 		}

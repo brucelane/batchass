@@ -161,7 +161,7 @@ public function addTabs():void
 		var tags:Tags = Tags.getInstance();
 		tags.dbPath = dbFolderPath;
 		tags.loadTagsFile();
-		// load tagsFile when config is done
+		// load clipsFile when config is done
 		var clips:Clips = Clips.getInstance();
 		clips.dbPath = dbFolderPath;
 		clips.loadClipsFile();
