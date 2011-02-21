@@ -163,9 +163,9 @@ package fr.batchass
 			var patternBackslash:RegExp = /\\/g;  
 			var patternForwardslash:RegExp = /\//g;  
 			var patternColon:RegExp = /:/g;  
-			var fileName:String = url.replace(patternBackslash,"-");
+			var fileName:String = url.replace(patternBackslash,"§");
 				
-			fileName = fileName.replace(patternForwardslash,"-");
+			fileName = fileName.replace(patternForwardslash,"§");
 			fileName = fileName.replace(patternColon,"");
 
 			return fileName;

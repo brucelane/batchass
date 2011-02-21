@@ -29,6 +29,7 @@ package fr.batchass
 		private static var timer:Timer;
 		private static var busy:Boolean = false;
 		private static var filesToDownload:Array = new Array();
+		private static const minFileSize:int = 10000;
 		
 		public function CacheManager( cacheDir:String )
 		{
@@ -82,13 +83,13 @@ package fr.batchass
 				return thumbnailUrl;
 			}		
 		}
-		public function getClipByURL( assetUrl:String ):String
+		public function getClipByURL( assetUrl:String, force:Boolean=false ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getClipByURL localUrl: " + localUrl );
-			if( cacheFile.exists )
+			if( cacheFile.exists && !force )
 			{
 				Util.log( "CacheManager, getClipByURL cacheFile exists: " + cacheFile.url );
 				//if ( displayInDefaultApp ) cacheFile.openWithDefaultApplication();
@@ -96,12 +97,13 @@ package fr.batchass
 			} 
 			else 
 			{
-				Util.log( "CacheManager, getClipByURL cacheFile does not exist: " + assetUrl );
+				if ( force ) Util.log( "CacheManager, getClipByURL cacheFile forced: " + force.toString() );
+				Util.log( "CacheManager, getClipByURL cacheFile does not exist or download forced: " + assetUrl );
 				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
 				return assetUrl;
 			}
 		}
-		public function getSwfByURL( assetUrl:String ):String
+		public function getSwfByURL( assetUrl:String, videoUrl:String ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			var cacheFile:File = new File( localUrl );
@@ -109,8 +111,22 @@ package fr.batchass
 			Util.log( "CacheManager, getSwfByURL localUrl: " + localUrl );
 			if( cacheFile.exists )
 			{
-				Util.log( "CacheManager, getSwfByURL cacheFile exists: " + cacheFile.url );
-				return cacheFile.url;
+				Util.log( "CacheManager, getSwfByURL size: " + cacheFile.size );
+				// error9 case:
+				if ( cacheFile.size < minFileSize )
+				{
+					// dl the video
+					if ( videoUrl.length > 0 ) getClipByURL( videoUrl, true );
+					// then the swf (for session mgmt)
+					filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
+					return assetUrl;
+				}
+				else
+				{
+					Util.log( "CacheManager, getSwfByURL cacheFile exists and size ok: " + cacheFile.url );
+					return cacheFile.url;
+				}
+				
 			} 
 			else 
 			{
@@ -143,7 +159,7 @@ package fr.batchass
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, addFileToCache localUrl: " + localUrl );
-			if( cacheFile.exists )
+			if( cacheFile.exists && cacheFile.size > minFileSize )
 			{
 				Util.log( "CacheManager, addFileToCache cacheFile exists" );
 				busy = false;			
