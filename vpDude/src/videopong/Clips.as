@@ -51,6 +51,7 @@ package videopong
 					if ( CLIPS_XML..video.length() )
 					{
 						isConfigured = true;
+						//loadFilesInCache();
 					}
 				}
 			}
@@ -65,6 +66,11 @@ package videopong
 			}
 			refreshClipsXMLList();
 		}
+		/*public function loadFilesInCache():void 
+		{
+			trace("loadFilesInCache");				
+			
+		}*/
 		public function writeClipsFile():void 
 		{
 			clipsXmlPath = _dbPath + File.separator + "clips.xml";
