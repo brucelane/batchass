@@ -42,6 +42,9 @@ private var vpDbPath:String = "";
 private var password:String = "";
 private var passwordChanged:Boolean = false;
 
+[Bindable]
+private var reso:String = "320x240";
+
 public static var CONFIG_XML:XML;
 private var OWN_CLIPS_XML:XML;
 private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "mpeg", "mpg", "h264"];
@@ -77,6 +80,7 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			{
 				hiddenPassword += "*";
 			}
+			reso = CONFIG_XML..reso[0].toString();
 			parentDocument.vpFolderPath = File.applicationStorageDirectory.nativePath;
 /*			parentDocument.vpFolderPath = CONFIG_XML..db[0].toString();
 			if ( !parentDocument.vpFolderPath || parentDocument.vpFolderPath.length == 0 )
@@ -94,11 +98,18 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 		parentDocument.statusText.text = msg;
 		Util.log( msg );
 	}
-	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
-	parentDocument.vpUploadUrl = parentDocument.vpUpUrl + "?login=" + userName + "&password=" + password;
+	createEncodedVars();
 	timer = new Timer(1000);
 	timer.addEventListener(TimerEvent.TIMER, processConvert);
 	timer.start();
+
+}
+private function createEncodedVars():void
+{
+	var fullUrlToEncode:String = parentDocument.vpUrl + "?login=" + escape(userName) + "&password=" + escape(password);
+	var fullUpUrlToEncode:String = parentDocument.vpUpUrl + "?login=" + escape(userName) + "&password=" + escape(password);
+	parentDocument.vpFullUrl = fullUrlToEncode;
+	parentDocument.vpUploadUrl = fullUpUrlToEncode;
 
 }
 protected function config_creationCompleteHandler(event:FlexEvent):void
@@ -125,11 +136,12 @@ protected function pwdTextInput_changeHandler(event:TextOperationEvent):void
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	var isChanged:Boolean = false;
-	if ( userName != userTextInput.text || parentDocument.ownFolderPath != ownTextInput.text ) 
+	if ( userName != userTextInput.text || parentDocument.ownFolderPath != ownTextInput.text || reso != resoTextInput.text ) 
 	{
 		isChanged = true;
 		userName = userTextInput.text;
 		parentDocument.ownFolderPath = ownTextInput.text;
+		reso = resoTextInput.text;
 		checkFolder( parentDocument.ownFolderPath );
 	}
 	if ( passwordChanged ) 
@@ -153,8 +165,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	checkFolder( parentDocument.vpFolderPath );
 	writeFolderXmlFile();
 
-	parentDocument.vpFullUrl = parentDocument.vpUrl + "?login=" + userName + "&password=" + password;
-	parentDocument.vpUploadUrl = parentDocument.vpUpUrl + "?login=" + userName + "&password=" + password;
+	createEncodedVars();
 	if ( !isConfigured )
 	{
 		isConfigured = true;
@@ -206,6 +217,7 @@ private function writeFolderXmlFile():void
 					<pwd>{password}</pwd>
 					<db>{parentDocument.vpFolderPath}</db>
 					<own>{parentDocument.ownFolderPath}</own>
+					<reso>{reso}</reso>
 				 </config>;
 	var folderFile:File = File.applicationStorageDirectory.resolvePath( defaultConfigXmlPath );
 	// write the text file
@@ -463,7 +475,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		processArgs[i++] = "-f";
 		processArgs[i++] = "avm2";
 		processArgs[i++] = "-s";
-		processArgs[i++] =  "320x240";
+		processArgs[i++] = reso;// "320x240";
 		processArgs[i++] = swfPath + clipGeneratedName + ".swf";
 		nativeProcessStartupInfo.arguments = processArgs;
 		var startFFMpegProcess:NativeProcess = new NativeProcess();
