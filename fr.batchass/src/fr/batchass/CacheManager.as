@@ -67,7 +67,8 @@ package fr.batchass
 		public function getThumbnailByURL( thumbnailUrl:String ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileNameFromFormerSlash( thumbnailUrl ) ;
-			var cacheFile:File = new File( localUrl );
+			return localUrl;
+			/*var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getThumbnailByURL localUrl: " + localUrl );
 			if( cacheFile.exists )
@@ -78,15 +79,16 @@ package fr.batchass
 			else 
 			{
 				Util.log( "CacheManager, getThumbnailByURL cacheFile does not exist: " + thumbnailUrl );
-				filesToDownload.push({sUrl:thumbnailUrl,lUrl:localUrl});
+				addFileToCache( thumbnailUrl, localUrl );
 
 				return thumbnailUrl;
-			}		
+			}	*/	
 		}
 		public function getClipByURL( assetUrl:String, force:Boolean=false ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
-			var cacheFile:File = new File( localUrl );
+			return localUrl;
+			/*var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getClipByURL localUrl: " + localUrl );
 			if( cacheFile.exists && !force )
@@ -101,12 +103,72 @@ package fr.batchass
 				Util.log( "CacheManager, getClipByURL cacheFile does not exist or download forced: " + assetUrl );
 				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
 				return assetUrl;
+			}*/
+		}
+		public function downloadClipFiles( thumbnailUrl:String, assetUrl:String, swfUrl:String ):void
+		{
+/*			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
+			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload ) else cachedVideo = "";
+			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );
+
+*/			
+			var tUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileNameFromFormerSlash( thumbnailUrl ) ;
+			var tCacheFile:File = new File( tUrl );
+			var sUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( swfUrl ) ;
+			var sCacheFile:File = new File( sUrl );
+			var cUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
+			var cCacheFile:File = new File( cUrl );
+			
+			Util.cacheLog( "CacheManager, downloadClipFiles thumb localUrl: " + tUrl );
+			if( tCacheFile.exists )
+			{
+				Util.cacheLog( "CacheManager, downloadClipFiles thumb cacheFile exists: " + tCacheFile.url );
+			} 
+			else 
+			{
+				Util.cacheLog( "CacheManager, downloadClipFiles thumb cacheFile does not exist: " + thumbnailUrl );
+				addFileToDownload( thumbnailUrl, tUrl );			
+			}	
+			if ( sCacheFile.exists )
+			{
+				if ( sCacheFile.size < minFileSize )
+				{			
+					Util.cacheLog( "CacheManager, downloadClipFiles sUrl size < " + minFileSize );
+					addFileToDownload( assetUrl, cUrl );
+					addFileToDownload( swfUrl, sUrl);
+				}
+			}
+			else
+			{
+				Util.cacheLog( "CacheManager, downloadClipFiles does not exist " + sUrl );
+				addFileToDownload( assetUrl, cUrl );
+				addFileToDownload( swfUrl, sUrl);
+				
+			}
+				
+		}
+		public function addFileToDownload( assetUrl:String, localUrl:String):void
+		{
+			var found:Boolean = false;
+			if ( filesToDownload.length > 0 )
+			{
+				for ( var i:int = 0; i < filesToDownload.length; i++)
+				{
+					if ( filesToDownload[i].sUrl == assetUrl ) found = true;
+				}				
+			}
+
+			if ( !found )
+			{
+				Util.cacheLog( "CacheManager, addFileToDownload not in queue: " + assetUrl );
+				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
 			}
 		}
-		public function getSwfByURL( assetUrl:String, videoUrl:String ):String
+		public function getSwfByURL( assetUrl:String ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
-			var cacheFile:File = new File( localUrl );
+			return localUrl;
+			/*var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getSwfByURL localUrl: " + localUrl );
 			if( cacheFile.exists )
@@ -133,7 +195,7 @@ package fr.batchass
 				Util.log( "CacheManager, getSwfByURL cacheFile does not exist: " + assetUrl );
 				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
 				return assetUrl;
-			}
+			}*/
 		}
 		// download image for gallery
 		public function getGalleryImageByURL( url:String, width:int, height:int ):String
@@ -159,14 +221,14 @@ package fr.batchass
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, addFileToCache localUrl: " + localUrl );
-			if( cacheFile.exists && cacheFile.size > minFileSize )
+/*			if( cacheFile.exists && cacheFile.size > minFileSize )
 			{
 				Util.log( "CacheManager, addFileToCache cacheFile exists" );
 				busy = false;			
 			}
 			else
 			{
-				Util.log( "CacheManager, addFileToCache cacheFile does not exist" );
+				Util.log( "CacheManager, addFileToCache cacheFile does not exist" );*/
 				if(!pendingDictionaryByURL[url])
 				{
 					Util.log( "CacheManager, addFileToCache url: " + url );
@@ -183,7 +245,7 @@ package fr.batchass
 					pendingDictionaryByCacheFile[loader] = localUrl;
 					pendingDictionaryByURL[url] = true;
 				} 
-			}
+			//}
 		}
 
 		private function addAssetToCache( url:String, displayInDefaultApp:Boolean = false ):void
@@ -232,6 +294,7 @@ package fr.batchass
 			
 			var cacheFile:File = new File( pendingDictionaryByCacheFile[loader] );
 			Util.log( "CacheManager, addFileToCache cacheFile: " + pendingDictionaryByCacheFile[loader] );
+			Util.log( "CacheManager, addFileToCache cacheFile.url: " + cacheFile.url );
 			var stream:FileStream = new FileStream();
 			cacheFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 			stream.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );

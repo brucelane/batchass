@@ -45,6 +45,21 @@ package fr.batchass
 			trace( text );
 			
 		} 
+		public static function cacheLog( text:String, clear:Boolean=false ):void
+		{
+			
+			var file:File = File.applicationStorageDirectory.resolvePath( "cache-" + sessionDate + ".log" );
+			var fileMode:String = ( clear ? FileMode.WRITE : FileMode.APPEND );
+			
+			var fileStream:FileStream = new FileStream();
+			fileStream.open( file, fileMode );
+			
+			fileStream.writeMultiByte( text + "\n", File.systemCharset );
+			fileStream.close();
+			trace( text );
+			
+		} 
+
 		public static function ffMpegOutputLog( text:String, clear:Boolean=false ):void
 		{
 			
