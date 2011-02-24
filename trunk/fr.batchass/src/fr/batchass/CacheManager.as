@@ -16,8 +16,9 @@ package fr.batchass
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	
-	public class CacheManager
+	public class CacheManager implements IEventDispatcher
 	{
+		private var dispatcher:EventDispatcher;
 		private var _cacheDir:File;
 		private static var instance:CacheManager;
 		private static var pendingDictionaryByLoader:Dictionary = new Dictionary();
@@ -35,6 +36,7 @@ package fr.batchass
 		{
 			_cacheDir = File.documentsDirectory.resolvePath( cacheDir );
 			Util.log( "CacheManager, constructor, cachedir: " + cacheDir );
+			dispatcher = new EventDispatcher(this);
 			timer = new Timer(1000);
 			timer.addEventListener(TimerEvent.TIMER, processQueue);
 			timer.start();
@@ -50,7 +52,26 @@ package fr.batchass
 			
 			return instance;
 		}
-		private static function processQueue(event:Event): void 
+		public function addEventListener(type:String, listener:Function, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = false):void{
+			dispatcher.addEventListener(type, listener, useCapture, priority);
+		}
+		
+		public function dispatchEvent(evt:Event):Boolean{
+			return dispatcher.dispatchEvent(evt);
+		}
+		
+		public function hasEventListener(type:String):Boolean{
+			return dispatcher.hasEventListener(type);
+		}
+		
+		public function removeEventListener(type:String, listener:Function, useCapture:Boolean = false):void{
+			dispatcher.removeEventListener(type, listener, useCapture);
+		}
+		
+		public function willTrigger(type:String):Boolean {
+			return dispatcher.willTrigger(type);
+		}
+		private function processQueue(event:Event): void 
 		{
 			if ( !busy )
 			{
@@ -61,14 +82,16 @@ package fr.batchass
 					addFileToCache( filesToDownload[0].sUrl, filesToDownload[0].lUrl );
 					filesToDownload.shift();
 			 	}
-
+				else
+				{
+					dispatchEvent( new Event(Event.COMPLETE) );
+				}	
 			}
 		}
 		public function getThumbnailByURL( thumbnailUrl:String ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileNameFromFormerSlash( thumbnailUrl ) ;
-			return localUrl;
-			/*var cacheFile:File = new File( localUrl );
+			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, getThumbnailByURL localUrl: " + localUrl );
 			if( cacheFile.exists )
@@ -79,39 +102,17 @@ package fr.batchass
 			else 
 			{
 				Util.log( "CacheManager, getThumbnailByURL cacheFile does not exist: " + thumbnailUrl );
-				addFileToCache( thumbnailUrl, localUrl );
-
+				filesToDownload.push({sUrl:thumbnailUrl,lUrl:localUrl});				
 				return thumbnailUrl;
-			}	*/	
+			}
 		}
 		public function getClipByURL( assetUrl:String, force:Boolean=false ):String
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + CLIPS_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			return localUrl;
-			/*var cacheFile:File = new File( localUrl );
-			
-			Util.log( "CacheManager, getClipByURL localUrl: " + localUrl );
-			if( cacheFile.exists && !force )
-			{
-				Util.log( "CacheManager, getClipByURL cacheFile exists: " + cacheFile.url );
-				//if ( displayInDefaultApp ) cacheFile.openWithDefaultApplication();
-				return cacheFile.url;
-			} 
-			else 
-			{
-				if ( force ) Util.log( "CacheManager, getClipByURL cacheFile forced: " + force.toString() );
-				Util.log( "CacheManager, getClipByURL cacheFile does not exist or download forced: " + assetUrl );
-				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
-				return assetUrl;
-			}*/
 		}
 		public function downloadClipFiles( thumbnailUrl:String, assetUrl:String, swfUrl:String ):void
-		{
-/*			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
-			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload ) else cachedVideo = "";
-			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );
-
-*/			
+		{			
 			var tUrl:String = _cacheDir.nativePath + File.separator + THUMBS_PATH + File.separator + Util.getFileNameFromFormerSlash( thumbnailUrl ) ;
 			var tCacheFile:File = new File( tUrl );
 			var sUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( swfUrl ) ;
@@ -142,10 +143,8 @@ package fr.batchass
 			{
 				Util.cacheLog( "CacheManager, downloadClipFiles does not exist " + sUrl );
 				addFileToDownload( assetUrl, cUrl );
-				addFileToDownload( swfUrl, sUrl);
-				
-			}
-				
+				addFileToDownload( swfUrl, sUrl);			
+			}			
 		}
 		public function addFileToDownload( assetUrl:String, localUrl:String):void
 		{
@@ -168,34 +167,6 @@ package fr.batchass
 		{
 			var localUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			return localUrl;
-			/*var cacheFile:File = new File( localUrl );
-			
-			Util.log( "CacheManager, getSwfByURL localUrl: " + localUrl );
-			if( cacheFile.exists )
-			{
-				Util.log( "CacheManager, getSwfByURL size: " + cacheFile.size );
-				// error9 case:
-				if ( cacheFile.size < minFileSize )
-				{
-					// dl the video
-					if ( videoUrl.length > 0 ) getClipByURL( videoUrl, true );
-					// then the swf (for session mgmt)
-					filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
-					return assetUrl;
-				}
-				else
-				{
-					Util.log( "CacheManager, getSwfByURL cacheFile exists and size ok: " + cacheFile.url );
-					return cacheFile.url;
-				}
-				
-			} 
-			else 
-			{
-				Util.log( "CacheManager, getSwfByURL cacheFile does not exist: " + assetUrl );
-				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
-				return assetUrl;
-			}*/
 		}
 		// download image for gallery
 		public function getGalleryImageByURL( url:String, width:int, height:int ):String
@@ -216,36 +187,28 @@ package fr.batchass
 			}
 			return fileName;
 		}
-		private static function addFileToCache( url:String, localUrl:String ):void
+		private function addFileToCache( url:String, localUrl:String ):void
 		{
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, addFileToCache localUrl: " + localUrl );
-/*			if( cacheFile.exists && cacheFile.size > minFileSize )
+
+			if(!pendingDictionaryByURL[url])
 			{
-				Util.log( "CacheManager, addFileToCache cacheFile exists" );
-				busy = false;			
-			}
-			else
-			{
-				Util.log( "CacheManager, addFileToCache cacheFile does not exist" );*/
-				if(!pendingDictionaryByURL[url])
-				{
-					Util.log( "CacheManager, addFileToCache url: " + url );
-					var req:URLRequest = new URLRequest(url);
-					var loader:URLLoader = new URLLoader();
-					loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
-					loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
-					loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
-					loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
-					loader.addEventListener( Event.COMPLETE, fileLoadComplete );
-					loader.dataFormat = URLLoaderDataFormat.BINARY;
-					loader.load(req);
-					pendingDictionaryByLoader[loader] = url;
-					pendingDictionaryByCacheFile[loader] = localUrl;
-					pendingDictionaryByURL[url] = true;
-				} 
-			//}
+				Util.log( "CacheManager, addFileToCache url: " + url );
+				var req:URLRequest = new URLRequest(url);
+				var loader:URLLoader = new URLLoader();
+				loader.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+				loader.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+				loader.addEventListener( HTTPStatusEvent.HTTP_STATUS, httpStatusHandler );
+				loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
+				loader.addEventListener( Event.COMPLETE, fileLoadComplete );
+				loader.dataFormat = URLLoaderDataFormat.BINARY;
+				loader.load(req);
+				pendingDictionaryByLoader[loader] = url;
+				pendingDictionaryByCacheFile[loader] = localUrl;
+				pendingDictionaryByURL[url] = true;
+			} 
 		}
 
 		private function addAssetToCache( url:String, displayInDefaultApp:Boolean = false ):void
@@ -286,7 +249,7 @@ package fr.batchass
 				pendingDictionaryByURL[localUrlPath] = true;
 			} 
 		}
-		private static function fileLoadComplete( event:Event ):void
+		private function fileLoadComplete( event:Event ):void
 		{
 			var loader:URLLoader = event.target as URLLoader;
 			var url:String = pendingDictionaryByLoader[loader];
@@ -380,21 +343,21 @@ package fr.batchass
 			return bytes;
 		} 
 				
-		public static function errorEventErrorHandler(event:ErrorEvent):void
+		public function errorEventErrorHandler(event:ErrorEvent):void
 		{
 			Util.log( 'An ErrorEvent has occured: ' + event.text );
 		}	
-		private static function ioErrorHandler( event:IOErrorEvent ):void
+		private function ioErrorHandler( event:IOErrorEvent ):void
 		{
 			Util.log( 'CacheManager, An IO Error has occured: ' + event.text );
 		}    
 		// only called if a security error detected by flash player such as a sandbox violation
-		private static function securityErrorHandler( event:SecurityErrorEvent ):void
+		private function securityErrorHandler( event:SecurityErrorEvent ):void
 		{
 			Util.log( "CacheManager, securityErrorHandler: " + event.text );
 		}		
 		//  after a file upload is complete or attemted the server will return an http status code, code 200 means all is good anything else is bad.
-		private static function httpStatusHandler( event:HTTPStatusEvent ):void 
+		private function httpStatusHandler( event:HTTPStatusEvent ):void 
 		{   
 			Util.log( "CacheManager, httpStatusHandler, status(200 is ok): " + event.status );
 		}
