@@ -68,11 +68,6 @@ private function set ownFolderPath(value:String):void
 	_ownFolderPath = value;
 }
 
-
-protected function vpDude_preinitializeHandler(event:FlexEvent):void
-{
-}
-
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
@@ -250,28 +245,6 @@ private function onMonitor(event:StatusEvent):void
 		}	
 	}
 }
-/*public function onDragEnter(event:DragEvent):void
-{
-	if(event.dragSource.hasFormat("air:file list"))
-	{
-		DragManager.acceptDragDrop(this);
-	}
-	else
-	{
-		statusText.text = 'Format not supported, please drop file(s).';
-	}
-}
-public function onDragDrop(event:DragEvent):void
-{
-	trace("onDragDrop" );
-	var fileToUpload:File;
-	var itemsArray:Array = event.dragSource.dataForFormat("air:file list") as Array;
-	if(itemsArray != null)
-	{
-		//TODO
-	}
-	statusText.text = "Dropped file(s) added."
-}*/
 
 public function errorEventErrorHandler(event:ErrorEvent):void
 {

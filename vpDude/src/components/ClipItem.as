@@ -76,47 +76,16 @@ override public function set data( value:Object ) : void {
 			{
 				Util.errorLog( cachedThumbnail1 + " does not exist" );
 			}
-
-			/*if ( data.urlthumb2 ) cachedThumbnail2 = data.urlthumb2;
-			var thumb2:File = new File( cachedThumbnail2 );
-			if ( !thumb2.exists ) 
-			{
-				Util.errorLog( cachedThumbnail2 + " does not exist" );
-				cachedThumbnail2 = cachedThumbnail1;
-			}
-			if ( data.urlthumb3 ) cachedThumbnail3 = data.urlthumb3;
-			var thumb3:File = new File( cachedThumbnail3 );
-			if ( !thumb3.exists ) 
-			{
-				Util.errorLog( cachedThumbnail3 + " does not exist" );
-				cachedThumbnail3 = cachedThumbnail1;
-			}*/
 			if ( data.@urllocal ) cachedVideo = data.@urllocal;
 		}
 		else
 		{	
 			// get urls from cached files
 			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
-			/*if ( data.urlthumb2 ) cachedThumbnail2 = getCachedThumbnail( data.urlthumb2 );
-			if ( data.urlthumb3 ) cachedThumbnail3 = getCachedThumbnail( data.urlthumb3 );*/
 			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload ) else cachedVideo = "";
-			if ( data.urlpreview )
-			{
-				cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );//calls getClipByURL
-				var swfPreview:File = new File( cachedSwf );
-				if ( !swfPreview.exists ) 
-				{
-					Util.errorLog( cachedSwf + " does not exist" );
-				}
-				else
-				{
-					if ( swfPreview.size < minFileSize )
-					{
-						Util.errorLog( cachedSwf + " size < " + minFileSize.toString());
-
-					}
-				}
-			}
+			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );
+			// check if files are cached 
+			checkLocalCache( data.urlthumb1, data.urldownload, data.urlpreview );
 		}
 		//load image for drag n drop
 		var req:URLRequest = new URLRequest( cachedThumbnail1 );
@@ -139,6 +108,27 @@ override public function set data( value:Object ) : void {
 		
 	}
 }
+private function checkLocalCache( t:String, c:String, v:String ):void
+{
+	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( parentDocument.dldFolderPath );
+	var sCacheFile:File = new File( cachedSwf );
+	Util.cacheLog( "ClipItem, checkLocalCache swf localUrl: " + cachedSwf );
+	if( sCacheFile.exists )
+	{
+		Util.cacheLog( "ClipItem, checkLocalCache swf size: " + sCacheFile.size );
+		// error9 case:
+		if ( sCacheFile.size < minFileSize )
+		{
+			Util.cacheLog( "ClipItem, checkLocalCache swf size < " + minFileSize.toString() );
+			FlexGlobals.topLevelApplication.cache.downloadClipFiles( t, c, v );
+		}
+	}
+	else
+	{
+		Util.cacheLog( "ClipItem, checkLocalCache swf does not exist: " + cachedSwf );
+		FlexGlobals.topLevelApplication.cache.downloadClipFiles( t, c, v );
+	}	 
+}
 private function loadComplete(event:Event):void
 {
 	image = event.target.loader.content;
@@ -152,7 +142,7 @@ private function getCachedVideo( videoUrl:String ):String
 private function getCachedSwf( swfUrl:String, videoUrl:String ):String
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl, videoUrl );
+	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl );
 	Util.log( "getCachedSwf, cachedSwfUrl: " + cachedSwfUrl );
 	return cachedSwfUrl;
 }
@@ -162,84 +152,6 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 	var cachedThumbUrl:String = FlexGlobals.topLevelApplication.cache.getThumbnailByURL( thumbnailUrl );
 	return cachedThumbUrl;
 }
-/*protected function tagClip_mouseOverHandler(event:MouseEvent):void
-{
-	tagClip.toolTip = "Tags: " + tagList + "\nClick to edit tags";
-}
-protected function tagClip_clickHandler(event:MouseEvent):void
-{
-	tagInput = new TagEdit();
-	tagInput.data = data as XML;//clipXmlTagList;
-	if ( FlexGlobals.topLevelApplication.tabNav.selectedChild is components.Search )
-	{
-		FlexGlobals.topLevelApplication.tabNav.selectedChild.tagHGroup.addElement( tagInput );
-	}
-}
-protected function moreClip_mouseOverHandler(event:MouseEvent):void
-{
-	moreClip.toolTip = "Click for more details";
-}
-protected function moreClip_clickHandler(event:MouseEvent):void
-{
-	var options:NativeWindowInitOptions = new NativeWindowInitOptions();
-	options.systemChrome	= NativeWindowSystemChrome.ALTERNATE;
-	options.transparent		= false;
-	options.type			= NativeWindowType.UTILITY;
-	if ( moreContainer )
-	{
-		moreContainer.exit();
-	}
-	moreContainer = new MoreWindow(options);
-	moreContainer.width = 95;
-	moreContainer.height = 135;
-	moreContainer.x = event.stageX + FlexGlobals.topLevelApplication.nativeWindow.x - 100;
-	moreContainer.y = event.stageY + FlexGlobals.topLevelApplication.nativeWindow.y - 130;
-	moreContainer.stage.scaleMode = StageScaleMode.NO_SCALE;
-	moreContainer.stage.align = StageAlign.TOP_LEFT;
-	moreContainer.alwaysInFront	= true;
-	
-	var content:MoreWindowContent = new MoreWindowContent();
-	moreContainer.addChildControls(content);
-	content.creator.text="Created by:\n" + data.creator.@name;
-	 
-	content.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
-	
-	content.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
-	moreContainer.activate();
-
-}
-protected function previewClip_mouseOverHandler(event:MouseEvent):void
-{
-	previewClip.toolTip = "Click to preview";
-}
-protected function previewClip_clickHandler(event:MouseEvent):void
-{
-	if ( data.urlpreview.length() > 0 )	
-	{
-		var options:NativeWindowInitOptions = new NativeWindowInitOptions();
-		options.systemChrome	= NativeWindowSystemChrome.ALTERNATE;
-		options.transparent		= false;
-		options.type			= NativeWindowType.UTILITY;
-		if ( previewContainer )
-		{
-			previewContainer.exit();
-		}
-		previewContainer = new PreviewWindow(options);
-		previewContainer.width = 340;
-		previewContainer.height = 320;
-		previewContainer.x = event.stageX + FlexGlobals.topLevelApplication.nativeWindow.x - 100;
-		previewContainer.y = event.stageY + FlexGlobals.topLevelApplication.nativeWindow.y - 130;
-		previewContainer.stage.scaleMode = StageScaleMode.NO_SCALE;
-		previewContainer.stage.align = StageAlign.TOP_LEFT;
-		previewContainer.alwaysInFront	= true;
-		
-		var content:PreviewWindowContent = new PreviewWindowContent();
-		previewContainer.addChildControls(content);
-		content.title.text = data.video.@id;
-		content.swfComp.source = data.urlpreview;
-		previewContainer.activate();
-	}
-}*/
 protected function viewOnline_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/clip/detail/" + data.@id;
@@ -253,12 +165,6 @@ protected function creator_clickHandler(event:MouseEvent):void
 protected function rateClip_clickHandler(event:MouseEvent):void
 {
 }
-
-/*protected function viewClip_clickHandler(event:MouseEvent):void
-{
-	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	FlexGlobals.topLevelApplication.cache.getClipByURL( data.urldownload, true );
-}*/
 
 protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 {
