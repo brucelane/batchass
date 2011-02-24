@@ -43,8 +43,6 @@
 				<mx:SWFLoader id="swfComp" width="320" height="240"/>
 				<mx:LinkButton id="viewClipBtn" label=""  />
 				<mx:LinkButton id="viewCreatorBtn" label="" />			
-				<s:Label id="localUrl" paddingLeft="10" height="45"  width="320" />
-				<mx:Spacer height="50"/>
 				<components:AdvancedAutoComplete
 					id="tagAutoComplete"
 					allowMultipleSelection="true"
@@ -57,6 +55,7 @@
 					</components:inlineButton>
 				</components:AdvancedAutoComplete>
 				<s:Button id="applyBtn" label="Apply" click="applyBtn_clickHandler(event)" />				
+				<s:Label id="localUrl" paddingLeft="10" height="45"  width="320" />
 			</s:VGroup>
 		</s:HGroup>
 	</s:VGroup>

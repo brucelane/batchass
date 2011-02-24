@@ -54,6 +54,8 @@ private var searchComp:Search;
 private var ac:ArrayCollection;
 private var tagArray:Array = [];
 private const minFileSize:int = 10000;
+[Embed(source='../assets/wait.png')]
+private var waitImage:Class;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -66,6 +68,7 @@ override public function set data( value:Object ) : void {
 			var thumb1:File = new File( cachedThumbnail1 );
 			if ( !thumb1.exists ) 
 			{
+				imgUrl.source = waitImage;
 				Util.errorLog( cachedThumbnail1 + " does not exist" );
 			}
 			else
@@ -84,6 +87,11 @@ override public function set data( value:Object ) : void {
 		{	
 			// get urls from cached files
 			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
+			var cthumb1:File = new File( cachedThumbnail1 );
+			if ( !cthumb1.exists ) 
+			{
+				imgUrl.source = waitImage;
+			}
 			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload ) else cachedVideo = "";
 			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );
 			// check if files are cached 
@@ -136,8 +144,7 @@ private function checkLocalCache( t:String, c:String, v:String ):void
 	else
 	{
 		Util.cacheLog( "ClipItem, checkLocalCache swf does not exist: " + cachedSwf );
-		allDldOk = false;
-		
+		allDldOk = false;	
 	}	
 	if ( !allDldOk )
 	{
