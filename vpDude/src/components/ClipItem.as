@@ -8,6 +8,7 @@ import flash.display.BitmapData;
 import flash.display.Graphics;
 import flash.display.NativeWindow;
 import flash.display.NativeWindowInitOptions;
+import flash.events.Event;
 import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
@@ -29,12 +30,6 @@ import videopong.*;
 
 [Bindable]
 private var cachedThumbnail1:String;
-/*
-[Bindable]
-private var cachedThumbnail2:String;
-[Bindable]
-private var cachedThumbnail3:String;
-*/
 [Bindable]
 private var clipname:String;
 [Bindable]
@@ -43,9 +38,7 @@ private var tagList:String;
 // get instance of Tags class
 [Bindable]
 private var tags:Tags = Tags.getInstance();;
-// get instance of Clips class
-[Bindable]
-private var clips:Clips;
+
 // Collection of tags for this clip
 [Bindable]
 public var clipXmlTagList:XMLList;
@@ -55,7 +48,7 @@ private var image:Bitmap;
 private var cachedVideo:String;
 // url of swf
 private var cachedSwf:String;
-//store search component
+// store search component
 private var searchComp:Search;
 // for tagAutoComplete
 private var ac:ArrayCollection;
@@ -64,7 +57,6 @@ private const minFileSize:int = 10000;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
-	var reLoad:Boolean = false;
 	if ( data )
 	{
 		if ( data.attribute( "urllocal" ).length() > 0 ) 
@@ -76,6 +68,16 @@ override public function set data( value:Object ) : void {
 			{
 				Util.errorLog( cachedThumbnail1 + " does not exist" );
 			}
+			else
+			{
+				var req:URLRequest = new URLRequest( cachedThumbnail1 );
+				var loader:Loader = new Loader();
+				loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
+				loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+				loader.load( req );
+				imgUrl.source = cachedThumbnail1;
+			}
+			
 			if ( data.@urllocal ) cachedVideo = data.@urllocal;
 		}
 		else
@@ -87,12 +89,6 @@ override public function set data( value:Object ) : void {
 			// check if files are cached 
 			checkLocalCache( data.urlthumb1, data.urldownload, data.urlpreview );
 		}
-		//load image for drag n drop
-		var req:URLRequest = new URLRequest( cachedThumbnail1 );
-		var loader:Loader = new Loader();
-		loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
-		loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
-		loader.load( req );
 
 		data.clip.@name ? clipname = data.clip.@name : "...";
 		
@@ -108,11 +104,25 @@ override public function set data( value:Object ) : void {
 		
 	}
 }
+private function allFilesDownloaded(evt:Event):void
+{
+	//load image for drag n drop
+	FlexGlobals.topLevelApplication.cache.removeEventListener( Event.COMPLETE, allFilesDownloaded );
+	var req:URLRequest = new URLRequest( cachedThumbnail1 );
+	var loader:Loader = new Loader();
+	loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
+	loader.contentLoaderInfo.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+	loader.load( req );
+	imgUrl.source = cachedThumbnail1;
+	var clips:Clips = Clips.getInstance();
+	clips.refreshClipsXMLList();
+}
 private function checkLocalCache( t:String, c:String, v:String ):void
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( parentDocument.dldFolderPath );
 	var sCacheFile:File = new File( cachedSwf );
 	Util.cacheLog( "ClipItem, checkLocalCache swf localUrl: " + cachedSwf );
+	var allDldOk:Boolean = true;
 	if( sCacheFile.exists )
 	{
 		Util.cacheLog( "ClipItem, checkLocalCache swf size: " + sCacheFile.size );
@@ -120,14 +130,20 @@ private function checkLocalCache( t:String, c:String, v:String ):void
 		if ( sCacheFile.size < minFileSize )
 		{
 			Util.cacheLog( "ClipItem, checkLocalCache swf size < " + minFileSize.toString() );
-			FlexGlobals.topLevelApplication.cache.downloadClipFiles( t, c, v );
+			allDldOk = false;
 		}
 	}
 	else
 	{
 		Util.cacheLog( "ClipItem, checkLocalCache swf does not exist: " + cachedSwf );
+		allDldOk = false;
+		
+	}	
+	if ( !allDldOk )
+	{
+		FlexGlobals.topLevelApplication.cache.addEventListener( Event.COMPLETE, allFilesDownloaded );
 		FlexGlobals.topLevelApplication.cache.downloadClipFiles( t, c, v );
-	}	 
+	}
 }
 private function loadComplete(event:Event):void
 {
