@@ -411,6 +411,7 @@ private function processConvert(event:Event): void
 		{
 			busy = true;
 			currentThumb = thumbsToConvert[0].tNumber;
+			ffout.text += "Converting: " + thumbsToConvert[0].clipLocalPath + "\n";
 			execute(  thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber );
 			thumbsToConvert.shift();
 		}
@@ -441,6 +442,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 	try
 	{
 		var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		ffout.text += "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n";
 		
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = ffMpegExecutable;
@@ -500,7 +502,13 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
 		
-		if (thumbNumber == 1) thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg" else thumb1 = "";
+		if (thumbNumber == 1) 
+		{
+			thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg" 
+		}
+		else thumb1 = "";
+		ffout.text += "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n";
+		
 		var processArgs:Vector.<String> = new Vector.<String>();
 		processArgs[0] = "-i";
 		processArgs[1] = ownVideoPath;
@@ -581,7 +589,7 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 }
 private function resetConsole():void
 {
-	if ( log.text.length > 100 ) log.text = "";
+	if ( log.text.length > 500 ) log.text = "";
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {
