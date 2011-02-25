@@ -2,6 +2,7 @@ import components.*;
 
 import flash.desktop.NativeApplication;
 import flash.desktop.NativeProcess;
+import flash.events.Event;
 import flash.events.ProgressEvent;
 import flash.events.TimerEvent;
 import flash.filesystem.File;
@@ -412,6 +413,7 @@ private function processConvert(event:Event): void
 			busy = true;
 			currentThumb = thumbsToConvert[0].tNumber;
 			ffout.text += "Converting: " + thumbsToConvert[0].clipLocalPath + "\n";
+			Util.ffMpegOutputLog( "processConvert: " + "Converting " + thumbsToConvert[0].clipLocalPath + "\n" );
 			execute(  thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber );
 			thumbsToConvert.shift();
 		}
@@ -441,8 +443,13 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 	// Start the process
 	try
 	{
+		if ( ownVideoPath.indexOf(".swf") > -1 )
+		{
+			copySwf( ownVideoPath, swfPath + clipGeneratedName + ".swf" );
+		}
 		var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
 		ffout.text += "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n";
+		Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
 		
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = ffMpegExecutable;
@@ -486,13 +493,31 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 			outputDataHandler);
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
 			errorMovieDataHandler);
-		
+		startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
 	}
 	catch (e:Error)
 	{
 		Util.log( "NativeProcess Error: " + e.message );
 	}
 }
+private function copySwf( src:String, dest:String ):void
+{
+	var sourceFile:File = new File( src );
+	var destFile:File = new File( dest );
+	sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+	sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+	try 
+	{
+		sourceFile.copyTo( destFile );
+	}
+	catch (error:Error)
+	{
+		Util.errorLog( "copySwf Error:" + error.message );
+	}
+	
+}
+
+//thumbs
 private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
 	// Start the process
@@ -508,6 +533,7 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 		}
 		else thumb1 = "";
 		ffout.text += "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n";
+		Util.ffMpegOutputLog( "NativeProcess execute: " + "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n" );
 		
 		var processArgs:Vector.<String> = new Vector.<String>();
 		processArgs[0] = "-i";
@@ -546,7 +572,11 @@ private function outputDataHandler(event:ProgressEvent):void
 	log.text += data;
 	Util.ffMpegOutputLog( "NativeProcess outputDataHandler: " + data );
 }
-
+private function processClose(event:Event):void
+{
+	var process:NativeProcess = event.target as NativeProcess;
+	Util.ffMpegOutputLog( "NativeProcess processClose" );
+}
 private function errorOutputDataHandler(event:ProgressEvent):void
 {
 	var process:NativeProcess = event.target as NativeProcess;
@@ -575,7 +605,11 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 		}
 		busy = false;
 	}
-
+	if (data.indexOf("swf: I/O error occurred")>-1)
+	{ 
+		busy = false;
+		//copySwf();
+	}
 	Util.ffMpegErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function errorMovieDataHandler(event:ProgressEvent):void
@@ -585,6 +619,11 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 	resetConsole();
 	log.text += data;
 	if (data.indexOf("muxing overhead")>-1) busy = false;
+	if (data.indexOf("swf: I/O error occurred")>-1)
+	{ 
+		busy = false;
+		//copySwf();
+	}
 	Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function resetConsole():void
