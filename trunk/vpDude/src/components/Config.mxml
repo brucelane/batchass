@@ -39,8 +39,8 @@
 			</s:HGroup>
 			<s:Button label="Apply" id="applyBtn" click="applyBtn_clickHandler(event)"/>
 			<s:VGroup width="100%" height="100%" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
-				<s:TextArea id="log" width="100%" height="150"/>
-				<s:TextArea id="ffout" width="100%" height="200"/>
+				<s:TextArea id="log" width="100%" height="100"/>
+				<s:TextArea id="ffout" width="100%" height="250"/>
 				<s:Button label="Clear console text" click="log.text=''" />
 			</s:VGroup>			
 		</s:VGroup>
