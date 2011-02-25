@@ -494,6 +494,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
 			errorMovieDataHandler);
 		startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
+		startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);
 	}
 	catch (e:Error)
 	{
@@ -516,7 +517,10 @@ private function copySwf( src:String, dest:String ):void
 	}
 	
 }
-
+private function onExit(evt:NativeProcessExitEvent):void
+{
+	Util.ffMpegOutputLog( "Process ended with code: " + evt.exitCode); 
+}
 //thumbs
 private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
