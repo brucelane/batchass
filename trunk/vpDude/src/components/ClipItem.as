@@ -56,6 +56,8 @@ private var tagArray:Array = [];
 private const minFileSize:int = 10000;
 [Embed(source='../assets/wait.png')]
 private var waitImage:Class;
+[Embed(source='../assets/previewwait.png')]
+private var previewWaitImage:Class;
 
 override public function set data( value:Object ) : void {
 	super.data = value;
@@ -93,7 +95,7 @@ override public function set data( value:Object ) : void {
 				imgUrl.source = waitImage;
 			}
 			if ( data.urldownload ) cachedVideo = getCachedVideo( data.urldownload ) else cachedVideo = "";
-			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview, cachedVideo );
+			if ( data.urlpreview ) cachedSwf = getCachedSwf( data.urlpreview );
 			// check if files are cached 
 			checkLocalCache( data.urlthumb1, data.urldownload, data.urlpreview );
 		}
@@ -162,7 +164,7 @@ private function getCachedVideo( videoUrl:String ):String
 	var cachedVideoUrl:String = FlexGlobals.topLevelApplication.cache.getClipByURL( videoUrl );
 	return cachedVideoUrl;
 }
-private function getCachedSwf( swfUrl:String, videoUrl:String ):String
+private function getCachedSwf( swfUrl:String ):String
 {
 	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
 	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl );
@@ -188,8 +190,7 @@ protected function creator_clickHandler(event:MouseEvent):void
 protected function rateClip_clickHandler(event:MouseEvent):void
 {
 }
-
-protected function imgUrl_mouseDownHandler(event:MouseEvent):void
+protected function updateDetails():void
 {
 	if ( FlexGlobals.topLevelApplication.search ) 
 	{
@@ -206,9 +207,17 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 		Util.log( "imgUrl_mouseDownHandler, urlPreview: " + urlPreview );
 		if ( urlPreview ) 
 		{
-			var cachedUrl:String = getCachedSwf( urlPreview, "" );
+			var cachedUrl:String = getCachedSwf( urlPreview );
 			Util.log( "imgUrl_mouseDownHandler, cachedUrl: " + cachedUrl );
-			searchComp.swfComp.source = cachedUrl;
+			var cPrev:File = new File( cachedUrl );
+			if ( !cPrev.exists ) 
+			{
+				searchComp.swfComp.source = previewWaitImage;
+			}
+			else
+			{
+				searchComp.swfComp.source = cachedUrl;
+			}
 		}
 		else
 		{
@@ -223,7 +232,7 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 			);
 		ac = new ArrayCollection( tagArray );
 		searchComp.tagAutoComplete.selectedItems = ac;
-
+		
 		if ( data.attribute( "urllocal" ).length() > 0 ) 
 		{	
 			searchComp.localUrl.text = data.attribute( "urllocal" );
@@ -233,10 +242,16 @@ protected function imgUrl_mouseDownHandler(event:MouseEvent):void
 			searchComp.localUrl.text = "";
 		}
 	}
-
+	
+}
+protected function imgUrl_mouseDownHandler(event:MouseEvent):void
+{
 	var draggedObject:Clipboard = new Clipboard();
 	var fileToDrag:File = new File( cachedVideo );
 	var dragOptions : NativeDragOptions = new NativeDragOptions();
+
+	//update details on the right side
+	updateDetails();
 	// we don't want the file to be moved
 	dragOptions.allowCopy = true;
 	dragOptions.allowLink = true;
