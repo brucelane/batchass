@@ -37,7 +37,6 @@ public var vpUploadUrl:String = vpUpUrl;
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 
-public var cache:CacheManager;
 public var search:Search;
 
 // path to vpDude folder
@@ -77,7 +76,14 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener( NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize );
 
-	Util.log( "NativeProcess.isSupported:" + NativeProcess.isSupported, true );
+	//clear log files
+	Util.log( "Start", true );
+	Util.log( "NativeProcess.isSupported:" + NativeProcess.isSupported );
+	Util.errorLog( "Start", true );
+	Util.ffMpegErrorLog( "Start", true );
+	Util.ffMpegMovieErrorLog( "Start", true );
+	Util.ffMpegOutputLog( "Start", true );
+	Util.cacheLog( "Start", true );
 	urlMonitor( vpRootUrl );
 	checkFFMpeg();
 }
