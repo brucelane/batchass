@@ -323,22 +323,12 @@ public function processAllFiles( selectedDir:File ):void
 		{
 			var clipPath:String = lstFile.nativePath;
 			var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
-			var lastSlash:int = clipRelativePath.lastIndexOf( File.separator );
-			if ( lastSlash == -1 )
-			{
-				clipRelativePath = "";
-			}
-			else
-			{
-				clipRelativePath = clipRelativePath.substr( 0, lastSlash );
-			}
+			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
 			
-			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipPath );
-			//var clipGeneratedPath:String = Util.getFileNameWithSafePath( clipPath );
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
-				if ( clips.newClip( lstFile.nativePath ) )
+				if ( clips.newClip( clipRelativePath ) )
 				{
 					log.text += "New clip: " + clipGeneratedName + "\n";
 					//var clipId:String = Util.nowDate;
@@ -364,7 +354,7 @@ public function processAllFiles( selectedDir:File ):void
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3});
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
 					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
-					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipPath}> 
+					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipRelativePath}> 
 										<dategenerated>{clipGeneratedName.substr(0,18)}</dategenerated>
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
@@ -390,7 +380,6 @@ public function processAllFiles( selectedDir:File ):void
 						}
 					}
 					newClips.push({clipName:clipGeneratedName,ownXml:OWN_CLIPS_XML,cPath:clipPath});
-					//clips.addNewClip( clipGeneratedName, OWN_CLIPS_XML, clipPath );
 				}
 				else
 				{

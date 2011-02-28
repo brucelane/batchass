@@ -12,6 +12,7 @@ import flash.events.Event;
 import flash.events.FocusEvent;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
+import flash.filesystem.File;
 
 import fr.batchass.*;
 
@@ -59,6 +60,8 @@ private var waitImage:Class;
 [Embed(source='../assets/previewwait.png')]
 private var previewWaitImage:Class;
 
+private var cache:CacheManager;
+
 override public function set data( value:Object ) : void {
 	super.data = value;
 	if ( data )
@@ -83,7 +86,7 @@ override public function set data( value:Object ) : void {
 				imgUrl.source = cachedThumbnail1;
 			}
 			
-			if ( data.@urllocal ) cachedVideo = data.@urllocal;
+			if ( data.@urllocal ) cachedVideo = FlexGlobals.topLevelApplication.ownFolderPath + File.separator + data.@urllocal;
 		}
 		else
 		{	
@@ -117,7 +120,7 @@ override public function set data( value:Object ) : void {
 private function allFilesDownloaded(evt:Event):void
 {
 	//load image for drag n drop
-	FlexGlobals.topLevelApplication.cache.removeEventListener( Event.COMPLETE, allFilesDownloaded );
+	if ( cache ) cache.removeEventListener( Event.COMPLETE, allFilesDownloaded );
 	var req:URLRequest = new URLRequest( cachedThumbnail1 );
 	var loader:Loader = new Loader();
 	loader.contentLoaderInfo.addEventListener( Event.COMPLETE, loadComplete );
@@ -129,7 +132,7 @@ private function allFilesDownloaded(evt:Event):void
 }
 private function checkLocalCache( t:String, c:String, v:String ):void
 {
-	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( parentDocument.dldFolderPath );
+	if ( !cache ) cache = new CacheManager( parentDocument.dldFolderPath );
 	var sCacheFile:File = new File( cachedSwf );
 	Util.cacheLog( "ClipItem, checkLocalCache swf localUrl: " + cachedSwf );
 	var allDldOk:Boolean = true;
@@ -150,8 +153,8 @@ private function checkLocalCache( t:String, c:String, v:String ):void
 	}	
 	if ( !allDldOk )
 	{
-		FlexGlobals.topLevelApplication.cache.addEventListener( Event.COMPLETE, allFilesDownloaded );
-		FlexGlobals.topLevelApplication.cache.downloadClipFiles( t, c, v );
+		cache.addEventListener( Event.COMPLETE, allFilesDownloaded );
+		cache.downloadClipFiles( t, c, v );
 	}
 }
 private function loadComplete(event:Event):void
@@ -160,21 +163,21 @@ private function loadComplete(event:Event):void
 }
 private function getCachedVideo( videoUrl:String ):String
 {
-	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	var cachedVideoUrl:String = FlexGlobals.topLevelApplication.cache.getClipByURL( videoUrl );
+	if ( !cache ) cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
+	var cachedVideoUrl:String = cache.getClipByURL( videoUrl );
 	return cachedVideoUrl;
 }
 private function getCachedSwf( swfUrl:String ):String
 {
-	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	var cachedSwfUrl:String = FlexGlobals.topLevelApplication.cache.getSwfByURL( swfUrl );
+	if ( !cache ) cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
+	var cachedSwfUrl:String = cache.getSwfByURL( swfUrl );
 	Util.log( "getCachedSwf, cachedSwfUrl: " + cachedSwfUrl );
 	return cachedSwfUrl;
 }
 private function getCachedThumbnail( thumbnailUrl:String ):String
 {
-	if ( !FlexGlobals.topLevelApplication.cache ) FlexGlobals.topLevelApplication.cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	var cachedThumbUrl:String = FlexGlobals.topLevelApplication.cache.getThumbnailByURL( thumbnailUrl );
+	if ( !cache ) cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
+	var cachedThumbUrl:String = cache.getThumbnailByURL( thumbnailUrl );
 	return cachedThumbUrl;
 }
 protected function viewOnline_clickHandler(event:MouseEvent):void
