@@ -34,7 +34,7 @@ private var tiWidth:int = 350;
 private var isConfigured:Boolean = false;
 
 [Bindable]
-private var userName:String = "";
+public var userName:String = "";
 [Bindable]
 private var hiddenPassword:String = "";
 [Bindable]
@@ -76,6 +76,7 @@ protected function config_preinitializeHandler(event:FlexEvent):void
 			CONFIG_XML = new XML( readTextFile( configFile ) );
 			
 			userName = CONFIG_XML..username[0].toString();
+			parentDocument.userName = userName;
 			password = CONFIG_XML..pwd[0].toString();
 			for ( var i:uint = 0; i < password.length; i++ )
 			{
@@ -141,6 +142,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	{
 		isChanged = true;
 		userName = userTextInput.text;
+		parentDocument.userName = userName;
 		parentDocument.ownFolderPath = ownTextInput.text;
 		reso = resoTextInput.text;
 		checkFolder( parentDocument.ownFolderPath );

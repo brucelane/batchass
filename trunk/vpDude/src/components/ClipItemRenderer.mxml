@@ -11,7 +11,8 @@
 		<s:State name="hovered"/>
 		<s:State name="selected" />
 	</s:states>
-	<s:BorderContainer borderStyle="inset" borderColor="#ffffff" borderColor.hovered="#c0c0c0" borderColor.selected="#474746"
+	<s:BorderContainer borderStyle="inset" borderColor="#ffffff" 
+					   borderColor.hovered="#c0c0c0" borderColor.selected="#474746"
 					   borderWeight.normal="1" borderWeight="3"
 					   width.normal="105" height.normal="79" 
 					   width="106" height="80">
