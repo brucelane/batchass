@@ -245,8 +245,8 @@ protected function updateDetails():void
 			searchComp.swfComp.source = null;
 		}
 		searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
-		//searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
-		searchComp.tagAutoComplete.data = clipXmlTagList;
+		searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
+		//searchComp.tagAutoComplete.data = clipXmlTagList; wrong data id = ""
 		
 		data..tags.tag.
 			(
