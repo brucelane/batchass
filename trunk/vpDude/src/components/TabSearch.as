@@ -60,7 +60,6 @@ private function handleTagButtonClick():void
 protected function applyBtn_clickHandler(event:MouseEvent):void
 {
 	// write tags to clip and tags XML
-	trace(tagAutoComplete.selectedItems);
 	clips = Clips.getInstance();
 	//remove existing tags
 	clips.removeTags( tagAutoComplete.data.@id );
@@ -74,11 +73,4 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 		//test if tag is not already in clip
 		clips.addTagIfNew( oneTag.toLowerCase(), tagAutoComplete.data.@id  );
 	}
-	//remove textInput
-	//deleteTagTextInput();
 }	
-protected function cancelBtn_clickHandler(event:MouseEvent):void
-{
-	//remove textInput
-	//deleteTagTextInput();
-}
