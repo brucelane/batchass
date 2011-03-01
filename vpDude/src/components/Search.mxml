@@ -55,7 +55,7 @@
 					</components:inlineButton>
 				</components:AdvancedAutoComplete>
 				<s:Button id="applyBtn" label="Apply" click="applyBtn_clickHandler(event)" />				
-				<s:Label id="localUrl" paddingLeft="10" height="45"  width="320" />
+				<!--<s:Label id="localUrl" paddingLeft="10" height="45"  width="320" />-->
 			</s:VGroup>
 		</s:HGroup>
 	</s:VGroup>

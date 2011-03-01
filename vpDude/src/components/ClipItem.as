@@ -1,6 +1,7 @@
 import com.hillelcoren.components.AdvancedAutoComplete;
 import com.hillelcoren.components.AutoComplete;
 
+import components.Config;
 import components.Search;
 import components.TagEdit;
 
@@ -33,9 +34,9 @@ import videopong.*;
 private var cachedThumbnail1:String;
 [Bindable]
 private var clipname:String;
-[Bindable]
+/*[Bindable]
 private var tagList:String;
-
+*/
 // get instance of Tags class
 [Bindable]
 private var tags:Tags = Tags.getInstance();;
@@ -115,7 +116,7 @@ override public function set data( value:Object ) : void {
 			if ( tagString.length > 0 ) tagString += ",";
 			tagString += oneTag.@name;
 		}
-		tagList = tagString;
+		//tagList = tagString;
 		
 	}
 }
@@ -203,13 +204,25 @@ protected function updateDetails():void
 	{
 		searchComp = FlexGlobals.topLevelApplication.search;
 		searchComp.viewClipBtn.label = data.clip.@name;
-		searchComp.viewCreatorBtn.label = "created by: " + data.creator.@name;
 		if (searchComp.viewClipBtn.hasEventListener( MouseEvent.CLICK ) )
 			searchComp.viewClipBtn.removeEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
 		if (searchComp.viewCreatorBtn.hasEventListener( MouseEvent.CLICK ) )
 			searchComp.viewCreatorBtn.removeEventListener( MouseEvent.CLICK, creator_clickHandler );
 		searchComp.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
-		searchComp.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );
+		
+		if ( FlexGlobals.topLevelApplication.userName != data.creator.@name)
+		{
+			searchComp.viewCreatorBtn.label = "created by: " + data.creator.@name;
+			searchComp.viewCreatorBtn.visible = true;
+			searchComp.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );				
+		}
+		else
+		{
+			searchComp.viewCreatorBtn.label = "";	
+			searchComp.viewCreatorBtn.visible = false;
+		}
+		
+		
 		var urlPreview:String = data.urlpreview;
 		Util.log( "imgUrl_mouseDownHandler, urlPreview: " + urlPreview );
 		if ( urlPreview ) 
@@ -242,14 +255,14 @@ protected function updateDetails():void
 		ac = new ArrayCollection( tagArray );
 		searchComp.tagAutoComplete.selectedItems = ac;
 		
-		if ( data.attribute( "urllocal" ).length() > 0 ) 
+		/*if ( data.attribute( "urllocal" ).length() > 0 ) 
 		{	
 			searchComp.localUrl.text = data.attribute( "urllocal" );
 		}
 		else
 		{
 			searchComp.localUrl.text = "";
-		}
+		}*/
 	}
 	
 }

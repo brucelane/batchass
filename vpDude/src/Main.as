@@ -38,6 +38,7 @@ public var dldFolderPath:String;
 public var dbFolderPath:String;
 
 public var search:Search;
+public var userName:String;
 
 // path to vpDude folder
 private var _vpFolderPath:String;
