@@ -53,7 +53,7 @@ private var cachedSwf:String;
 private var searchComp:Search;
 // for tagAutoComplete
 private var ac:ArrayCollection;
-private var tagArray:Array = [];
+//private var tagArray:Array = [];
 private const minFileSize:int = 10000;
 [Embed(source='../assets/wait.png')]
 private var waitImage:Class;
@@ -107,7 +107,9 @@ override public function set data( value:Object ) : void {
 		
 		//tagsXMLList = new XMLListCollection(data..tags.tag.@name);
 		clipXmlTagList = data..tags.tag as XMLList;
-		var tagString:String = "";
+		var tagString:String = "";	
+		//searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
+
 		for each ( var oneTag:XML in clipXmlTagList )
 		{
 			if ( tagString.length > 0 ) tagString += ",";
@@ -195,6 +197,8 @@ protected function rateClip_clickHandler(event:MouseEvent):void
 }
 protected function updateDetails():void
 {
+	var tagArray:Array = [];
+
 	if ( FlexGlobals.topLevelApplication.search ) 
 	{
 		searchComp = FlexGlobals.topLevelApplication.search;
@@ -228,7 +232,9 @@ protected function updateDetails():void
 			searchComp.swfComp.source = null;
 		}
 		searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
-		searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
+		//searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
+		searchComp.tagAutoComplete.data = clipXmlTagList;
+		
 		data..tags.tag.
 			(
 				tagArray.push( attribute("name") )
