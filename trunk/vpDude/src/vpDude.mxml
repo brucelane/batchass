@@ -4,11 +4,19 @@
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
 					   width="840" height="670"
+					   xmlns:nativeUpdater="com.riaspace.nativeUpdater.*"
 					   xmlns:components="components.*">
 
+	<fx:Declarations>
+		<nativeUpdater:NativeUpdater id="updater" />
+	</fx:Declarations>
+	
 	<fx:Script source="Main.as" />
 
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
+		<s:Button id="btnUpdateApp" label="Update Application" 
+				  click="updater.updateApplication()"
+				  verticalCenter="0" horizontalCenter="0" />
 		<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
 		
 		<mx:TabNavigator id="tabNav" width="830" height="600" change="tabNav_changeHandler(event)" >

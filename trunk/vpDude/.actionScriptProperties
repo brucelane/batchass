@@ -19,6 +19,7 @@
       <airExcludes>
         <airExclude path="compile.cmd"/>
         <airExclude path="css"/>
+        <airExclude path="com"/>
       </airExcludes>
     </application>
   </applications>
