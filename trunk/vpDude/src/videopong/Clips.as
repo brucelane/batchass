@@ -62,7 +62,7 @@ package videopong
 			if ( !isConfigured )
 			{
 				CLIPS_XML = <videos />;
-				writeClipsFile();
+				writeClipsFile(true);
 			}
 			refreshClipsXMLList();
 		}
@@ -71,14 +71,14 @@ package videopong
 			trace("loadFilesInCache");				
 			
 		}*/
-		public function writeClipsFile():void 
+		public function writeClipsFile(refreshDatabind:Boolean):void 
 		{
 			clipsXmlPath = _dbPath + File.separator + "clips.xml";
 			var clipsFile:File = File.applicationStorageDirectory.resolvePath( clipsXmlPath );
 			
 			// write the text file
 			writeTextFile( clipsFile, CLIPS_XML );					
-			refreshClipsXMLList();
+			if (refreshDatabind) refreshClipsXMLList();
 		}
 		// refresh XML collection for data binding
 		public function refreshClipsXMLList():void 
@@ -95,7 +95,7 @@ package videopong
 			writeTextFile( clipXmlFile, clipXml );					
 		}
 		// test if new tag in clip xml
-		public function addTagIfNew( tag:String, clipId:String ):void
+		public function addTagIfNew( tag:String, clipId:String, refreshDatabind:Boolean ):void
 		{
 			//read clip xml file
 			var localClipXMLFile:String = _dbPath + File.separator + clipId + ".xml" ;
@@ -122,8 +122,8 @@ package videopong
 				writeClipXmlFile( clipId, clipXml );
 				//update global CLIPS_XML file
 				CLIPS_XML..video.(@id==clipId).tags.appendChild( newTag );
-				writeClipsFile();
-				refreshClipsXMLList();
+				writeClipsFile( refreshDatabind );
+				/*reset refreshClipsXMLList();*/
 				var tags:Tags = Tags.getInstance();
 				tags.addTagIfNew( tag );
 			}
@@ -156,8 +156,8 @@ package videopong
 			}
 			
 			writeClipXmlFile( clipId, clipXml );
-			writeClipsFile();
-			refreshClipsXMLList();
+			writeClipsFile(false);
+			//refreshClipsXMLList();
 		}
 		public function newClip( urllocal:String ):Boolean
 		{
@@ -220,7 +220,7 @@ package videopong
 			if ( foundNewClip )
 			{
 				CLIPS_XML.appendChild( clipXml );
-				writeClipsFile();	
+				writeClipsFile(true);	
 				writeClipXmlFile( clipGeneratedName, clipXml );
 			}
 		}
