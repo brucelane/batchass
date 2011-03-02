@@ -6,8 +6,6 @@
 					creationComplete="config_creationCompleteHandler(event)"
 					label="config" 
 					>
-			
-
 		<fx:Script source="TabConfig.as" />
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
 			<!--<s:HGroup>
@@ -30,8 +28,9 @@
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="Local own videos path:" verticalAlign="bottom"/>
 				<s:TextInput width="{tiWidth}" text="{parentDocument.ownFolderPath}" id="ownTextInput"/>
-				<s:Button label="..." id="browseOwnPathBtn" width="30" click="browseOwnPathBtn_clickHandler(event)"/>	
+				<s:Button label="..." toolTip="select my own folder" id="browseOwnPathBtn" width="30" click="browseOwnPathBtn_clickHandler(event)"/>	
 				<s:Button label="Sync" toolTip="resync my own files" id="resyncBtn" click="resyncBtn_clickHandler(event)"/>
+				<s:Button label="Show folder" toolTip="show my own files" id="exploreBtn" click="exploreBtn_clickHandler(event)"/>
 			</s:HGroup>
 			<s:HGroup>
 				<s:Label width="{lblWidth}" text="FFMpeg output resolution:" verticalAlign="bottom"/>
