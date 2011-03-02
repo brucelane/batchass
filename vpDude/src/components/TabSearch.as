@@ -62,15 +62,15 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	// write tags to clip and tags XML
 	clips = Clips.getInstance();
 	//remove existing tags
-	clips.removeTags( tagAutoComplete.data.@id );
+	clips.removeTags( tagAutoComplete.data.@id );//resets search view!!!
 	//loop in tags and add them to XML db
 	for each ( var oneTag:String in tagAutoComplete.selectedItems )
 	{
 		tags = Tags.getInstance();
 		// if tag not already in global tags, add it
-		tags.addTagIfNew( oneTag.toLowerCase() );
+		tags.addTagIfNew( oneTag.toLowerCase() );//no reset:ok
 		
 		//test if tag is not already in clip
-		clips.addTagIfNew( oneTag.toLowerCase(), tagAutoComplete.data.@id  );
+		clips.addTagIfNew( oneTag.toLowerCase(), tagAutoComplete.data.@id, false );//resets search view!!!
 	}
 }	

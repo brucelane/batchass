@@ -255,14 +255,14 @@ protected function updateDetails():void
 		ac = new ArrayCollection( tagArray );
 		searchComp.tagAutoComplete.selectedItems = ac;
 		
-		/*if ( data.attribute( "urllocal" ).length() > 0 ) 
+		if ( data.attribute( "urllocal" ).length() > 0 ) 
 		{	
-			searchComp.localUrl.text = data.attribute( "urllocal" );
+			searchComp.localUrl.text = FlexGlobals.topLevelApplication.ownFolderPath + File.separator + data.attribute( "urllocal" );
 		}
 		else
 		{
 			searchComp.localUrl.text = "";
-		}*/
+		}
 	}
 	
 }
