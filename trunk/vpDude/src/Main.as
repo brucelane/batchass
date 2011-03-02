@@ -71,7 +71,7 @@ private function set ownFolderPath(value:String):void
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
-	//AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
+	AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
 
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
