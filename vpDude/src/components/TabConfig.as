@@ -310,6 +310,14 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	processAllFiles( selectedDirectory );
 	
 }
+protected function exploreBtn_clickHandler(event:MouseEvent):void
+{
+	var file:File = new File( parentDocument.ownFolderPath );
+	file.browse();
+	
+	//file.browseForDirectory( "Select where your own videos are located." ); 
+
+}
 // Process all files in a directory structure including subdirectories.
 public function processAllFiles( selectedDir:File ):void
 {
