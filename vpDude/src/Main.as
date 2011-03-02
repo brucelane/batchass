@@ -71,7 +71,7 @@ private function set ownFolderPath(value:String):void
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
-	AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
+	//AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
 
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
@@ -167,8 +167,6 @@ public function addTabs():void
 		var clips:Clips = Clips.getInstance();
 		clips.dbPath = dbFolderPath;
 		clips.loadClipsFile();
-		// this.addEventListener( DragEvent.DRAG_ENTER, onDragEnter );
-		// this.addEventListener( DragEvent.DRAG_DROP, onDragDrop );
 	}
 }
 
