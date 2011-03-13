@@ -188,6 +188,12 @@ protected function viewOnline_clickHandler(event:MouseEvent):void
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/clip/detail/" + data.@id;
 	FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
 }
+protected function viewFolder_clickHandler(event:MouseEvent):void
+{
+	var file:File = new File( cachedVideo );
+	file.browse();
+}
+
 protected function creator_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/user/"+ data.creator.@id + "/" + data.creator.@name;
@@ -208,16 +214,17 @@ protected function updateDetails():void
 			searchComp.viewClipBtn.removeEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
 		if (searchComp.viewCreatorBtn.hasEventListener( MouseEvent.CLICK ) )
 			searchComp.viewCreatorBtn.removeEventListener( MouseEvent.CLICK, creator_clickHandler );
-		searchComp.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
 		
 		if ( FlexGlobals.topLevelApplication.userName != data.creator.@name)
 		{
+			searchComp.viewClipBtn.addEventListener( MouseEvent.CLICK, viewOnline_clickHandler );
 			searchComp.viewCreatorBtn.label = "created by: " + data.creator.@name;
 			searchComp.viewCreatorBtn.visible = true;
 			searchComp.viewCreatorBtn.addEventListener( MouseEvent.CLICK, creator_clickHandler );				
 		}
 		else
 		{
+			searchComp.viewClipBtn.addEventListener( MouseEvent.CLICK, viewFolder_clickHandler );
 			searchComp.viewCreatorBtn.label = "";	
 			searchComp.viewCreatorBtn.visible = false;
 		}
