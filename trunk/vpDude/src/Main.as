@@ -3,10 +3,17 @@ import air.net.URLMonitor;
 
 import components.*;
 
+import flash.desktop.NativeApplication;
+import flash.desktop.NativeProcess;
+import flash.desktop.NativeProcessStartupInfo;
 import flash.display.InteractiveObject;
+import flash.events.Event;
 import flash.events.NativeWindowBoundsEvent;
-import flash.globalization.LastOperationStatus;
+import flash.events.ProgressEvent;
+import flash.filesystem.FileMode;
+import flash.filesystem.FileStream;
 import flash.system.Capabilities;
+import flash.utils.ByteArray;
 
 import fr.batchass.*;
 
@@ -43,6 +50,12 @@ public var userName:String;
 // path to vpDude folder
 private var _vpFolderPath:String;
 
+private static var urlStream:URLStream;
+private static var fileStream:FileStream;
+private static var _updateUrl:String;
+private static var updateFile:File;
+
+
 [Bindable]
 public function get vpFolderPath():String
 {
@@ -71,8 +84,11 @@ private function set ownFolderPath(value:String):void
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
 	//check for update or update if downloaded
-	AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
-
+	//AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
+	//AIR 2.6
+	_updateUrl = "http://www.videopong.net/vpdudefiles/vpDude.xml";
+	downloadUpdateDescriptor();
+	
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener( NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize );
@@ -250,7 +266,120 @@ private function onMonitor(event:StatusEvent):void
 		}	
 	}
 }
-
+//AIR 2.6
+protected static function downloadUpdateDescriptor():void
+{
+	Util.log( "appUpdater,downloadUpdateDescriptor" ); 
+	var updateDescLoader:URLLoader = new URLLoader;
+	updateDescLoader.addEventListener(Event.COMPLETE, updateDescLoader_completeHandler);
+	//updateDescLoader.addEventListener(IOErrorEvent.IO_ERROR, updateDescLoader_ioErrorHandler);
+	updateDescLoader.load(new URLRequest(_updateUrl));
+}
+protected static function updateDescLoader_completeHandler(event:Event):void
+{
+	Util.log( "appUpdater,updateDescLoader_completeHandler" ); 
+	var loader:URLLoader = URLLoader(event.currentTarget);
+	
+	// Closing update descriptor loader
+	//closeUpdateDescLoader(loader);
+	
+	// Getting update descriptor XML from loaded data
+	var updateDescriptor:XML = XML(loader.data);
+	// Getting default namespace of update descriptor
+	var udns:Namespace = updateDescriptor.namespace();
+	
+	// Getting application descriptor XML
+	var applicationDescriptor:XML = NativeApplication.nativeApplication.applicationDescriptor;
+	// Getting default namespace of application descriptor
+	var adns:Namespace = applicationDescriptor.namespace();
+	
+	// Getting versionNumber from update descriptor
+	var updateVersion:String = updateDescriptor.udns::versionNumber.toString();
+	// Getting versionNumber from application descriptor
+	var currentVersion:String = applicationDescriptor.adns::versionNumber.toString();
+	Util.log( "appUpdater,updateDescLoader_completeHandler, updateVersion: " + updateVersion ); 
+	Util.log( "appUpdater,updateDescLoader_completeHandler, currentVersion: " + currentVersion ); 
+	
+	// Comparing current version with update version
+	if (currentVersion != updateVersion)
+	{
+		// Getting update url
+		var updateUrl:String = updateDescriptor.udns::url.toString();
+		// Downloading update file
+		downloadUpdate(updateUrl);
+	}
+}
+protected static function downloadUpdate(updateUrl:String):void
+{
+	// Parsing file name out of the download url
+	var fileName:String = updateUrl.substr(updateUrl.lastIndexOf("/") + 1);
+	Util.log( "appUpdater,downloadUpdate, fileName: " + fileName ); 
+	
+	// Creating new file ref in temp directory
+	updateFile = File.createTempDirectory().resolvePath(fileName);
+	Util.log( "appUpdater,downloadUpdate, updateFile: " + updateFile.url ); 
+	
+	// Using URLStream to download update file
+	urlStream = new URLStream;
+	urlStream.addEventListener(Event.OPEN, urlStream_openHandler);
+	urlStream.addEventListener(ProgressEvent.PROGRESS, urlStream_progressHandler);
+	urlStream.addEventListener(Event.COMPLETE, urlStream_completeHandler);
+	//urlStream.addEventListener(IOErrorEvent.IO_ERROR, urlStream_ioErrorHandler);
+	urlStream.load(new URLRequest(updateUrl));
+}
+protected static function urlStream_openHandler(event:Event):void
+{
+	Util.log( "appUpdater, urlStream_openHandler" ); 
+	// Creating new FileStream to write downloaded bytes into
+	fileStream = new FileStream;
+	fileStream.open(updateFile, FileMode.WRITE);
+}
+protected static function urlStream_progressHandler(event:ProgressEvent):void
+{
+	Util.log( "appUpdater, urlStream_progressHandler" ); 
+	// ByteArray with loaded bytes
+	var loadedBytes:ByteArray = new ByteArray;
+	// Reading loaded bytes
+	urlStream.readBytes(loadedBytes);
+	// Writing loaded bytes into the FileStream
+	fileStream.writeBytes(loadedBytes);
+}
+protected static function urlStream_completeHandler(event:Event):void
+{
+	Util.log( "appUpdater, urlStream_completeHandler" ); 
+	// Closing URLStream and FileStream
+	//closeStreams();
+	
+	// Installing update
+	installUpdate();
+}
+protected static function installUpdate():void
+{
+	try
+	{
+		Util.log( "appUpdater, installUpdate" ); 
+		// Running the installer using NativeProcess API
+		var info:NativeProcessStartupInfo = new NativeProcessStartupInfo;
+		info.executable = updateFile;
+		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.url ); 
+		
+		var process:NativeProcess = new NativeProcess();
+		process.start(info);
+		Util.log( "appUpdater, installUpdate, process started" ); 
+		
+		// Exit application for the installer to be able to proceed
+		for each (var window:NativeWindow in NativeApplication.nativeApplication.openedWindows) 
+		{
+			window.close();
+		}
+		Util.log( "appUpdater,installUpdate, exit" ); 
+		NativeApplication.nativeApplication.exit();
+	}
+	catch (e:Error)
+	{
+		Util.log( "appUpdater, installUpdate Error: " + e.message );
+	}
+}
 public function errorEventErrorHandler(event:ErrorEvent):void
 {
 	Util.log( 'An ErrorEvent has occured: ' + event.text );
