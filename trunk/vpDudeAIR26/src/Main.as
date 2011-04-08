@@ -380,19 +380,19 @@ protected  function installUpdate():void
 	try
 	{
 		Util.log( "appUpdater, installUpdate" ); 
-		// Running the installer using NativeProcess API
-		var info:NativeProcessStartupInfo = new NativeProcessStartupInfo;
-		info.executable = updateFile;
 		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.url ); 
 		var localUrl:String = updateFile.url;
 		var localExeFolder:String = localUrl.substr(0, localUrl.lastIndexOf("/") );
 		
 		navigateToURL(new URLRequest(localExeFolder));
-		NativeApplication.nativeApplication.exit();
+		// Running the installer using NativeProcess API
+		var info:NativeProcessStartupInfo = new NativeProcessStartupInfo;
+		info.executable = updateFile;
+		
 		//localUpdateFile.label = updateFile.url; 
 		//localUpdateFile.visible = true;
 		
-		/*var process:NativeProcess = new NativeProcess();
+		var process:NativeProcess = new NativeProcess();
 		process.start(info);
 		Util.log( "appUpdater, installUpdate, process started" ); 
 		
@@ -402,11 +402,12 @@ protected  function installUpdate():void
 			window.close();
 		}
 		Util.log( "appUpdater,installUpdate, exit" ); 
-		NativeApplication.nativeApplication.exit();*/
+		NativeApplication.nativeApplication.exit();
 	}
 	catch (e:Error)
 	{
 		Util.log( "appUpdater, installUpdate Error: " + e.message );
+		//NativeApplication.nativeApplication.exit();
 	}
 }
 protected function localUpdateFile_clickHandler(event:MouseEvent):void
