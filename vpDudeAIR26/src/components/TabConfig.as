@@ -313,8 +313,9 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 }
 protected function exploreBtn_clickHandler(event:MouseEvent):void
 {
-	var file:File = new File( parentDocument.ownFolderPath );
-	file.browse();
+	//var file:File = new File( parentDocument.ownFolderPath );
+	//file.browse();
+	navigateToURL(new URLRequest(parentDocument.ownFolderPath));
 }
 // Process all files in a directory structure including subdirectories.
 public function processAllFiles( selectedDir:File ):void
@@ -332,6 +333,7 @@ public function processAllFiles( selectedDir:File ):void
 			var clipPath:String = lstFile.nativePath;
 			var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
 			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
+			var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
 			
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
@@ -368,7 +370,7 @@ public function processAllFiles( selectedDir:File ):void
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
 										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
 										<urlpreview>{swfPath + clipGeneratedName + ".swf"}</urlpreview>
-										<clip name={clipGeneratedName}/>
+										<clip name={clipGeneratedTitle}/>
 										<creator name={userName}/>
 										<tags>
 											<tag name="own"/>
