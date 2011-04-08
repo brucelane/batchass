@@ -52,6 +52,7 @@ private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "m
 
 private var moviesToConvert:Array = new Array();
 private var thumbsToConvert:Array = new Array();
+
 private var newClips:Array = new Array();
 
 private var timer:Timer;

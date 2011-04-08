@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>  
-<update xmlns="http://ns.adobe.com/air/framework/update/description/2.5">  
-<versionNumber>0.4.023</versionNumber>  
+<update xmlns="http://ns.adobe.com/air/framework/update/description/2.6">  
+<version>0.4.026</version>  
+<versionNumber>0.4.026</versionNumber>  
 <url>http://www.videopong.net/vpdudefiles/vpDude.exe</url>  
 <description><![CDATA[ 
-New in version 0.4.023: 
+New in version 0.4.026: 
 * AIR 2.6
 ]]></description>  
 </update>

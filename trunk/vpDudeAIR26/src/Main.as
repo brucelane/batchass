@@ -50,11 +50,11 @@ public var userName:String;
 // path to vpDude folder
 private var _vpFolderPath:String;
 
-private static var urlStream:URLStream;
-private static var fileStream:FileStream;
-private static var _updateUrl:String;
-private static var updateFile:File;
-
+private  var urlStream:URLStream;
+private  var fileStream:FileStream;
+private  var _updateUrl:String;
+private  var updateFile:File;
+private  var downloadUrl:String;
 
 [Bindable]
 public function get vpFolderPath():String
@@ -267,7 +267,7 @@ private function onMonitor(event:StatusEvent):void
 	}
 }
 //AIR 2.6
-protected static function downloadUpdateDescriptor():void
+protected  function downloadUpdateDescriptor():void
 {
 	Util.log( "appUpdater,downloadUpdateDescriptor" ); 
 	var updateDescLoader:URLLoader = new URLLoader;
@@ -275,7 +275,7 @@ protected static function downloadUpdateDescriptor():void
 	//updateDescLoader.addEventListener(IOErrorEvent.IO_ERROR, updateDescLoader_ioErrorHandler);
 	updateDescLoader.load(new URLRequest(_updateUrl));
 }
-protected static function updateDescLoader_completeHandler(event:Event):void
+protected  function updateDescLoader_completeHandler(event:Event):void
 {
 	Util.log( "appUpdater,updateDescLoader_completeHandler" ); 
 	var loader:URLLoader = URLLoader(event.currentTarget);
@@ -304,12 +304,35 @@ protected static function updateDescLoader_completeHandler(event:Event):void
 	if (currentVersion != updateVersion)
 	{
 		// Getting update url
-		var updateUrl:String = updateDescriptor.udns::url.toString();
-		// Downloading update file
-		downloadUpdate(updateUrl);
+		downloadUrl = updateDescriptor.udns::url.toString();
+		UpdateBtn.visible = true;
+		
 	}
 }
-protected static function downloadUpdate(updateUrl:String):void
+protected function UpdateBtn_clickHandler(event:MouseEvent):void
+{
+	switch (UpdateBtn.label)
+	{
+		case "Update available!":
+			UpdateBtn.label = "Downloading...";
+			UpdateBtn.toolTip = "Please wait...";
+
+			// Downloading update file
+			downloadUpdate(downloadUrl);
+			break;
+		case "Downloading...":
+			
+			break;
+		case "Show setup folder":
+			// Installing update
+			installUpdate();
+			break;
+		default:
+			Util.log( "appUpdater,UpdateBtn_clickHandler: undefined state: "  + UpdateBtn.label); 
+			break;
+	}
+}
+protected  function downloadUpdate(updateUrl:String):void
 {
 	// Parsing file name out of the download url
 	var fileName:String = updateUrl.substr(updateUrl.lastIndexOf("/") + 1);
@@ -327,14 +350,14 @@ protected static function downloadUpdate(updateUrl:String):void
 	//urlStream.addEventListener(IOErrorEvent.IO_ERROR, urlStream_ioErrorHandler);
 	urlStream.load(new URLRequest(updateUrl));
 }
-protected static function urlStream_openHandler(event:Event):void
+protected  function urlStream_openHandler(event:Event):void
 {
 	Util.log( "appUpdater, urlStream_openHandler" ); 
 	// Creating new FileStream to write downloaded bytes into
 	fileStream = new FileStream;
 	fileStream.open(updateFile, FileMode.WRITE);
 }
-protected static function urlStream_progressHandler(event:ProgressEvent):void
+protected  function urlStream_progressHandler(event:ProgressEvent):void
 {
 	Util.log( "appUpdater, urlStream_progressHandler" ); 
 	// ByteArray with loaded bytes
@@ -344,16 +367,15 @@ protected static function urlStream_progressHandler(event:ProgressEvent):void
 	// Writing loaded bytes into the FileStream
 	fileStream.writeBytes(loadedBytes);
 }
-protected static function urlStream_completeHandler(event:Event):void
+protected  function urlStream_completeHandler(event:Event):void
 {
 	Util.log( "appUpdater, urlStream_completeHandler" ); 
 	// Closing URLStream and FileStream
 	//closeStreams();
-	
-	// Installing update
-	installUpdate();
+	UpdateBtn.label = "Show setup folder";
+	UpdateBtn.toolTip = "Please show folder and then exit vpDude to proceed to setup...";
 }
-protected static function installUpdate():void
+protected  function installUpdate():void
 {
 	try
 	{
@@ -362,8 +384,15 @@ protected static function installUpdate():void
 		var info:NativeProcessStartupInfo = new NativeProcessStartupInfo;
 		info.executable = updateFile;
 		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.url ); 
+		var localUrl:String = updateFile.url;
+		var localExeFolder:String = localUrl.substr(0, localUrl.lastIndexOf("/") );
 		
-		var process:NativeProcess = new NativeProcess();
+		navigateToURL(new URLRequest(localExeFolder));
+		NativeApplication.nativeApplication.exit();
+		//localUpdateFile.label = updateFile.url; 
+		//localUpdateFile.visible = true;
+		
+		/*var process:NativeProcess = new NativeProcess();
 		process.start(info);
 		Util.log( "appUpdater, installUpdate, process started" ); 
 		
@@ -373,12 +402,17 @@ protected static function installUpdate():void
 			window.close();
 		}
 		Util.log( "appUpdater,installUpdate, exit" ); 
-		NativeApplication.nativeApplication.exit();
+		NativeApplication.nativeApplication.exit();*/
 	}
 	catch (e:Error)
 	{
 		Util.log( "appUpdater, installUpdate Error: " + e.message );
 	}
+}
+protected function localUpdateFile_clickHandler(event:MouseEvent):void
+{
+	var request:URLRequest = new URLRequest(updateFile.url);
+	navigateToURL(request);
 }
 public function errorEventErrorHandler(event:ErrorEvent):void
 {
