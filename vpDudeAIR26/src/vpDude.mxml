@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   creationComplete="vpDude_creationCompleteHandler(event)" 
+					   width="840" height="670"
+					   xmlns:components="components.*">
+
+	<fx:Script source="Main.as" />
+
+	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
+		<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
+		
+		<mx:TabNavigator id="tabNav" width="830" height="600" change="tabNav_changeHandler(event)" >
+			<components:Config  />
+			<components:About  />
+			<components:Quit/>
+		</mx:TabNavigator>
+	</s:VGroup>
+</s:WindowedApplication>
