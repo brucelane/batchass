@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>  
 <update xmlns="http://ns.adobe.com/air/framework/update/description/2.6">  
-<version>0.4.030</version>  
-<versionNumber>0.4.030</versionNumber>  
+<version>0.4.031</version>  
+<versionNumber>0.4.031</versionNumber>  
 <url>http://www.videopong.net/vpdudefiles/vpDude.exe</url>  
 <description><![CDATA[ 
 New in version 0.4.030: 
 * AIR 2.6
 * better own clip titles
+* icons
 ]]></description>  
 </update>
