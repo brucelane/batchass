@@ -28,7 +28,7 @@
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
   <buildTargets>
     <buildTarget buildTargetName="default">
-      <airSettings airCertificatePath="C:/Users/adm.bruce/Adobe Flash Builder 4.5/cert/255426024.p12" airTimestamp="true" version="1">
+      <airSettings airCertificatePath="/Users/sit/Documents/Adobe Flash Builder 4.5/cert/255426024.p12" airTimestamp="true" version="1">
         <airExcludes>
           <pathEntry path="css"/>
         </airExcludes>
