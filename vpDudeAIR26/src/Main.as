@@ -367,7 +367,7 @@ protected  function downloadUpdate(updateUrl:String):void
 	Util.log( "appUpdater,downloadUpdate, fileName: " + fileName ); 
 	
 	// Creating new file ref in temp directory
-	updateFile = File.createTempDirectory().resolvePath(fileName);
+	updateFile = File.applicationStorageDirectory.resolvePath(fileName);
 	Util.log( "appUpdater,downloadUpdate, updateFile: " + updateFile.nativePath ); 
 	
 	// Using URLStream to download update file
