@@ -320,7 +320,19 @@ protected  function updateDescLoader_completeHandler(event:Event):void
 	if (currentVersion != updateVersion)
 	{
 		// Getting update url
-		downloadUrl = updateDescriptor.udns::url.toString();
+		var os:String = Capabilities.os.substr(0, 3);
+		if (os == "Win") 
+		{
+			downloadUrl = updateDescriptor.udns::url.toString() + "exe";
+		} 
+		else if (os == "Mac") 
+		{
+			downloadUrl = updateDescriptor.udns::url.toString() + "dmg";
+		} 
+		else 
+		{
+			downloadUrl = updateDescriptor.udns::url.toString() + "exe"; //KO: linux extension?
+		}
 		UpdateBtn.visible = true;
 		
 	}
@@ -428,7 +440,7 @@ protected  function installUpdate():void
 }
 protected function localUpdateFile_clickHandler(event:MouseEvent):void
 {
-	var request:URLRequest = new URLRequest(updateFile.url);
+	var request:URLRequest = new URLRequest(updateFile.nativePath);
 	navigateToURL(request);
 }
 public function errorEventErrorHandler(event:ErrorEvent):void
