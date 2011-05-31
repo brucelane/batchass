@@ -138,15 +138,16 @@ private function checkFFMpeg():void
 	}
 	
 	var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
-	vpFFMpegExePath = FFMpegFile.url;
+	//vpFFMpegExePath = FFMpegFile.url;
+	vpFFMpegExePath = FFMpegFile.nativePath;
 	
 	if( FFMpegFile.exists )
 	{
-		Util.log( "FFMpegFile exists: " + FFMpegFile.url );
+		Util.log( "FFMpegFile exists: " + FFMpegFile.nativePath );
 	} 
 	else 
 	{
-		Util.log( "FFMpegFile does not exist: " + FFMpegFile.url );
+		Util.log( "FFMpegFile does not exist: " + FFMpegFile.nativePath );
 		dlFFMpeg( vpDudeFiles + vpFFMpeg );
 	}
 }
@@ -355,7 +356,7 @@ protected  function downloadUpdate(updateUrl:String):void
 	
 	// Creating new file ref in temp directory
 	updateFile = File.createTempDirectory().resolvePath(fileName);
-	Util.log( "appUpdater,downloadUpdate, updateFile: " + updateFile.url ); 
+	Util.log( "appUpdater,downloadUpdate, updateFile: " + updateFile.nativePath ); 
 	
 	// Using URLStream to download update file
 	urlStream = new URLStream;
@@ -395,8 +396,8 @@ protected  function installUpdate():void
 	try
 	{
 		Util.log( "appUpdater, installUpdate" ); 
-		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.url ); 
-		var localUrl:String = updateFile.url;
+		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.nativePath ); 
+		var localUrl:String = updateFile.nativePath;
 		var localExeFolder:String = localUrl.substr(0, localUrl.lastIndexOf("/") );
 		
 		navigateToURL(new URLRequest(localExeFolder));

@@ -231,24 +231,26 @@ protected function updateDetails():void
 		
 		
 		var urlPreview:String = data.urlpreview;
-		Util.log( "imgUrl_mouseDownHandler, urlPreview: " + urlPreview );
+		Util.log( "updateDetails, urlPreview: " + urlPreview );
 		if ( urlPreview ) 
 		{
 			var cachedUrl:String = getCachedSwf( urlPreview );
-			Util.log( "imgUrl_mouseDownHandler, cachedUrl: " + cachedUrl );
+			Util.log( "updateDetails, cachedUrl: " + cachedUrl );
 			var cPrev:File = new File( cachedUrl );
 			if ( !cPrev.exists ) 
 			{
+				Util.log( "updateDetails, cachedUrl does not exist: " + cachedUrl );
 				searchComp.swfComp.source = previewWaitImage;
 			}
 			else
 			{
+				Util.log( "updateDetails, cachedUrl exists: " + cachedUrl );
 				searchComp.swfComp.source = cachedUrl;
 			}
 		}
 		else
 		{
-			Util.log( "imgUrl_mouseDownHandler, urlPreview null" );
+			Util.log( "updateDetails, urlPreview null" );
 			searchComp.swfComp.source = null;
 		}
 		searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
