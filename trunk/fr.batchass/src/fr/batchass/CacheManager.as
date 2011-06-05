@@ -165,7 +165,8 @@ package fr.batchass
 		}
 		public function getSwfByURL( assetUrl:String ):String
 		{
-			var localUrl:String = _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
+			// added june 2011: "file://" for mac
+			var localUrl:String = "file://" + _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			return localUrl;
 		}
 		// download image for gallery
