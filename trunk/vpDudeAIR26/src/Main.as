@@ -42,6 +42,7 @@ import mx.managers.DragManager;
 import videopong.*;
 
 private var monitor:URLMonitor;
+public var connected:Boolean;
 
 public var vpDudeFiles:String = "http://www.videopong.net/vpdudefiles/";
 public var vpRootUrl:String = "http://www.videopong.net/";
@@ -247,11 +248,12 @@ private function onMonitor(event:StatusEvent):void
 {
 	if ( monitor )
 	{
-		statusText.text = vpRootUrl +  ( monitor.available ? " is available" : " could not be reached" );
+		connected = monitor.available;
+		statusText.text = vpRootUrl +  ( connected ? " is available" : " could not be reached" );
 		Util.log( statusText.text );
 
 		trace( tabNav.numChildren );	
-		if ( monitor.available ) 
+		if ( connected ) 
 		{
 			if ( tabNav.numChildren == 4 )
 			{
@@ -286,9 +288,9 @@ private function onMonitor(event:StatusEvent):void
 protected  function downloadUpdateDescriptor():void
 {
 	Util.log( "appUpdater,downloadUpdateDescriptor" ); 
-	var updateDescLoader:URLLoader = new URLLoader;
+	var updateDescLoader:URLLoader = new URLLoader();
 	updateDescLoader.addEventListener(Event.COMPLETE, updateDescLoader_completeHandler);
-	//updateDescLoader.addEventListener(IOErrorEvent.IO_ERROR, updateDescLoader_ioErrorHandler);
+	updateDescLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 	updateDescLoader.load(new URLRequest(_updateUrl));
 }
 protected  function updateDescLoader_completeHandler(event:Event):void

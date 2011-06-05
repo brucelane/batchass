@@ -119,7 +119,17 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 {
 	if ( isConfigured )
 	{
-		parentDocument.addTabs();
+		Util.log( "config_creationCompleteHandler, isConfigured is true" );
+		Util.log( "config_creationCompleteHandler, parentDocument: " + parentDocument );
+		if (parentDocument )
+		{	
+			parentDocument.addTabs();
+		}
+		else
+		{
+			Util.log( "config_creationCompleteHandler, parentDocument is null, maybe no internet cnx? " );
+		
+		}
 	}
 	else
 	{
@@ -315,7 +325,8 @@ protected function exploreBtn_clickHandler(event:MouseEvent):void
 {
 	//var file:File = new File( parentDocument.ownFolderPath );
 	//file.browse();
-	navigateToURL(new URLRequest(parentDocument.ownFolderPath));
+	// added june 2011 for mac: "file://"
+	navigateToURL(new URLRequest("file://" + parentDocument.ownFolderPath));
 }
 // Process all files in a directory structure including subdirectories.
 public function processAllFiles( selectedDir:File ):void

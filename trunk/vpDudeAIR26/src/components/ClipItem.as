@@ -186,7 +186,7 @@ private function getCachedThumbnail( thumbnailUrl:String ):String
 protected function viewOnline_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/clip/detail/" + data.@id;
-	FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
+	if (FlexGlobals.topLevelApplication.connected) FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
 }
 protected function viewFolder_clickHandler(event:MouseEvent):void
 {
@@ -197,7 +197,7 @@ protected function viewFolder_clickHandler(event:MouseEvent):void
 protected function creator_clickHandler(event:MouseEvent):void
 {
 	FlexGlobals.topLevelApplication.vpFullUrl = "http://www.videopong.net/user/"+ data.creator.@id + "/" + data.creator.@name;
-	FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
+	if (FlexGlobals.topLevelApplication.connected) FlexGlobals.topLevelApplication.tabNav.selectedIndex=1;
 }
 protected function rateClip_clickHandler(event:MouseEvent):void
 {
@@ -245,7 +245,11 @@ protected function updateDetails():void
 			else
 			{
 				Util.log( "updateDetails, cachedUrl exists: " + cachedUrl );
+				Util.log( "updateDetails, searchComp: " + searchComp );
+				Util.log( "updateDetails, searchComp.swfComp: " + searchComp.swfComp );
+				Util.log( "updateDetails, searchComp.swfComp.source before: " + searchComp.swfComp.source );
 				searchComp.swfComp.source = cachedUrl;
+				Util.log( "updateDetails, searchComp.swfComp.source after: " + searchComp.swfComp.source );
 			}
 		}
 		else
