@@ -411,7 +411,7 @@ protected  function installUpdate():void
 	{
 		Util.log( "appUpdater, installUpdate" ); 
 		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.nativePath ); 
-		var localUrl:String = updateFile.nativePath;
+		var localUrl:String = "file://" + updateFile.nativePath;
 		var localExeFolder:String = localUrl.substr(0, localUrl.lastIndexOf("/") );
 		
 		navigateToURL(new URLRequest(localExeFolder));
