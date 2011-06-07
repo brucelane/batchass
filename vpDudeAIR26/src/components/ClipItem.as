@@ -34,9 +34,7 @@ import videopong.*;
 private var cachedThumbnail1:String;
 [Bindable]
 private var clipname:String;
-/*[Bindable]
-private var tagList:String;
-*/
+
 // get instance of Tags class
 [Bindable]
 private var tags:Tags = Tags.getInstance();;
@@ -93,8 +91,16 @@ override public function set data( value:Object ) : void {
 		{	
 			// get urls from cached files
 			if ( data.urlthumb1 ) cachedThumbnail1 = getCachedThumbnail( data.urlthumb1 );
-			var cthumb1:File = new File( cachedThumbnail1 );
-			if ( !cthumb1.exists ) 
+			//test if start with http, means not downloaded
+			if (cachedThumbnail1.substr(0,7)=="file://")
+			{	
+				var cthumb1:File = new File( cachedThumbnail1 );
+				if ( !cthumb1.exists ) 
+				{
+					imgUrl.source = waitImage;
+				}
+			}
+			else
 			{
 				imgUrl.source = waitImage;
 			}
