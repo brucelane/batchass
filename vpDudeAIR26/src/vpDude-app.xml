@@ -25,7 +25,7 @@
 	<name>vpDude</name>
 
 	<!-- An application version designator (such as "v1", "2.5", or "Alpha 1"). Required. -->
-	<versionNumber>0.4.036</versionNumber>
+	<versionNumber>0.4.037</versionNumber>
 	
  	<!-- Description, displayed in the AIR application installer.
 	     May have multiple values for each language. See samples or xsd schema file. Optional. -->
@@ -88,7 +88,7 @@
     <!-- devices supported by AIR. If you wish to restrict deployment -->
     <!-- (i.e., to only mobile devices) then add this element and list -->
     <!-- only the profiles which your application does support. -->
-    <supportedProfiles>extendedDesktop desktop</supportedProfiles>
+    <supportedProfiles>extendedDesktop</supportedProfiles>
 
 	<!-- The subpath of the standard default installation location to use. Optional. -->
 	<!-- <installFolder></installFolder> -->
