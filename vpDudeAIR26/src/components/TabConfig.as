@@ -2,6 +2,7 @@ import components.*;
 
 import flash.desktop.NativeApplication;
 import flash.desktop.NativeProcess;
+import flash.desktop.NativeProcessStartupInfo;
 import flash.events.Event;
 import flash.events.ProgressEvent;
 import flash.events.TimerEvent;
@@ -424,7 +425,7 @@ private function processConvert(event:Event): void
 			currentThumb = thumbsToConvert[0].tNumber;
 			ffout.text += "Converting: " + thumbsToConvert[0].clipLocalPath + "\n";
 			Util.ffMpegOutputLog( "processConvert: " + "Converting " + thumbsToConvert[0].clipLocalPath + "\n" );
-			execute(  thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber );
+			execute( thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber );
 			thumbsToConvert.shift();
 		}
 		else
@@ -458,7 +459,15 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 			copySwf( ownVideoPath, swfPath + clipGeneratedName + ".swf" );
 		}
 		var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
-		ffout.text += "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n";
+		if ( !ffMpegExecutable.exists )
+		{
+			Util.log( "generatePreview, ffMpegExecutable does not exist: " + parentDocument.vpFFMpegExePath );
+		}
+		else
+		{
+			Util.log( "generatePreview, ffMpegExecutable exists: " + parentDocument.vpFFMpegExePath );
+		}
+		ffout.text += "generatePreview, Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n";
 		Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
 		
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
@@ -508,7 +517,8 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 	}
 	catch (e:Error)
 	{
-		Util.log( "NativeProcess Error: " + e.message );
+		Util.log( "generatePreview, NativeProcess Error: " + e.message );
+		busy = false;
 	}
 }
 private function copySwf( src:String, dest:String ):void
@@ -538,15 +548,26 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 	try
 	{
 		tPath = thumbsPath;
+		var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath(  parentDocument.vpFFMpegExePath );
+		if ( !ffMpegExecutable.exists )
+		{
+			Util.log( "execute, ffMpegExecutable does not exist: " + parentDocument.vpFFMpegExePath );
+		}
+		else
+		{
+			Util.log( "execute, ffMpegExecutable exists: " + parentDocument.vpFFMpegExePath );
+		}
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-		nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
-		
+		nativeProcessStartupInfo.executable = ffMpegExecutable;//File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		//nativeProcessStartupInfo.workingDirectory = File.applicationStorageDirectory.resolvePath(  parentDocument.vpFFMpegExePath ).nativePath;
+		Util.log( "execute, ffMpegExecutable path: " + File.applicationStorageDirectory.resolvePath(  parentDocument.vpFFMpegExePath ).nativePath );
+			                  		
 		if (thumbNumber == 1) 
 		{
 			thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg" 
 		}
 		else thumb1 = "";
-		ffout.text += "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n";
+		ffout.text += "execute, Converting " + ownVideoPath + " to thumb " + thumb1 + "\n";
 		Util.ffMpegOutputLog( "NativeProcess execute: " + "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n" );
 		
 		var processArgs:Vector.<String> = new Vector.<String>();
@@ -575,7 +596,8 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 	}
 	catch (e:Error)
 	{
-		Util.log( "NativeProcess Error: " + e.message );
+		Util.log( "execute, NativeProcess Error: " + e.message );
+		busy = false;
 	}
 }
 private function outputDataHandler(event:ProgressEvent):void
