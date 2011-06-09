@@ -176,10 +176,31 @@ private function FFMpegLoadComplete( event:Event ):void
 	stream.open( FFMpegFile, FileMode.WRITE );
 	stream.writeBytes( loader.data );
 	stream.close();
+	// TODO: if mac do chmod
+	/*
+	if (os == "Mac") 
+	{
+	var FFMpegPath:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator ); 
+	
+		vpFFMpeg = "ffmpeg.dat";
+	} */
 }
 
 public function addTabs():void 
 { 
+	/*if (os == "Mac") 
+	{
+		var FFMpegPath:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator ); 
+		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+		nativeProcessStartupInfo.executable = ffMpegExecutable;
+		//nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+		Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
+		var processArgs:Vector.<String> = new Vector.<String>();
+		var i:int = 0;
+		processArgs[i++] = "-i";
+		processArgs[i++] = ownVideoPath;
+		vpFFMpeg = "ffmpeg.dat";
+	}*/
 	if ( tabNav.numChildren == 3 )
 	{
 		tabNav.removeChildAt( 2 );//Quit
