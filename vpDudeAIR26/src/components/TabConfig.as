@@ -327,7 +327,14 @@ protected function exploreBtn_clickHandler(event:MouseEvent):void
 	//var file:File = new File( parentDocument.ownFolderPath );
 	//file.browse();
 	// added june 2011 for mac: "file://"
-	navigateToURL(new URLRequest("file://" + parentDocument.ownFolderPath));
+	if ( parentDocument.os == "Mac" )
+	{
+		navigateToURL(new URLRequest("file://" + parentDocument.ownFolderPath));
+	}
+	else
+	{
+		navigateToURL(new URLRequest( parentDocument.ownFolderPath));
+	}
 }
 // Process all files in a directory structure including subdirectories.
 public function processAllFiles( selectedDir:File ):void
