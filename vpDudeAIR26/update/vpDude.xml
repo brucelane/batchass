@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>  
 <update xmlns="http://ns.adobe.com/air/framework/update/description/2.6">  
-<version>0.4.038</version>  
-<versionNumber>0.4.038</versionNumber>  
+<version>0.4.040</version>  
+<versionNumber>0.4.040</versionNumber>  
 <url>http://www.videopong.net/vpdudefiles/vpDude.</url>  
 <description><![CDATA[ 
-New in version 0.4.038: 
+New in version 0.4.040: 
 * AIR 2.6
 * mac os bug fixing
 * extendedDesktop only
