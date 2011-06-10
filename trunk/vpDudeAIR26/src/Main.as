@@ -59,7 +59,7 @@ public var vpUploadUrl:String = vpUpUrl;
 
 public var dldFolderPath:String;
 public var dbFolderPath:String;
-
+public var os:String;
 public var search:Search;
 public var userName:String;
 
@@ -124,7 +124,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 private function checkFFMpeg():void
 {
 	// determine OS to download right ffmpeg
-	var os:String = Capabilities.os.substr(0, 3);
+	os = Capabilities.os.substr(0, 3);
 	if (os == "Win") 
 	{
 		vpFFMpeg = "ffmpeg.exe";
@@ -137,9 +137,19 @@ private function checkFFMpeg():void
 	{
 		vpFFMpeg = "ffmpeg.lame"; 
 	}
+	var FFMpegAppFile:File = File.applicationDirectory.resolvePath( 'ffmpeg' + File.separator + vpFFMpeg );
+	if( FFMpegAppFile.exists )
+	{
+		Util.log( "FFMpegAppFile exists: " + FFMpegAppFile.nativePath );
+	} 
+	else 
+	{
+		Util.log( "FFMpegAppFile does not exist: " + FFMpegAppFile.nativePath );
+	}
+	vpFFMpegExePath = FFMpegAppFile.nativePath;
 	
-	var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
-	//vpFFMpegExePath = FFMpegFile.url;
+	/*var FFMpegFile:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator + vpFFMpeg );
+	
 	vpFFMpegExePath = FFMpegFile.nativePath;
 	
 	if( FFMpegFile.exists )
@@ -150,9 +160,9 @@ private function checkFFMpeg():void
 	{
 		Util.log( "FFMpegFile does not exist: " + FFMpegFile.nativePath );
 		dlFFMpeg( vpDudeFiles + vpFFMpeg );
-	}
+	}*/
 }
-private function dlFFMpeg( url:String ):void
+/*private function dlFFMpeg( url:String ):void
 {
 		var req:URLRequest = new URLRequest(url);
 		var loader:URLLoader = new URLLoader();
@@ -163,9 +173,9 @@ private function dlFFMpeg( url:String ):void
 		loader.addEventListener( ErrorEvent.ERROR, errorEventErrorHandler );
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 		loader.load(req);
-}
+}*/
     
-private function FFMpegLoadComplete( event:Event ):void
+/*private function FFMpegLoadComplete( event:Event ):void
 {
 	var loader:URLLoader = event.target as URLLoader;
 	
@@ -177,30 +187,11 @@ private function FFMpegLoadComplete( event:Event ):void
 	stream.writeBytes( loader.data );
 	stream.close();
 	// TODO: if mac do chmod
-	/*
-	if (os == "Mac") 
-	{
-	var FFMpegPath:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator ); 
 	
-		vpFFMpeg = "ffmpeg.dat";
-	} */
-}
+}*/
 
 public function addTabs():void 
 { 
-	/*if (os == "Mac") 
-	{
-		var FFMpegPath:File = File.applicationStorageDirectory.resolvePath( 'config' + File.separator ); 
-		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-		nativeProcessStartupInfo.executable = ffMpegExecutable;
-		//nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
-		Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
-		var processArgs:Vector.<String> = new Vector.<String>();
-		var i:int = 0;
-		processArgs[i++] = "-i";
-		processArgs[i++] = ownVideoPath;
-		vpFFMpeg = "ffmpeg.dat";
-	}*/
 	if ( tabNav.numChildren == 3 )
 	{
 		tabNav.removeChildAt( 2 );//Quit
@@ -248,6 +239,7 @@ private function moveWindow( evt:MouseEvent ):void
 {
 	var clickedElement:String = evt.target.name;
 	if ( clickedElement.lastIndexOf( "WindowedApplicationSkin" ) > -1 ) nativeWindow.startMove();
+	if ( clickedElement.lastIndexOf( "HGroup8" ) > -1 ) nativeWindow.startMove();
 	if ( clickedElement.lastIndexOf( "VGroup" ) > -1 ) nativeWindow.startMove();
 }
 private function urlMonitor(url:String):void 
@@ -432,7 +424,15 @@ protected  function installUpdate():void
 	{
 		Util.log( "appUpdater, installUpdate" ); 
 		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.nativePath ); 
-		var localUrl:String = "file://" + updateFile.nativePath;
+		var localUrl:String;
+		if ( os == "Mac" )
+		{
+			localUrl = "file://" + updateFile.nativePath;
+		}
+		else
+		{
+			localUrl = updateFile.nativePath;
+		}
 		var localExeFolder:String = localUrl.substr(0, localUrl.lastIndexOf("/") );
 		
 		navigateToURL(new URLRequest(localExeFolder));
