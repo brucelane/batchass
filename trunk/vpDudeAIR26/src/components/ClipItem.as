@@ -179,7 +179,7 @@ private function getCachedVideo( videoUrl:String ):String
 private function getCachedSwf( swfUrl:String ):String
 {
 	if ( !cache ) cache = new CacheManager( FlexGlobals.topLevelApplication.dldFolderPath );
-	var cachedSwfUrl:String = cache.getSwfByURL( swfUrl );
+	var cachedSwfUrl:String	= cache.getSwfByURL( swfUrl, (FlexGlobals.topLevelApplication.os == "Mac") );
 	Util.log( "getCachedSwf, cachedSwfUrl: " + cachedSwfUrl );
 	return cachedSwfUrl;
 }
