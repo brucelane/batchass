@@ -163,10 +163,12 @@ package fr.batchass
 				filesToDownload.push({sUrl:assetUrl,lUrl:localUrl});
 			}
 		}
-		public function getSwfByURL( assetUrl:String ):String
+		public function getSwfByURL( assetUrl:String, macOs:Boolean ):String
 		{
+			var localUrl:String; 
 			// added june 2011: "file://" for mac
-			var localUrl:String = "file://" + _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
+			if ( macOs ) localUrl = "file://" else localUrl = "";
+			localUrl += _cacheDir.nativePath + File.separator + SWF_PATH + File.separator + Util.getFileNameFromFormerSlash( assetUrl ) ;
 			return localUrl;
 		}
 		// download image for gallery
