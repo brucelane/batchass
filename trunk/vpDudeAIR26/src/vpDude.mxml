@@ -2,11 +2,16 @@
 <s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx"
+					   xmlns:updater="http://updater.riaspace.com/"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
 					   width="840" height="670"
 					   xmlns:components="components.*">
 	<fx:Script source="Main.as" />
-
+	<fx:Declarations>
+		<updater:NativeApplicationUpdater id="updater" 
+										  updateURL="https://www.videopong.net/vpdudefiles/update.xml"
+										  initialized="updater_initializedHandler(event)"/>
+	</fx:Declarations>
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
 		<s:HGroup>
 			<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />

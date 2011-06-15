@@ -1,5 +1,6 @@
 
 import air.net.URLMonitor;
+import air.update.events.StatusUpdateEvent;
 import air.update.events.UpdateEvent;
 
 import com.riaspace.nativeApplicationUpdater.NativeApplicationUpdater;
@@ -89,8 +90,6 @@ private function set vpFolderPath(value:String):void
 }
 // path to own videos folder
 private var _ownFolderPath:String;
-// autoupdate from Piotr
-private var updater:NativeApplicationUpdater = new NativeApplicationUpdater();
 
 [Bindable]
 public function get ownFolderPath():String
@@ -105,6 +104,9 @@ private function set ownFolderPath(value:String):void
 
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 {
+	// autoupdate from Piotr
+	updater.initialize();
+	Util.log( "Check for new version, current: " + updater.currentVersion );
 	//check for update or update if downloaded
 	//AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
 	//AIR 2.6
@@ -125,12 +127,39 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	Util.cacheLog( "Start", true );
 	urlMonitor( vpRootUrl );
 	checkFFMpeg();
-	// autoupdate from Piotr
-	Util.log( "Check for new version, current: " + updater.currentVersion );
-	updater.updateURL = "https://www.videopong.net/vpdudefiles/update.xml";
+
+}
+protected function updater_initializedHandler(event:UpdateEvent):void
+{
+	Util.log( "Check now, current: " + updater.currentVersion );
+	updater.checkNow();
+}
+/*protected function isNewerFunction(currentVersion:String, updateVersion:String):Boolean
+{
+	// Example of custom isNewerFunction function, it can be omitted if one doesn't want
+	// to implement it's own version comparison logic. Be default it does simple string
+	// comparison.
+	return true;
+}
+protected function updater_initializedHandler(event:UpdateEvent):void
+{
+	// When NativeApplicationUpdater is initialized you can call checkNow function
 	updater.checkNow();
 }
 
+protected function updater_updateStatusHandler(event:StatusUpdateEvent):void
+{
+	if (event.available)
+	{
+		// In case update is available prevent default behavior of checkNow() function 
+		// and switch to the view that gives the user ability to decide if he wants to
+		// install new version of the application.
+		event.preventDefault();
+		UpdateBtn.visible = true;
+		
+	}
+	
+}*/
 private function checkFFMpeg():void
 {
 	// determine OS to download right ffmpeg
@@ -308,15 +337,15 @@ private function onMonitor(event:StatusEvent):void
 	}
 }
 //AIR 2.6
-protected  function downloadUpdateDescriptor():void
+/*protected  function downloadUpdateDescriptor():void
 {
 	Util.log( "appUpdater,downloadUpdateDescriptor" ); 
 	var updateDescLoader:URLLoader = new URLLoader();
 	updateDescLoader.addEventListener(Event.COMPLETE, updateDescLoader_completeHandler);
 	updateDescLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
 	updateDescLoader.load(new URLRequest(_updateUrl));
-}
-protected  function updateDescLoader_completeHandler(event:Event):void
+}*/
+/*protected  function updateDescLoader_completeHandler(event:Event):void
 {
 	Util.log( "appUpdater,updateDescLoader_completeHandler" ); 
 	var loader:URLLoader = URLLoader(event.currentTarget);
@@ -361,7 +390,7 @@ protected  function updateDescLoader_completeHandler(event:Event):void
 		UpdateBtn.visible = true;
 		
 	}
-}
+}*/
 protected function UpdateBtn_clickHandler(event:MouseEvent):void
 {
 	switch (UpdateBtn.label)
