@@ -1,5 +1,8 @@
 
 import air.net.URLMonitor;
+import air.update.events.UpdateEvent;
+
+import com.riaspace.nativeApplicationUpdater.NativeApplicationUpdater;
 
 import components.*;
 
@@ -44,8 +47,8 @@ import videopong.*;
 private var monitor:URLMonitor;
 public var connected:Boolean;
 
-public var vpDudeFiles:String = "http://www.videopong.net/vpdudefiles/";
-public var vpRootUrl:String = "http://www.videopong.net/";
+public var vpDudeFiles:String = "https://www.videopong.net/vpdudefiles/";
+public var vpRootUrl:String = "https://www.videopong.net/";
 public var vpUrl:String = vpRootUrl + "vpdude/";
 public var vpUpUrl:String = vpRootUrl + "vpdudeup/";
 // ffmpeg file name depending on OS
@@ -86,6 +89,9 @@ private function set vpFolderPath(value:String):void
 }
 // path to own videos folder
 private var _ownFolderPath:String;
+// autoupdate from Piotr
+private var updater:NativeApplicationUpdater = new NativeApplicationUpdater();
+
 [Bindable]
 public function get ownFolderPath():String
 {
@@ -102,8 +108,8 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	//check for update or update if downloaded
 	//AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
 	//AIR 2.6
-	_updateUrl = "http://www.videopong.net/vpdudefiles/vpDude.xml";
-	downloadUpdateDescriptor();
+	/*_updateUrl = "http://www.videopong.net/vpdudefiles/vpDude.xml";
+	downloadUpdateDescriptor();*/
 	
 	this.validateDisplayList();
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
@@ -119,6 +125,10 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	Util.cacheLog( "Start", true );
 	urlMonitor( vpRootUrl );
 	checkFFMpeg();
+	// autoupdate from Piotr
+	Util.log( "Check for new version, current: " + updater.currentVersion );
+	updater.updateURL = "https://www.videopong.net/vpdudefiles/update.xml";
+	updater.checkNow();
 }
 
 private function checkFFMpeg():void
