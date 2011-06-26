@@ -69,6 +69,11 @@ override public function set data( value:Object ) : void {
 		{	
 			//don't load from cache as it is local files
 			if ( data.urlthumb1 ) cachedThumbnail1 = data.urlthumb1;
+			if ( FlexGlobals.topLevelApplication.os == "Mac" )
+			{
+				cachedThumbnail1 = "file://" + cachedThumbnail1;
+			}
+			
 			var thumb1:File = new File( cachedThumbnail1 );
 			if ( !thumb1.exists ) 
 			{
