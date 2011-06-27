@@ -3,11 +3,11 @@
 
         <!-- Mac update -->
         <dmg>
-                <version>0.4.044</version>
+                <version>0.4.045</version>
                 <url>https://www.videopong.net/vpdudefiles/vpDude.dmg</url>
             <description>
             <![CDATA[
-				New in version 0.4.044: 
+				New in version 0.4.045: 
 				* AIR 2.6
                 * This a Mac update
                 ]]>
@@ -16,11 +16,11 @@
         
         <!-- Win update -->
         <exe>
-                <version>0.4.044</version>
+                <version>0.4.045</version>
                 <url>https://www.videopong.net/vpdudefiles/vpDude.exe</url>
             <description>
             <![CDATA[
- 				New in version 0.4.044: 
+ 				New in version 0.4.045: 
 				* AIR 2.6
                 * This a Win update
                 ]]>
@@ -29,11 +29,11 @@
 
         <!-- Debian update -->
         <deb>
-                <version>0.4.044</version>
+                <version>0.4.045</version>
                 <url>https://www.videopong.net/vpdudefiles/vpDude.deb</url>
             <description>
             <![CDATA[
-				New in version 0.4.044: 
+				New in version 0.4.045: 
 				* AIR 2.6
                 * This a Debian update
                 ]]>
@@ -42,11 +42,11 @@
 
         <!-- Redhat/Fedora/OpenSUSE update -->
         <rpm>
-                <version>0.4.044</version>
+                <version>0.4.045</version>
                 <url>https://www.videopong.net/vpdudefiles/vpDude.rpm</url>
             <description>
             <![CDATA[
-				New in version 0.4.044: 
+				New in version 0.4.045: 
 				* AIR 2.6
                 * This a Redhat/Fedora/OpenSUSE update
                 ]]>
