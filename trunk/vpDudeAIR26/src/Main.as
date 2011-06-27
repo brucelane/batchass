@@ -233,9 +233,10 @@ private function checkFFMpeg():void
 
 public function addTabs():void 
 { 
-	if ( tabNav.numChildren == 3 )
+	if ( tabNav.numChildren == 4 )
 	{
-		tabNav.removeChildAt( 2 );//Quit
+		tabNav.removeChildAt( 3 );//Quit
+		tabNav.removeChildAt( 2 );//Donate
 		tabNav.removeChildAt( 1 );//About
 		tabNav.removeChildAt( 0 );//Config
 		search = new Search();
@@ -244,6 +245,7 @@ public function addTabs():void
 		tabNav.addChild( new Upload() );
 		tabNav.addChild( new Config() );	
 		tabNav.addChild( new About() );	
+		tabNav.addChild( new Donate() );	
 		tabNav.addChild( new Quit() );	
 		// load tagsFile when config is done
 		var tags:Tags = Tags.getInstance();
@@ -266,6 +268,10 @@ protected function tabNav_changeHandler(event:IndexChangedEvent):void
 		}
 		
 		NativeApplication.nativeApplication.exit();
+	}
+	if( event.relatedObject is Donate) 
+	{
+		navigateToURL( new URLRequest("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=paypal%40toastbrot%2ech&item_name=videopong&no_shipping=1&no_note=1&cn=Optionale%20Mitteilung&tax=0&currency_code=CHF&lc=CH&bn=PP%2dDonationsBF&charset=UTF%2d8") );
 	}
 	
 }
