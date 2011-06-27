@@ -64,6 +64,7 @@ public var vpUploadUrl:String = vpUpUrl;
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 public var os:String;
+public var currentVersion:String;
 public var search:Search;
 public var userName:String;
 
@@ -114,6 +115,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	// autoupdate from Piotr
 	updater.initialize();
 	Util.log( "Check for new version, current: " + updater.currentVersion );
+	currentVersion = updater.currentVersion;
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener( NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize );
 
