@@ -1,5 +1,6 @@
 
 import air.net.URLMonitor;
+import air.update.events.DownloadErrorEvent;
 import air.update.events.StatusUpdateEvent;
 import air.update.events.UpdateEvent;
 
@@ -38,6 +39,7 @@ import fr.batchass.*;
 
 import mx.collections.ArrayCollection;
 import mx.collections.XMLListCollection;
+import mx.controls.Alert;
 import mx.events.DragEvent;
 import mx.events.FlexEvent;
 import mx.events.IndexChangedEvent;
@@ -60,6 +62,8 @@ public var vpFFMpegExePath:String;
 public var vpFullUrl:String = vpUrl;
 [Bindable]
 public var vpUploadUrl:String = vpUpUrl;
+[Bindable]
+protected var downloading:Boolean = false;
 
 public var dldFolderPath:String;
 public var dbFolderPath:String;
@@ -103,24 +107,33 @@ private function set ownFolderPath(value:String):void
 	_ownFolderPath = value;
 }
 
+/*<fx:Declarations>
+	<updater:NativeApplicationUpdater id="updater" 
+									  updateURL="https://www.videopong.net/vpdudefiles/update.xml"
+									  isNewerVersionFunction="{isNewerFunction}"										  
+									  initialized="updater_initializedHandler(event)"
+									  updateStatus="updater_updateStatusHandler(event)"										  
+									  error="updater_errorHandler(event)"
+									  downloadError="updater_errorHandler(event)"
+									  updateError="updater_errorHandler(event)"
+									  />
+</fx:Declarations>*/
+//private var updater:NativeApplicationUpdater;
+
 protected function vpDude_creationCompleteHandler(event:FlexEvent):void
-{
-	//check for update or update if downloaded
-	//AIRUpdater.checkForUpdate( "http://www.videopong.net/vpdudefiles/" );
-	//AIR 2.6
-	/*_updateUrl = "http://www.videopong.net/vpdudefiles/vpDude.xml";
-	downloadUpdateDescriptor();*/
-	
+{	
 	this.validateDisplayList();
+	Util.log( "Start", true );
 	// autoupdate from Piotr
+	//updater.updateURL = "https://www.videopong.net/vpdudefiles/update.xml";
 	updater.initialize();
 	Util.log( "Check for new version, current: " + updater.currentVersion );
 	currentVersion = updater.currentVersion;
+	
 	this.addEventListener( MouseEvent.MOUSE_DOWN, moveWindow );
 	this.addEventListener( NativeWindowDisplayStateEvent.DISPLAY_STATE_CHANGE, onWindowMaximize );
 
 	//clear log files
-	Util.log( "Start", true );
 	Util.log( "NativeProcess.isSupported:" + NativeProcess.isSupported );
 	Util.errorLog( "Start", true );
 	Util.ffMpegErrorLog( "Start", true );
@@ -131,37 +144,7 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 	checkFFMpeg();
 
 }
-protected function updater_initializedHandler(event:UpdateEvent):void
-{
-	Util.log( "Check now, current: " + updater.currentVersion );
-	updater.checkNow();
-}
-/*protected function isNewerFunction(currentVersion:String, updateVersion:String):Boolean
-{
-	// Example of custom isNewerFunction function, it can be omitted if one doesn't want
-	// to implement it's own version comparison logic. Be default it does simple string
-	// comparison.
-	return true;
-}
-protected function updater_initializedHandler(event:UpdateEvent):void
-{
-	// When NativeApplicationUpdater is initialized you can call checkNow function
-	updater.checkNow();
-}
 
-protected function updater_updateStatusHandler(event:StatusUpdateEvent):void
-{
-	if (event.available)
-	{
-		// In case update is available prevent default behavior of checkNow() function 
-		// and switch to the view that gives the user ability to decide if he wants to
-		// install new version of the application.
-		event.preventDefault();
-		UpdateBtn.visible = true;
-		
-	}
-	
-}*/
 private function checkFFMpeg():void
 {
 	// determine OS to download right ffmpeg
@@ -344,175 +327,7 @@ private function onMonitor(event:StatusEvent):void
 		}	
 	}
 }
-//AIR 2.6
-/*protected  function downloadUpdateDescriptor():void
-{
-	Util.log( "appUpdater,downloadUpdateDescriptor" ); 
-	var updateDescLoader:URLLoader = new URLLoader();
-	updateDescLoader.addEventListener(Event.COMPLETE, updateDescLoader_completeHandler);
-	updateDescLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-	updateDescLoader.load(new URLRequest(_updateUrl));
-}*/
-/*protected  function updateDescLoader_completeHandler(event:Event):void
-{
-	Util.log( "appUpdater,updateDescLoader_completeHandler" ); 
-	var loader:URLLoader = URLLoader(event.currentTarget);
-	
-	// Closing update descriptor loader
-	//closeUpdateDescLoader(loader);
-	
-	// Getting update descriptor XML from loaded data
-	var updateDescriptor:XML = XML(loader.data);
-	// Getting default namespace of update descriptor
-	var udns:Namespace = updateDescriptor.namespace();
-	
-	// Getting application descriptor XML
-	var applicationDescriptor:XML = NativeApplication.nativeApplication.applicationDescriptor;
-	// Getting default namespace of application descriptor
-	var adns:Namespace = applicationDescriptor.namespace();
-	
-	// Getting versionNumber from update descriptor
-	var updateVersion:String = updateDescriptor.udns::versionNumber.toString();
-	// Getting versionNumber from application descriptor
-	var currentVersion:String = applicationDescriptor.adns::versionNumber.toString();
-	Util.log( "appUpdater,updateDescLoader_completeHandler, updateVersion: " + updateVersion ); 
-	Util.log( "appUpdater,updateDescLoader_completeHandler, currentVersion: " + currentVersion ); 
-	
-	// Comparing current version with update version
-	if (currentVersion != updateVersion)
-	{
-		// Getting update url
-		var os:String = Capabilities.os.substr(0, 3);
-		if (os == "Win") 
-		{
-			downloadUrl = updateDescriptor.udns::url.toString() + "exe";
-		} 
-		else if (os == "Mac") 
-		{
-			downloadUrl = updateDescriptor.udns::url.toString() + "dmg";
-		} 
-		else 
-		{
-			downloadUrl = updateDescriptor.udns::url.toString() + "exe"; //KO: linux extension?
-		}
-		UpdateBtn.visible = true;
-		
-	}
-}*/
-protected function UpdateBtn_clickHandler(event:MouseEvent):void
-{
-	switch (UpdateBtn.label)
-	{
-		case "Update available!":
-			UpdateBtn.label = "Downloading...";
-			UpdateBtn.toolTip = "Please wait...";
 
-			// Downloading update file
-			downloadUpdate(downloadUrl);
-			break;
-		case "Downloading...":
-			
-			break;
-		case "Show setup folder":
-			// Installing update
-			installUpdate();
-			break;
-		default:
-			Util.log( "appUpdater,UpdateBtn_clickHandler: undefined state: "  + UpdateBtn.label); 
-			break;
-	}
-}
-protected  function downloadUpdate(updateUrl:String):void
-{
-	// Parsing file name out of the download url
-	var fileName:String = updateUrl.substr(updateUrl.lastIndexOf("/") + 1);
-	Util.log( "appUpdater,downloadUpdate, fileName: " + fileName ); 
-	
-	// Creating new file ref in temp directory
-	updateFile = File.applicationStorageDirectory.resolvePath(fileName);
-	Util.log( "appUpdater,downloadUpdate, updateFile: " + updateFile.nativePath ); 
-	
-	// Using URLStream to download update file
-	urlStream = new URLStream;
-	urlStream.addEventListener(Event.OPEN, urlStream_openHandler);
-	urlStream.addEventListener(ProgressEvent.PROGRESS, urlStream_progressHandler);
-	urlStream.addEventListener(Event.COMPLETE, urlStream_completeHandler);
-	//urlStream.addEventListener(IOErrorEvent.IO_ERROR, urlStream_ioErrorHandler);
-	urlStream.load(new URLRequest(updateUrl));
-}
-protected  function urlStream_openHandler(event:Event):void
-{
-	Util.log( "appUpdater, urlStream_openHandler" ); 
-	// Creating new FileStream to write downloaded bytes into
-	fileStream = new FileStream;
-	fileStream.open(updateFile, FileMode.WRITE);
-}
-protected  function urlStream_progressHandler(event:ProgressEvent):void
-{
-	Util.log( "appUpdater, urlStream_progressHandler" ); 
-	// ByteArray with loaded bytes
-	var loadedBytes:ByteArray = new ByteArray;
-	// Reading loaded bytes
-	urlStream.readBytes(loadedBytes);
-	// Writing loaded bytes into the FileStream
-	fileStream.writeBytes(loadedBytes);
-}
-protected  function urlStream_completeHandler(event:Event):void
-{
-	Util.log( "appUpdater, urlStream_completeHandler" ); 
-	// Closing URLStream and FileStream
-	//closeStreams();
-	UpdateBtn.label = "Show setup folder";
-	UpdateBtn.toolTip = "Please show folder and then exit vpDude to proceed to setup...";
-}
-protected  function installUpdate():void
-{
-	try
-	{
-		Util.log( "appUpdater, installUpdate" ); 
-		Util.log( "appUpdater, installUpdate, updateFile: " + updateFile.nativePath ); 
-		var localUrl:String;
-		if ( os == "Mac" )
-		{
-			localUrl = "file://" + updateFile.nativePath;
-		}
-		else
-		{
-			localUrl = updateFile.nativePath;
-		}
-		var localExeFolder:String = localUrl.substr(0, localUrl.lastIndexOf("/") );
-		
-		navigateToURL(new URLRequest(localExeFolder));
-		// Running the installer using NativeProcess API
-		var info:NativeProcessStartupInfo = new NativeProcessStartupInfo;
-		info.executable = updateFile;
-		
-		//localUpdateFile.label = updateFile.url; 
-		//localUpdateFile.visible = true;
-		
-		var process:NativeProcess = new NativeProcess();
-		process.start(info);
-		Util.log( "appUpdater, installUpdate, process started" ); 
-		
-		// Exit application for the installer to be able to proceed
-		for each (var window:NativeWindow in NativeApplication.nativeApplication.openedWindows) 
-		{
-			window.close();
-		}
-		Util.log( "appUpdater,installUpdate, exit" ); 
-		NativeApplication.nativeApplication.exit();
-	}
-	catch (e:Error)
-	{
-		Util.log( "appUpdater, installUpdate Error: " + e.message );
-		//NativeApplication.nativeApplication.exit();
-	}
-}
-protected function localUpdateFile_clickHandler(event:MouseEvent):void
-{
-	var request:URLRequest = new URLRequest(updateFile.nativePath);
-	navigateToURL(request);
-}
 public function errorEventErrorHandler(event:ErrorEvent):void
 {
 	Util.log( 'An ErrorEvent has occured: ' + event.text );
@@ -530,4 +345,91 @@ public function securityErrorHandler( event:SecurityErrorEvent ):void
 public function httpStatusHandler( event:HTTPStatusEvent ):void 
 {  
 	Util.log( "httpStatusHandler, status(200 is ok): " + event.status );
+}
+
+//UpdateBtn.visible = true;
+/*protected function localUpdateFile_clickHandler(event:MouseEvent):void
+{
+var request:URLRequest = new URLRequest(updateFile.nativePath);
+navigateToURL(request);
+}*/
+protected function isNewerFunction(currentVersion:String, updateVersion:String):Boolean
+{
+	// Example of custom isNewerFunction function, it can be omitted if one doesn't want
+	// to implement it's own version comparison logic. Be default it does simple string
+	// comparison.
+	return ( currentVersion != updateVersion );
+}
+
+protected function updater_errorHandler(event:ErrorEvent):void
+{
+	Alert.show(event.text);
+}
+
+protected function updater_initializedHandler(event:UpdateEvent):void
+{
+	//check for update
+	Util.log( "Check now, current: " + updater.currentVersion );
+	updater.checkNow();
+}
+/*protected function btnCheckNow_clickHandler(event:MouseEvent):void
+{
+	// First initialize NativeApplicationUpdater
+	updater.initialize();
+}*/
+protected function UpdateBtn_clickHandler(event:MouseEvent):void
+{
+	// In case user wants to download and install update display download progress bar
+	// and invoke downloadUpdate() function.
+	UpdateBtn.visible = false;
+	currentState = "updaterView";
+	downloading = true;
+	updater.addEventListener(DownloadErrorEvent.DOWNLOAD_ERROR, updater_downloadErrorHandler);
+	updater.addEventListener(UpdateEvent.DOWNLOAD_COMPLETE, updater_downloadCompleteHandler);
+	updater.downloadUpdate();
+}
+protected function updater_updateStatusHandler(event:StatusUpdateEvent):void
+{
+	if (event.available)
+	{
+		// In case update is available prevent default behavior of checkNow() function 
+		// and switch to the view that gives the user ability to decide if he wants to
+		// install new version of the application.
+		event.preventDefault();
+		UpdateBtn.visible = true;
+		//currentState = "updaterView";
+	}
+	/*else
+	{
+		Alert.show("Your application is up to date!");
+	}*/
+}
+
+protected function btnYes_clickHandler(event:MouseEvent):void
+{
+	
+	// In case user wants to download and install update display download progress bar
+	// and invoke downloadUpdate() function.
+	downloading = true;
+	updater.addEventListener(DownloadErrorEvent.DOWNLOAD_ERROR, updater_downloadErrorHandler);
+	updater.addEventListener(UpdateEvent.DOWNLOAD_COMPLETE, updater_downloadCompleteHandler);
+	updater.downloadUpdate();
+}
+
+protected function btnNo_clickHandler(event:MouseEvent):void
+{
+	if ( updater.hasEventListener(DownloadErrorEvent.DOWNLOAD_ERROR ) ) updater.removeEventListener(DownloadErrorEvent.DOWNLOAD_ERROR, updater_downloadErrorHandler);
+	if ( updater.hasEventListener(UpdateEvent.DOWNLOAD_COMPLETE ) ) updater.removeEventListener(UpdateEvent.DOWNLOAD_COMPLETE, updater_downloadCompleteHandler);
+	currentState = "mainView";
+}
+
+private function updater_downloadCompleteHandler(event:UpdateEvent):void
+{
+	// When update is downloaded install it.
+	updater.installUpdate();
+}
+
+private function updater_downloadErrorHandler(event:DownloadErrorEvent):void
+{
+	Alert.show("Error downloading update file, try again later.");
 }

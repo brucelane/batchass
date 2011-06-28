@@ -5,27 +5,56 @@
 					   xmlns:updater="http://updater.riaspace.com/"
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
 					   width="840" height="670"
+					   currentState="mainView"
 					   xmlns:components="components.*">
 	<fx:Script source="Main.as" />
 	<fx:Declarations>
 		<updater:NativeApplicationUpdater id="updater" 
 										  updateURL="https://www.videopong.net/vpdudefiles/update.xml"
-										  initialized="updater_initializedHandler(event)"/>
+										  isNewerVersionFunction="{isNewerFunction}"										  
+										  initialized="updater_initializedHandler(event)"
+										  updateStatus="updater_updateStatusHandler(event)"										  
+										  error="updater_errorHandler(event)"
+										  downloadError="updater_errorHandler(event)"
+										  updateError="updater_errorHandler(event)"
+										  />
 	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="mainView"/>
+		<s:State name="updaterView"/>
+	</s:states>
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
 		<s:HGroup>
 			<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
-			<mx:LinkButton id="localUpdateFile" width="350" visible="false" click="localUpdateFile_clickHandler(event)"/>
-			
+			<mx:LinkButton id="localUpdateFile" width="350" visible="false" />
+			<!--<s:Button id="btnCheckNow" label="Check for updates" includeIn="mainView" 
+			  click="btnCheckNow_clickHandler(event)"/>-->
 			<s:Button id="UpdateBtn" label="Update available!" visible="false" click="UpdateBtn_clickHandler(event)"
 					  toolTip="Click here to download"/>			
 		</s:HGroup>
 		
-		<mx:TabNavigator id="tabNav" width="830" height="600" change="tabNav_changeHandler(event)" >
+		<mx:TabNavigator id="tabNav" includeIn="mainView" width="830" height="600" change="tabNav_changeHandler(event)" >
 			<components:Config  />
 			<components:About  />
 			<components:Donate  />
 			<components:Quit/>
 		</mx:TabNavigator>
+		<s:HGroup verticalCenter="0" includeIn="updaterView" horizontalCenter="0" verticalAlign="top">
+			<!--<s:BitmapImage source="@Embed(source='/assets/icon128.png')" />-->
+			<s:VGroup width="100%" horizontalAlign="center">
+				<s:Label text="New version ({updater.updateVersion}) is available." />
+				<!--<s:Label text="Do you want to download it and install?" />-->
+				<mx:ProgressBar id="prgBar" source="{updater}" label="Downloading %3%" visible="{downloading}" />
+				<!--<s:HGroup>
+					<s:Button id="btnYes" label="Yes" click="btnYes_clickHandler(event)" />
+					<s:Button id="btnNo" label="No" click="btnNo_clickHandler(event)" />
+				</s:HGroup>-->
+				<s:Button id="btnNo" label="Cancel" click="btnNo_clickHandler(event)" />
+			</s:VGroup>
+		</s:HGroup>
 	</s:VGroup>
+	
+	
+	
 </s:WindowedApplication>
