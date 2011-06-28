@@ -5,7 +5,9 @@
 					label="donate" 
 					>	
 	<s:VGroup width="100%">
-		
+		<mx:HTML id="htmlBrowser" width="100%" height="100%"  
+				 htmlText="a web browser is opening with the page to donate." />
+
 	</s:VGroup>
 	
 </s:NavigatorContent>
