@@ -9,4 +9,4 @@
 		<mx:HTML id="htmlBrowser" width="100%" height="100%"  
 				 htmlText="vpDude is a free tool for &lt;a href='http://www.videopong.net'&gt;videopong.net&lt;/a&gt; users to handle downloaded and own clips in a platform- and vj-tool- independent way. &lt;br /&gt;  &lt;br /&gt;  it allows tagging clips, search for tags and drag clips to vjtools. &lt;br /&gt;  &lt;br /&gt;  vpDude is developed by Bruce Lane for Videopong.  &lt;br /&gt; &lt;br /&gt;  visit Bruce Lane's page at &lt;a href='http://www.batchass.fr'&gt;batchass.fr&lt;/a&gt; &lt;br /&gt;  &lt;br /&gt; vpDude version {parentDocument.currentVersion}" />
 	</s:VGroup>
-</s:NavigatorContent>
+</s:NavigatorContent> 
