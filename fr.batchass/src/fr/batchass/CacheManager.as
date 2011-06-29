@@ -16,6 +16,8 @@ package fr.batchass
 	import flash.utils.Dictionary;
 	import flash.utils.Timer;
 	
+	import mx.core.FlexGlobals;
+	
 	public class CacheManager implements IEventDispatcher
 	{
 		private var dispatcher:EventDispatcher;
@@ -195,9 +197,9 @@ package fr.batchass
 			var cacheFile:File = new File( localUrl );
 			
 			Util.log( "CacheManager, addFileToCache localUrl: " + localUrl );
-
 			if(!pendingDictionaryByURL[url])
 			{
+				FlexGlobals.topLevelApplication.statusText.text = 'File added to download queue: ' + url;
 				Util.log( "CacheManager, addFileToCache url: " + url );
 				var req:URLRequest = new URLRequest(url);
 				var loader:URLLoader = new URLLoader();
@@ -267,6 +269,7 @@ package fr.batchass
 			stream.open(cacheFile,FileMode.WRITE);
 			stream.writeBytes(loader.data);
 			stream.close();
+			FlexGlobals.topLevelApplication.statusText.text = 'File downloaded: ' + url;
 			
 			delete pendingDictionaryByLoader[loader];
 			delete pendingDictionaryByCacheFile[loader];
