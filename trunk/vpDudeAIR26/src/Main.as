@@ -246,17 +246,22 @@ protected function tabNav_changeHandler(event:IndexChangedEvent):void
 {
 	if( event.relatedObject is Quit) 
 	{
-		for each (var window:NativeWindow in NativeApplication.nativeApplication.openedWindows) {
-			window.close();
-		}
-		
-		NativeApplication.nativeApplication.exit();
+		quit();
 	}
 	if( event.relatedObject is Donate) 
 	{
 		navigateToURL( new URLRequest("https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=paypal%40toastbrot%2ech&item_name=videopong&no_shipping=1&no_note=1&cn=Optionale%20Mitteilung&tax=0&currency_code=CHF&lc=CH&bn=PP%2dDonationsBF&charset=UTF%2d8") );
 	}
 	
+}
+//quit
+private function quit():void
+{
+	for each (var window:NativeWindow in NativeApplication.nativeApplication.openedWindows) {
+		window.close();
+	}
+	
+	NativeApplication.nativeApplication.exit();
 }
 //prevent from maximizing
 protected function onWindowMaximize(event:NativeWindowDisplayStateEvent):void
