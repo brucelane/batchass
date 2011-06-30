@@ -32,6 +32,9 @@
 			  click="btnCheckNow_clickHandler(event)"/>-->
 			<s:Button id="UpdateBtn" label="Update available!" visible="false" click="UpdateBtn_clickHandler(event)"
 					  toolTip="Click here to download"/>			
+			<s:Button id="AboutBtn" label="about" toolTip="about vpDude"/>			
+			<s:Button id="DonateBtn" label="donate" toolTip="donate to videopong"/>			
+			<s:Button id="QuitBtn" label="quit" click="quit()" toolTip="quit vpDude"/>			
 		</s:HGroup>
 		
 		<mx:TabNavigator id="tabNav" includeIn="mainView" width="830" height="600" change="tabNav_changeHandler(event)" >
