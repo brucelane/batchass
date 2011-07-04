@@ -83,3 +83,7 @@ AutoComplete
 	padding-left: 0;
 	padding-right: 4;			
 }
+global
+{
+	chromeColor: #FFFFFF;
+}
