@@ -6,7 +6,9 @@
 					   creationComplete="vpDude_creationCompleteHandler(event)" 
 					   width="840" height="670"
 					   currentState="mainView"
+					   
 					   xmlns:components="components.*">
+	<fx:Style source="css/defaults.css"/>
 	<fx:Script source="Main.as" />
 	<fx:Declarations>
 		<updater:NativeApplicationUpdater id="updater" 
@@ -27,17 +29,16 @@
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
 		<s:HGroup>
 			<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
-			<mx:LinkButton id="localUpdateFile" width="350" visible="false" />
-			<!--<s:Button id="btnCheckNow" label="Check for updates" includeIn="mainView" 
-			  click="btnCheckNow_clickHandler(event)"/>-->
-			<s:Button id="UpdateBtn" label="Update available!" visible="false" click="UpdateBtn_clickHandler(event)"
-					  toolTip="Click here to download"/>			
-			<s:Button id="AboutBtn" label="about" toolTip="about vpDude"/>			
-			<s:Button id="DonateBtn" label="donate" toolTip="donate to videopong"/>			
-			<s:Button id="QuitBtn" label="quit" click="quit()" toolTip="quit vpDude"/>			
+			
+			<!--<s:Button id="UpdateBtn" label="Update available!" visible="false" click="UpdateBtn_clickHandler(event)"
+					  toolTip="Click here to download"/>-->			
+
 		</s:HGroup>
 		
-		<mx:TabNavigator id="tabNav" includeIn="mainView" width="830" height="600" change="tabNav_changeHandler(event)" >
+		<mx:TabNavigator id="tabNav" includeIn="mainView" 
+						 tabWidth="104"
+						 width="830" height="600"
+						 change="tabNav_changeHandler(event)">
 			<components:Config  />
 			<components:About  />
 			<components:Donate  />
@@ -47,12 +48,7 @@
 			<!--<s:BitmapImage source="@Embed(source='/assets/icon128.png')" />-->
 			<s:VGroup width="100%" horizontalAlign="center">
 				<s:Label text="New version ({updater.updateVersion}) is available." />
-				<!--<s:Label text="Do you want to download it and install?" />-->
 				<mx:ProgressBar id="prgBar" source="{updater}" label="Downloading %3%" visible="{downloading}" />
-				<!--<s:HGroup>
-					<s:Button id="btnYes" label="Yes" click="btnYes_clickHandler(event)" />
-					<s:Button id="btnNo" label="No" click="btnNo_clickHandler(event)" />
-				</s:HGroup>-->
 				<s:Button id="btnNo" label="Cancel" click="btnNo_clickHandler(event)" />
 			</s:VGroup>
 		</s:HGroup>
