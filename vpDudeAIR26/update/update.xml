@@ -3,11 +3,11 @@
 
         <!-- Mac update -->
         <dmg>
-                <version>0.5.003</version>
+                <version>0.5.004</version>
                 <url>https://www.videopong.net/vpdudefiles/vpDude.dmg</url>
             <description>
             <![CDATA[
-				New in version 0.5.003: 
+				New in version 0.5.004: 
 				* AIR 2.6
                 * This a Mac update
                 ]]>
