@@ -87,3 +87,14 @@ global
 {
 	chromeColor: #FFFFFF;
 }
+.tab
+{
+	font-weight: normal;
+/*	fillColors: #006699, #cccc66;*/
+}
+
+.selectedTab
+{
+	font-weight: bold;
+/*	fillColors: #006699, #cccc66;*/
+}
