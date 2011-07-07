@@ -175,6 +175,57 @@ package videopong
 			}
 			return foundNewClip;
 		}
+		public function fileChanged( urllocal:String, ownFolderPath:String ):Boolean
+		{
+			var hasChanged:Boolean = false;
+			if ( urllocal )
+			{
+				for each ( var appClip:XML in clipsXMLList )
+				{
+					if ( appClip.@urllocal.toString() == urllocal )
+					{
+						// clip is found TODO check modification date
+						var xmlModDate:String = appClip.@datemodified.toString();
+						Util.log( urllocal + " date in XML: " + xmlModDate  );
+						
+						//path to original own video
+						var clipPath:String = ownFolderPath + File.separator + urllocal;
+						var clipFile:File = File.applicationStorageDirectory.resolvePath( clipPath );
+						try
+						{
+							if ( !clipFile.exists )
+							{
+								// what to do? hasChanged = true; ?
+								Util.log( clipPath + " does not exist" );
+							}
+							else
+							{
+								Util.log( clipPath + " exists, compare modification date" );
+								var clipModificationDate:String = clipFile.modificationDate.toUTCString();
+								Util.log( urllocal + " date in file system: " + clipModificationDate  );
+								if ( clipModificationDate == xmlModDate )
+								{
+									//same date
+									Util.log( "same date" );
+								}
+								else
+								{
+									//different date
+									Util.log( "different date" );
+									hasChanged = true;
+								}
+							}
+						}
+						catch ( e:Error )
+						{	
+							hasChanged = true;
+							Util.log( "Error loading " + clipPath + " file: " + e.message );
+						}
+					}
+				}				
+			}
+			return hasChanged;
+		}
 		public function clipIsNew( clipGeneratedName:String, urllocal:String=null ):Boolean
 		{
 			var foundNewClip:Boolean = true;
