@@ -3,9 +3,7 @@ import components.*;
 import flash.desktop.NativeApplication;
 import flash.desktop.NativeProcess;
 import flash.desktop.NativeProcessStartupInfo;
-import flash.events.Event;
-import flash.events.ProgressEvent;
-import flash.events.TimerEvent;
+import flash.events.*;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.utils.Timer;
@@ -61,6 +59,13 @@ private var busy:Boolean = false;
 private var thumb1:String;
 private var tPath:String;
 private var currentThumb:int;
+
+private var countNew:int = 0;
+private var countDeleted:int = 0;
+private var countChanged:int = 0;
+private var countError:int = 0;
+private var countTotal:int = 0;
+private var errorFilenames:String = "";
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -128,8 +133,7 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 		}
 		else
 		{
-			Util.log( "config_creationCompleteHandler, parentDocument is null, maybe no internet cnx? " );
-		
+			Util.log( "config_creationCompleteHandler, parentDocument is null, maybe no internet cnx? " );		
 		}
 	}
 	else
@@ -189,7 +193,7 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 }
 
 // Copy all files in a directory structure including subdirectories.
-public function copyFolders( sourceDir:File, destDir:String, destDirRoot:String="" ):Boolean
+/*public function copyFolders( sourceDir:File, destDir:String, destDirRoot:String="" ):Boolean
 {
 	var str:String = "";
 	var copySuccess:Boolean = true
@@ -223,7 +227,7 @@ public function copyFolders( sourceDir:File, destDir:String, destDirRoot:String=
 		}
 	}	
 	return copySuccess;
-}
+}*/
 
 private function writeFolderXmlFile():void
 {
@@ -318,14 +322,19 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	var selectedDirectory:File = new File( parentDocument.ownFolderPath );
 	// Get directory listing
 	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
+	parentDocument.statusText.text = "Processing " + ownFiles.length + " file(s)";
+	countNew = 0;
+	countDeleted = 0;
+	countChanged = 0;
+	countError = 0;
+	errorFilenames = ""
+	countTotal = ownFiles.length;
 	// read all files in the folder
 	processAllFiles( selectedDirectory );
 	
 }
 protected function exploreBtn_clickHandler(event:MouseEvent):void
 {
-	//var file:File = new File( parentDocument.ownFolderPath );
-	//file.browse();
 	// added june 2011 for mac: "file://"
 	if ( parentDocument.os == "Mac" )
 	{
@@ -334,6 +343,9 @@ protected function exploreBtn_clickHandler(event:MouseEvent):void
 	else
 	{
 		navigateToURL(new URLRequest( parentDocument.ownFolderPath));
+		//var file:File = new File( parentDocument.ownFolderPath );
+		//file.browse();
+
 	}
 }
 // Process all files in a directory structure including subdirectories.
@@ -350,6 +362,8 @@ public function processAllFiles( selectedDir:File ):void
 		else
 		{
 			var clipPath:String = lstFile.nativePath;
+			var clipModificationDate:String = lstFile.modificationDate.toUTCString();
+			var clipSize:String = lstFile.size.toString();			
 			var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
 			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
 			var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
@@ -359,6 +373,7 @@ public function processAllFiles( selectedDir:File ):void
 			{
 				if ( clips.newClip( clipRelativePath ) )
 				{
+					countNew++;
 					log.text += "New clip: " + clipGeneratedName + "\n";
 					//var clipId:String = Util.nowDate;
 					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
@@ -383,13 +398,13 @@ public function processAllFiles( selectedDir:File ):void
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3});
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
 					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
-					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipRelativePath}> 
-										<dategenerated>{clipGeneratedName.substr(0,18)}</dategenerated>
+					// removed july 7th: <dategenerated>{clipGeneratedName.substr(0,18)}</dategenerated>
+					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipRelativePath} datemodified={clipModificationDate} size={clipSize}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
 										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
 										<urlpreview>{swfPath + clipGeneratedName + ".swf"}</urlpreview>
-										<clip name={clipGeneratedTitle}/>
+										<clip name={clipGeneratedTitle} />
 										<creator name={userName}/>
 										<tags>
 											<tag name="own"/>
@@ -413,10 +428,20 @@ public function processAllFiles( selectedDir:File ):void
 				else
 				{
 					log.text += "Clip already in db: " + clipGeneratedName + "\n";
+					// check if file changed
+					if ( clips.fileChanged( clipRelativePath, parentDocument.ownFolderPath ) )
+					{
+						//TODO: delete thumbs and preview swf
+						//TODO: generate new files
+						//TODO: modify xml
+						//TODO: modify clips.xml
+					}
 				}
 			}
 			else
 			{
+				countError++;
+				errorFilenames += clipGeneratedName + "\n";
 				log.text += "File extension not in permitted list: " + clipGeneratedName + "\n";
 			}
 		}
@@ -439,7 +464,6 @@ private function processConvert(event:Event): void
 		{	
 			if ( newClips.length > 0 )
 			{
-				//busy = true;
 				var clips:Clips = Clips.getInstance();
 				clips.addNewClip( newClips[0].clipName, newClips[0].ownXml, newClips[0].cPath );
 				newClips.shift();
@@ -452,12 +476,28 @@ private function processConvert(event:Event): void
 					generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].snd );
 					moviesToConvert.shift();
 				}
+				else
+				{
+					// all is converted and finished
+					if (log && countTotal > 0)
+					{
+						log.text = "Completed:\n";;
+						log.text += "- newly indexed: " + countNew + " clip(s)\n";
+						if ( countError > 0 )
+						{
+							log.text += "- could not convert: " + countError + " clip(s):\n";
+							log.text += errorFilenames;
+						}
+						
+					}
+				}
 			}
 		}
 	}
 }
 private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
 {
+	parentDocument.statusText.text = "Converting to swf: " + ownVideoPath;
 	// Start the process
 	try
 	{
@@ -551,6 +591,7 @@ private function onExit(evt:NativeProcessExitEvent):void
 //thumbs
 private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
 {
+	parentDocument.statusText.text = "Creating thumb: " + ownVideoPath;
 	// Start the process
 	try
 	{
@@ -565,8 +606,8 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 			Util.log( "execute, ffMpegExecutable exists: " + parentDocument.vpFFMpegExePath );
 		}
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-		nativeProcessStartupInfo.executable = ffMpegExecutable;//File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
-		//nativeProcessStartupInfo.workingDirectory = File.applicationStorageDirectory.resolvePath(  parentDocument.vpFFMpegExePath ).nativePath;
+		nativeProcessStartupInfo.executable = ffMpegExecutable;
+
 		Util.log( "execute, ffMpegExecutable path: " + File.applicationStorageDirectory.resolvePath(  parentDocument.vpFFMpegExePath ).nativePath );
 			                  		
 		if (thumbNumber == 1) 
@@ -643,7 +684,7 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 			}
 			catch (error:Error)
 			{
-				Util.errorLog( "CopyFolders Error:" + error.message );
+				Util.errorLog( "errorOutputDataHandler Error:" + error.message );
 			}
 		}
 		busy = false;
