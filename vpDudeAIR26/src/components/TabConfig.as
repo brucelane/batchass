@@ -26,7 +26,7 @@ private var ownFiles:ArrayCollection;
 private var defaultConfigXmlPath:String = 'config' + File.separator + '.vpDudeConfig';
 
 [Bindable]
-private var lblWidth:int = 150;
+private var lblWidth:int = 180;
 [Bindable]
 private var tiWidth:int = 350;
 
