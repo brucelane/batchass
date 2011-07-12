@@ -66,6 +66,7 @@ private var countChanged:int = 0;
 private var countError:int = 0;
 private var countTotal:int = 0;
 private var errorFilenames:String = "";
+private var currentFilename:String = "";
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -327,7 +328,8 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	countDeleted = 0;
 	countChanged = 0;
 	countError = 0;
-	errorFilenames = ""
+	errorFilenames = "";
+	currentFilename = "";
 	countTotal = ownFiles.length;
 	// read all files in the folder
 	processAllFiles( selectedDirectory );
@@ -494,9 +496,14 @@ private function processConvert(event:Event): void
 			}
 		}
 	}
+	else
+	{
+		
+	}
 }
 private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
 {
+	currentFilename = clipGeneratedName;
 	parentDocument.statusText.text = "Converting to swf: " + ownVideoPath;
 	// Start the process
 	try
@@ -552,6 +559,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		processArgs[i++] = "-s";
 		processArgs[i++] = reso;// "320x240";
 		processArgs[i++] = swfPath + clipGeneratedName + ".swf";
+		processArgs[i++] = "-y";
 		nativeProcessStartupInfo.arguments = processArgs;
 		var startFFMpegProcess:NativeProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);
@@ -694,6 +702,10 @@ private function errorOutputDataHandler(event:ProgressEvent):void
 		busy = false;
 		//copySwf();
 	}
+	if (data.indexOf("Unknown format")>-1)
+	{ 
+		busy = false;
+	}
 	Util.ffMpegErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function errorMovieDataHandler(event:ProgressEvent):void
@@ -705,8 +717,19 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 	if (data.indexOf("muxing overhead")>-1) busy = false;
 	if (data.indexOf("swf: I/O error occurred")>-1)
 	{ 
+		countError++;
+		errorFilenames += currentFilename + "\n";
 		busy = false;
-		//copySwf();
+	}
+	if (data.indexOf("Unknown format")>-1)
+	{ 
+		countError++;
+		errorFilenames += currentFilename + "\n";
+		busy = false;
+	}
+	if (data.indexOf("already exists. Overwrite")>-1)
+	{ 
+		busy = false;
 	}
 	Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
