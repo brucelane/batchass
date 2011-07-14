@@ -444,7 +444,7 @@ public function processAllFiles( selectedDir:File ):void
 			else
 			{
 				countError++;
-				errorFilenames += clipGeneratedName + "\n";
+				errorFilenames += clipPath + "\n";
 				log.text += "File extension not in permitted list: " + clipGeneratedName + "\n";
 			}
 		}
@@ -484,12 +484,12 @@ private function processConvert(event:Event): void
 					// all is converted and finished
 					if (log && countTotal > 0)
 					{
-						log.text = "Completed:\n";;
-						log.text += "- newly indexed: " + countNew + " clip(s)\n";
+						ffout.text = "Completed:\n";;
+						ffout.text += "- newly indexed: " + countNew + " clip(s)\n";
 						if ( countError > 0 )
 						{
-							log.text += "- could not convert: " + countError + " clip(s):\n";
-							log.text += errorFilenames;
+							ffout.text += "- could not convert: " + countError + " clip(s):\n";
+							ffout.text += errorFilenames;
 						}
 						
 					}
@@ -505,7 +505,7 @@ private function processConvert(event:Event): void
 }
 private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
 {
-	currentFilename = clipGeneratedName;
+	currentFilename = ownVideoPath;
 	parentDocument.statusText.text = "Converting to swf: " + ownVideoPath;
 	// Start the process
 	try
