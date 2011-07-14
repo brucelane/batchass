@@ -70,7 +70,20 @@ package videopong
 		{
 			tagsXmlPath = _dbPath + File.separator + "tags.xml";
 			var tagsFile:File = File.applicationStorageDirectory.resolvePath( tagsXmlPath );
+			// sort the TAGS_XML
+			var arrayToSort:Array = new Array();
+			for each ( var item:XML in TAGS_XML.tag )
+			{
+				arrayToSort.push( {name:item.@name,creationdate:item.@creationdate} );
+			}
 			
+			arrayToSort.sortOn( "name" );
+			TAGS_XML =  <tags>
+						</tags>;
+			for each ( var arrayItem in arrayToSort )
+			{
+				TAGS_XML.appendChild( <tag name={arrayItem.name} creationdate={arrayItem.creationdate} /> );
+			}					
 			// write the text file
 			writeTextFile( tagsFile, TAGS_XML );					
 			refreshTagsXMLList();
