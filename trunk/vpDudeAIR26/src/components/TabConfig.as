@@ -67,6 +67,7 @@ private var countError:int = 0;
 private var countTotal:int = 0;
 private var errorFilenames:String = "";
 private var currentFilename:String = "";
+private var startFFMpegProcess:NativeProcess;
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -498,7 +499,8 @@ private function processConvert(event:Event): void
 	}
 	else
 	{
-		
+		//busy
+		if ( !startFFMpegProcess.running ) busy = false;
 	}
 }
 private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
@@ -561,7 +563,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		processArgs[i++] = swfPath + clipGeneratedName + ".swf";
 		processArgs[i++] = "-y";
 		nativeProcessStartupInfo.arguments = processArgs;
-		var startFFMpegProcess:NativeProcess = new NativeProcess();
+		startFFMpegProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
 			outputDataHandler);
@@ -643,7 +645,7 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 		processArgs[13] = "-y";
 		nativeProcessStartupInfo.arguments = processArgs;
 
-		var startFFMpegProcess:NativeProcess = new NativeProcess();
+		startFFMpegProcess = new NativeProcess();
 		startFFMpegProcess.start(nativeProcessStartupInfo);
 		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
 			outputDataHandler);
