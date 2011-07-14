@@ -370,6 +370,7 @@ public function processAllFiles( selectedDir:File ):void
 			var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
 			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
 			var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
+			var clipGeneratedTitleWithoutExtension:String = Util.getFileNameWithoutExtension( clipRelativePath );
 			
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
@@ -421,6 +422,7 @@ public function processAllFiles( selectedDir:File ):void
 						
 						for each (var folder:String in folders)
 						{
+							if ( clipGeneratedTitle == folder) folder = clipGeneratedTitleWithoutExtension;
 							tags.addTagIfNew( folder );
 							var folderXmlTag:XML = <tag name={folder} creationdate={Util.nowDate} />;
 							OWN_CLIPS_XML.tags.appendChild( folderXmlTag );
