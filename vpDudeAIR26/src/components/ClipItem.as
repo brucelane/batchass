@@ -58,6 +58,8 @@ private const minFileSize:int = 10000;
 private var waitImage:Class;
 [Embed(source='../assets/previewwait.png')]
 private var previewWaitImage:Class;
+[Embed(source='../assets/previewnotavailable.png')]
+private var previewNotAvailableImage:Class;
 
 private var cache:CacheManager;
 
@@ -251,7 +253,14 @@ protected function updateDetails():void
 			if ( !cPrev.exists ) 
 			{
 				Util.log( "updateDetails, cachedUrl does not exist: " + cachedUrl );
-				searchComp.swfComp.source = previewWaitImage;
+				if ( urlPreview.substr( 0, 4 ) == "http" )
+				{
+					searchComp.swfComp.source = previewWaitImage;
+				}
+				else
+				{
+					searchComp.swfComp.source = previewNotAvailableImage;
+				}
 			}
 			else
 			{
@@ -266,7 +275,7 @@ protected function updateDetails():void
 		else
 		{
 			Util.log( "updateDetails, urlPreview null" );
-			searchComp.swfComp.source = null;
+			searchComp.swfComp.source = previewNotAvailableImage;
 		}
 		searchComp.tagAutoComplete.dataProvider = tags.tagsXMLList;
 		searchComp.tagAutoComplete.data = data as XML;//clipXmlTagList;
