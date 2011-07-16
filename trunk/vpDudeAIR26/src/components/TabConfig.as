@@ -371,6 +371,8 @@ public function processAllFiles( selectedDir:File ):void
 			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
 			var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
 			var clipGeneratedTitleWithoutExtension:String = Util.getFileNameWithoutExtension( clipRelativePath );
+			var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
+			var swfPath:String = parentDocument.dldFolderPath + "/preview/" + clipGeneratedName + "/";
 			
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
@@ -380,7 +382,6 @@ public function processAllFiles( selectedDir:File ):void
 					countNew++;
 					log.text += "New clip: " + clipGeneratedName + "\n";
 					//var clipId:String = Util.nowDate;
-					var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
 					var thumbsFolder:File = new File( thumbsPath );
 					// creates folder if it does not exists
 					if ( !thumbsFolder.exists ) 
@@ -388,7 +389,6 @@ public function processAllFiles( selectedDir:File ):void
 						// create the directory
 						thumbsFolder.createDirectory();
 					}
-					var swfPath:String = parentDocument.dldFolderPath + "/preview/" + clipGeneratedName + "/";
 					var previewFolder:File = new File( swfPath );
 					// creates folder if it does not exists
 					if ( !previewFolder.exists ) 
@@ -402,7 +402,7 @@ public function processAllFiles( selectedDir:File ):void
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3});
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
 					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
-					// removed july 7th: <dategenerated>{clipGeneratedName.substr(0,18)}</dategenerated>
+					// create XML
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipRelativePath} datemodified={clipModificationDate} size={clipSize}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
 										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
@@ -436,21 +436,53 @@ public function processAllFiles( selectedDir:File ):void
 					// check if file changed
 					if ( clips.fileChanged( clipRelativePath, parentDocument.ownFolderPath ) )
 					{
-						//TODO: delete thumbs and preview swf
-						//TODO: generate new files
-						//TODO: modify xml
-						//TODO: modify clips.xml
+						// delete thumbs and preview swf
+						deleteThumbs( thumbsPath );
+						deleteFile( swfPath + clipGeneratedName + ".swf" );
+						// modify xml
+						// read clip xml file
+						var localClipXMLFile:String = parentDocument.dbFolderPath + File.separator + clipGeneratedName + ".xml" ;
+						var clipXmlFile:File = new File( localClipXMLFile );
+						var clipXml:XML = new XML( readTextFile( clipXmlFile ) );					
+						clipXml.@datemodified = clipModificationDate;
+						clipXml.@size = clipSize;
+						
+						// write the text file
+						clips.writeClipXmlFile( clipGeneratedName, clipXml );					
+						
+						// modify clips.xml
+						clips.deleteClip( clipGeneratedName, clipRelativePath );
+						// generate new files
+						newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
 					}
 				}
 			}
 			else
 			{
 				countError++;
-				errorFilenames += clipPath + "\n";
+				// errorFilenames += clipPath + "\n";
 				log.text += "File extension not in permitted list: " + clipGeneratedName + "\n";
 			}
 		}
 	}	
+}
+private function deleteThumbs( thumbsPath:String ): void 
+{
+	deleteFile( thumbsPath + "thumb1.jpg" );
+	deleteFile( thumbsPath + "thumb2.jpg" );
+	deleteFile( thumbsPath + "thumb3.jpg" );
+}
+private function deleteFile( path:String ): void 
+{
+	var file:File = new File( path );
+	// delete file if it exists
+	if ( file.exists ) 
+	{
+		file.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+		file.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+		file.moveToTrash();
+		//TODO delete event listeners
+	}
 }
 private function processConvert(event:Event): void 
 {
