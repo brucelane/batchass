@@ -275,6 +275,11 @@ package videopong
 				writeClipXmlFile( clipGeneratedName, clipXml );
 			}
 		}
+		public function deleteClip( clipGeneratedName:String, urllocal:String=null ):void
+		{		
+			delete CLIPS_XML..video.(@id==clipGeneratedName)[0];
+			writeClipsFile(true);	
+		}
 		
 		public function filterTags( acFilter:ArrayCollection ):void 
 		{
