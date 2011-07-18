@@ -314,6 +314,21 @@ private function checkFolder( folderPath:String ):void
 	}
 }
 
+protected function exploreBtn_clickHandler(event:MouseEvent):void
+{
+	// added june 2011 for mac: "file://"
+	if ( parentDocument.os == "Mac" )
+	{
+		navigateToURL(new URLRequest("file://" + parentDocument.ownFolderPath));
+	}
+	else
+	{
+		navigateToURL(new URLRequest( parentDocument.ownFolderPath));
+		//var file:File = new File( parentDocument.ownFolderPath );
+		//file.browse();
+
+	}
+}
 protected function resyncBtn_clickHandler(event:MouseEvent):void
 {
 	if ( parentDocument.ownFolderPath != ownTextInput.text ) 
@@ -332,24 +347,43 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	errorFilenames = "";
 	currentFilename = "";
 	countTotal = ownFiles.length;
+	// delete inexistent files from db
+	var clips:Clips = Clips.getInstance();
+	var clipList:XMLList = clips.CLIPS_XML..video as XMLList;
+	for each ( var clip:XML in clipList )
+	{
+		//test if own file
+		if ( clip.@urllocal )
+		{
+			var searchedFile:File = new File( parentDocument.ownFolderPath + File.separator + clip.@urllocal );
+			// search for file is own folder
+			if ( !searchedFile.exists ) 
+			{
+				// delete xml file
+				deleteFile( parentDocument.dbFolderPath + File.separator + clip.@id + ".xml" );
+				// delete in clips.xml
+				clips.deleteClip( clip.@id, clip.@urllocal );
+				//TODO delete tag in tags.xml
+				//var tags:Tags = Tags.getInstance();
+				//tags.
+				// delete thumbs
+				deleteFile( clip.urlthumb1 );
+				deleteFile( clip.urlthumb2 );
+				deleteFile( clip.urlthumb3 );
+				// delete thumbs folder
+				deleteFolder( parentDocument.dldFolderPath+ File.separator + "thumbs" + File.separator + clip.@id );
+				// delete preview
+				deleteFile( clip.urlpreview );
+				// delete preview folder
+				deleteFolder( parentDocument.dldFolderPath+ File.separator + "preview" + File.separator + clip.@id );
+				countDeleted++;
+			}		
+		}	 	
+	}
+
 	// read all files in the folder
 	processAllFiles( selectedDirectory );
 	
-}
-protected function exploreBtn_clickHandler(event:MouseEvent):void
-{
-	// added june 2011 for mac: "file://"
-	if ( parentDocument.os == "Mac" )
-	{
-		navigateToURL(new URLRequest("file://" + parentDocument.ownFolderPath));
-	}
-	else
-	{
-		navigateToURL(new URLRequest( parentDocument.ownFolderPath));
-		//var file:File = new File( parentDocument.ownFolderPath );
-		//file.browse();
-
-	}
 }
 // Process all files in a directory structure including subdirectories.
 public function processAllFiles( selectedDir:File ):void
@@ -454,6 +488,7 @@ public function processAllFiles( selectedDir:File ):void
 						clips.deleteClip( clipGeneratedName, clipRelativePath );
 						// generate new files
 						newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
+						countChanged++;
 					}
 				}
 			}
@@ -481,6 +516,18 @@ private function deleteFile( path:String ): void
 		file.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
 		file.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
 		file.moveToTrash();
+		//TODO delete event listeners
+	}
+}
+private function deleteFolder( path:String ): void 
+{
+	var folder:File = new File( path );
+	// delete file if it exists
+	if ( folder.exists ) 
+	{
+		folder.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+		folder.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+		folder.moveToTrash();
 		//TODO delete event listeners
 	}
 }
@@ -520,6 +567,8 @@ private function processConvert(event:Event): void
 					{
 						ffout.text = "Completed:\n";;
 						ffout.text += "- newly indexed: " + countNew + " clip(s)\n";
+						ffout.text += "- changed: " + countChanged + " clip(s)\n";
+						ffout.text += "- deleted: " + countDeleted + " clip(s)\n";
 						if ( countError > 0 )
 						{
 							ffout.text += "- could not convert: " + countError + " clip(s):\n";
