@@ -16,18 +16,18 @@ package com.hillelcoren.assets.skins
 			{
 				case "upSkin":
 					color 		= 0xEFF2F7;
-					borderColor = 0xCCD5E4;
+					borderColor = 0xe3e3e3;//CCD5E4;
 					break;
 				case "overSkin":
-					color		= 0xD8DFEA;
-					borderColor = 0xCCD5E4;
+					color		= 0xe9e9e9;//D8DFEA;
+					borderColor = 0xe3e3e3;//CCD5E4;
 					break;
 				case "downSkin":
 				case "selectedUpSkin":
 				case "selectedOverSkin":
 				case "selectedDownSkin":
-					color 		= 0x5670A6;
-					borderColor = 0x3B5998;
+					color 		= 0xa6a6a6;//5670A6;
+					borderColor = 0x9b9b9b;//3B5998;
 			}
 			
 			var g:Graphics = graphics;
