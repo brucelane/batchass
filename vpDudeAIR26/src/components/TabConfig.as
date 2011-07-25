@@ -60,10 +60,17 @@ private var thumb1:String;
 private var tPath:String;
 private var currentThumb:int;
 
+[Bindable]
 private var countNew:int = 0;
+[Bindable]
 private var countDeleted:int = 0;
+[Bindable]
 private var countChanged:int = 0;
+[Bindable]
+private var countDone:int = 0;
+[Bindable]
 private var countError:int = 0;
+[Bindable]
 private var countTotal:int = 0;
 private var errorFilenames:String = "";
 private var currentFilename:String = "";
@@ -343,10 +350,12 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	countNew = 0;
 	countDeleted = 0;
 	countChanged = 0;
+	countDone = 0;
 	countError = 0;
 	errorFilenames = "";
 	currentFilename = "";
 	countTotal = ownFiles.length;
+	syncStatus.text = "(" + countDone + "/" + countTotal + ")";
 	// delete inexistent files from db
 	var clips:Clips = Clips.getInstance();
 	var clipList:XMLList = clips.CLIPS_XML..video as XMLList;
@@ -799,23 +808,31 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 	var data:String = process.standardError.readUTFBytes(process.standardError.bytesAvailable);
 	resetConsole();
 	log.text += data;
-	if (data.indexOf("muxing overhead")>-1) busy = false;
+	if (data.indexOf("muxing overhead")>-1)
+	{
+		countDone++;
+		busy = false;
+	}
 	if (data.indexOf("swf: I/O error occurred")>-1)
 	{ 
+		countDone++;
 		countError++;
 		errorFilenames += currentFilename + "\n";
 		busy = false;
 	}
 	if (data.indexOf("Unknown format")>-1)
 	{ 
+		countDone++;
 		countError++;
 		errorFilenames += currentFilename + "\n";
 		busy = false;
 	}
 	if (data.indexOf("already exists. Overwrite")>-1)
 	{ 
+		countDone++;
 		busy = false;
 	}
+	syncStatus.text = "(" + countDone + "/" + countTotal + ")";
 	Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function resetConsole():void
