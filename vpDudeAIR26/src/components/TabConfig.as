@@ -55,6 +55,7 @@ private var thumbsToConvert:Array = new Array();
 private var newClips:Array = new Array();
 
 private var timer:Timer;
+[Bindable]
 private var busy:Boolean = false;
 private var thumb1:String;
 private var tPath:String;
@@ -72,7 +73,11 @@ private var countDone:int = 0;
 private var countError:int = 0;
 [Bindable]
 private var countTotal:int = 0;
-private var errorFilenames:String = "";
+private var newFiles:String = "";
+private var delFiles:String = "";
+private var chgFiles:String = "";
+private var errFiles:String = "";
+private var allFiles:String = "";
 private var currentFilename:String = "";
 private var startFFMpegProcess:NativeProcess;
 
@@ -342,19 +347,34 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	{
 		parentDocument.ownFolderPath = ownTextInput.text;
 	}
-	
-	var selectedDirectory:File = new File( parentDocument.ownFolderPath );
-	// Get directory listing
-	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
-	parentDocument.statusText.text = "Processing " + ownFiles.length + " file(s)";
 	countNew = 0;
 	countDeleted = 0;
 	countChanged = 0;
 	countDone = 0;
 	countError = 0;
-	errorFilenames = "";
+	newFiles = "";
+	delFiles = "";
+	chgFiles = "";
+	errFiles = "";
+	
+	var selectedDirectory:File = new File( parentDocument.ownFolderPath );
+	// Get directory listing
+	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
+
+	countTotal = 0;
+	for each ( var f:File in ownFiles )
+	{
+		if ( !f.isDirectory )
+		{
+			countTotal++;
+			allFiles += f.name + " ";
+		}
+	}
+	
+	
+	parentDocument.statusText.text = "Processing " + ownFiles.length + " file(s)";
 	currentFilename = "";
-	countTotal = ownFiles.length;
+	//countTotal = ownFiles.length;
 	syncStatus.text = "(" + countDone + "/" + countTotal + ")";
 	// delete inexistent files from db
 	var clips:Clips = Clips.getInstance();
@@ -386,6 +406,7 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 				// delete preview folder
 				deleteFolder( parentDocument.dldFolderPath+ File.separator + "preview" + File.separator + clip.@id );
 				countDeleted++;
+				delFiles += clip.@id + " ";
 			}		
 		}	 	
 	}
@@ -423,6 +444,7 @@ public function processAllFiles( selectedDir:File ):void
 				if ( clips.newClip( clipRelativePath ) )
 				{
 					countNew++;
+					newFiles += clipGeneratedName + " ";
 					log.text += "New clip: " + clipGeneratedName + "\n";
 					//var clipId:String = Util.nowDate;
 					var thumbsFolder:File = new File( thumbsPath );
@@ -498,12 +520,18 @@ public function processAllFiles( selectedDir:File ):void
 						// generate new files
 						newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
 						countChanged++;
+						chgFiles += clipGeneratedName + "";
+					}
+					else
+					{
+						countDone++;
 					}
 				}
 			}
 			else
 			{
 				countError++;
+				countDone++;
 				// errorFilenames += clipPath + "\n";
 				log.text += "File extension not in permitted list: " + clipGeneratedName + "\n";
 			}
@@ -542,6 +570,7 @@ private function deleteFolder( path:String ): void
 }
 private function processConvert(event:Event): void 
 {
+	if ( syncStatus ) syncStatus.text = "(" + countDone + "/" + countTotal + ")";
 	if ( !busy )
 	{
 		if ( thumbsToConvert.length > 0 )
@@ -574,14 +603,13 @@ private function processConvert(event:Event): void
 					// all is converted and finished
 					if (log && countTotal > 0)
 					{
-						ffout.text = "Completed:\n";;
-						ffout.text += "- newly indexed: " + countNew + " clip(s)\n";
-						ffout.text += "- changed: " + countChanged + " clip(s)\n";
-						ffout.text += "- deleted: " + countDeleted + " clip(s)\n";
+						ffout.text = "Completed:\n [" + allFiles + "]\n";
+						ffout.text += "- newly indexed: " + countNew + " clip(s) [" + newFiles + "]\n";
+						ffout.text += "- changed: " + countChanged + " clip(s) [" + chgFiles + "]\n";
+						ffout.text += "- deleted: " + countDeleted + " clip(s) [" + delFiles + "]\n";
 						if ( countError > 0 )
 						{
-							ffout.text += "- could not convert: " + countError + " clip(s):\n";
-							ffout.text += errorFilenames;
+							ffout.text += "- could not convert: " + countError + " clip(s) [" + errFiles + "]\n";
 						}
 						
 					}
@@ -594,10 +622,19 @@ private function processConvert(event:Event): void
 		//busy
 		if ( !startFFMpegProcess.running ) busy = false;
 	}
+	if ( busy )
+	{
+		this.setCurrentState("Busy");
+		
+	}
+	else
+	{
+		this.setCurrentState("Normal");
+	}
 }
 private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
 {
-	currentFilename = ownVideoPath;
+	currentFilename = clipGeneratedName;
 	parentDocument.statusText.text = "Converting to swf: " + ownVideoPath;
 	// Start the process
 	try
@@ -810,29 +847,29 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 	log.text += data;
 	if (data.indexOf("muxing overhead")>-1)
 	{
-		countDone++;
+		//countDone++;
 		busy = false;
 	}
 	if (data.indexOf("swf: I/O error occurred")>-1)
 	{ 
-		countDone++;
+		//countDone++;
 		countError++;
-		errorFilenames += currentFilename + "\n";
+		errFiles += currentFilename + " ";
 		busy = false;
 	}
 	if (data.indexOf("Unknown format")>-1)
 	{ 
-		countDone++;
+		//countDone++;
 		countError++;
-		errorFilenames += currentFilename + "\n";
+		errFiles += currentFilename + " ";
 		busy = false;
 	}
 	if (data.indexOf("already exists. Overwrite")>-1)
-	{ 
-		countDone++;
+	{ 	
+		countDone--;
 		busy = false;
 	}
-	syncStatus.text = "(" + countDone + "/" + countTotal + ")";
+	if ( !busy ) countDone++;
 	Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 }
 private function resetConsole():void
