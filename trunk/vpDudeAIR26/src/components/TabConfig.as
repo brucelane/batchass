@@ -519,6 +519,7 @@ public function processAllFiles( selectedDir:File ):void
 						// generate new files
 						newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
 						countChanged++;
+						countDone++;
 						chgFiles += clipGeneratedName + "";
 					}
 					else
