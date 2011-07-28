@@ -73,6 +73,9 @@ private var countDone:int = 0;
 private var countError:int = 0;
 [Bindable]
 private var countTotal:int = 0;
+[Bindable]
+private var countNoChange:int = 0;
+private var nochgFiles:String = "";
 private var newFiles:String = "";
 private var delFiles:String = "";
 private var chgFiles:String = "";
@@ -352,25 +355,18 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	countChanged = 0;
 	countDone = 0;
 	countError = 0;
+	countNoChange = 0;
+	nochgFiles = "";
 	newFiles = "";
 	delFiles = "";
 	chgFiles = "";
 	errFiles = "";
+	allFiles = "";
 	
 	var selectedDirectory:File = new File( parentDocument.ownFolderPath );
 	// Get directory listing
 	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
-
 	countTotal = 0;
-	for each ( var f:File in ownFiles )
-	{
-		if ( !f.isDirectory )
-		{
-			countTotal++;
-			allFiles += f.name + " ";
-		}
-	}
-	
 	
 	parentDocument.statusText.text = "Processing " + ownFiles.length + " file(s)";
 	currentFilename = "";
@@ -428,6 +424,9 @@ public function processAllFiles( selectedDir:File ):void
 		}
 		else
 		{
+			Util.log('processAllFiles, not directory: ' + lstFile.name);
+			countTotal++;
+			allFiles += lstFile.name + " ";
 			var clipPath:String = lstFile.nativePath;
 			var clipModificationDate:String = lstFile.modificationDate.toUTCString();
 			var clipSize:String = lstFile.size.toString();			
@@ -525,6 +524,8 @@ public function processAllFiles( selectedDir:File ):void
 					else
 					{
 						countDone++;
+						countNoChange++;
+						nochgFiles += clipGeneratedName + " ";
 					}
 				}
 			}
@@ -607,6 +608,7 @@ private function processConvert(event:Event): void
 						ffout.text += "- newly indexed: " + countNew + " clip(s) [" + newFiles + "]\n";
 						ffout.text += "- changed: " + countChanged + " clip(s) [" + chgFiles + "]\n";
 						ffout.text += "- deleted: " + countDeleted + " clip(s) [" + delFiles + "]\n";
+						ffout.text += "- no change: " + countNoChange + " clip(s) [" + nochgFiles + "]\n";
 						if ( countError > 0 )
 						{
 							ffout.text += "- could not convert: " + countError + " clip(s) [" + errFiles + "]\n";
