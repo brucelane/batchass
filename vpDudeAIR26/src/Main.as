@@ -1,8 +1,6 @@
 
 import air.net.URLMonitor;
-import air.update.events.DownloadErrorEvent;
-import air.update.events.StatusUpdateEvent;
-import air.update.events.UpdateEvent;
+import air.update.events.*;
 
 import com.riaspace.nativeApplicationUpdater.NativeApplicationUpdater;
 
@@ -14,16 +12,7 @@ import flash.desktop.NativeProcessStartupInfo;
 import flash.display.InteractiveObject;
 import flash.display.NativeWindow;
 import flash.display.NativeWindowDisplayState;
-import flash.events.ErrorEvent;
-import flash.events.Event;
-import flash.events.HTTPStatusEvent;
-import flash.events.IOErrorEvent;
-import flash.events.MouseEvent;
-import flash.events.NativeWindowBoundsEvent;
-import flash.events.NativeWindowDisplayStateEvent;
-import flash.events.ProgressEvent;
-import flash.events.SecurityErrorEvent;
-import flash.events.StatusEvent;
+import flash.events.*;
 import flash.filesystem.File;
 import flash.filesystem.FileMode;
 import flash.filesystem.FileStream;
@@ -359,16 +348,12 @@ protected function updater_updateStatusHandler(event:StatusUpdateEvent):void
 		// install new version of the application.
 		event.preventDefault();
 		updateTab.enabled = true;
-		//updateTab.label = "												   update available, click here to setup!";
-		updateTab.label = "click for update!";
-		
+		updateTab.label = "click for update!";		
 	}
-
 }
 
 protected function btnYes_clickHandler(event:MouseEvent):void
-{
-	
+{	
 	// In case user wants to download and install update display download progress bar
 	// and invoke downloadUpdate() function.
 	downloading = true;

@@ -28,10 +28,6 @@
 	<s:VGroup paddingLeft="8" paddingBottom="8" paddingRight="8" paddingTop="8">
 		<s:HGroup>
 			<s:BitmapImage id="logo" source="@Embed('../assets/vp-logo.png')" />
-			
-			<!--<s:Button id="UpdateBtn" label="Update available!" visible="false" click="UpdateBtn_clickHandler(event)"
-					  toolTip="Click here to download"/>-->			
-
 		</s:HGroup>
 		
 		<mx:TabNavigator id="tabNav" includeIn="mainView" 
@@ -53,7 +49,4 @@
 			</s:VGroup>
 		</s:HGroup>
 	</s:VGroup>
-	
-	
-	
 </s:WindowedApplication>
