@@ -341,7 +341,6 @@ protected function exploreBtn_clickHandler(event:MouseEvent):void
 		navigateToURL(new URLRequest( parentDocument.ownFolderPath));
 		//var file:File = new File( parentDocument.ownFolderPath );
 		//file.browse();
-
 	}
 }
 protected function resyncBtn_clickHandler(event:MouseEvent):void
@@ -627,12 +626,14 @@ private function processConvert(event:Event): void
 	}
 	if ( busy )
 	{
-		this.setCurrentState("Busy");
-		
+		this.setCurrentState("Busy");	
 	}
 	else
 	{
-		this.setCurrentState("Normal");
+		if ( ( thumbsToConvert.length == 0 ) && ( moviesToConvert.length == 0 ) && ( newClips.length == 0 ) )
+		{
+			this.setCurrentState("Normal");
+		}
 	}
 }
 private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
