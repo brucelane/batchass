@@ -30,9 +30,11 @@ package fr.batchass
 		private const CLIPS_PATH:String = "clips";
 		private const SWF_PATH:String = "preview";
 		private static var timer:Timer;
-		private static var busy:Boolean = false;
+		private static var busy:Boolean = false;		
 		private static var filesToDownload:Array = new Array();
 		private static const minFileSize:int = 10000;
+		[Bindable]
+		public var filesRemaining:int = 0;
 		
 		public function CacheManager( cacheDir:String )
 		{
@@ -75,12 +77,13 @@ package fr.batchass
 		}
 		private function processQueue(event:Event): void 
 		{
+			filesRemaining = filesToDownload.length;
 			if ( !busy )
 			{
-			 	if ( filesToDownload.length > 0 )
+			 	if ( filesRemaining > 0 )
 				{
 					busy = true;
-					Util.log( "CacheManager, processQueue, filesToDownload.length: " + filesToDownload.length );
+					Util.log( "CacheManager, processQueue, filesToDownload.length: " + filesRemaining );
 					addFileToCache( filesToDownload[0].sUrl, filesToDownload[0].lUrl );
 					filesToDownload.shift();
 			 	}
@@ -274,6 +277,7 @@ package fr.batchass
 			delete pendingDictionaryByLoader[loader];
 			delete pendingDictionaryByCacheFile[loader];
 			delete pendingDictionaryByURL[url];
+			filesRemaining = filesToDownload.length;
 			busy = false;
 		}
 
