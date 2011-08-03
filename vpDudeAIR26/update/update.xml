@@ -16,11 +16,11 @@
         
         <!-- Win update -->
         <exe>
-                <version>0.5.011</version>
+                <version>0.5.012</version>
                 <url>https://www.videopong.net/vpdudefiles/vpDude.exe</url>
             <description>
             <![CDATA[
- 				New in version version 0.5.011: 
+ 				New in version version 0.5.012: 
 				* AIR 2.6
                 * This a Win update
                 ]]>
