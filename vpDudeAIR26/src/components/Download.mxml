@@ -14,6 +14,7 @@
 				<!--<s:TextInput id="loc" width="500" enter="htmlBrowser.location = loc.text" text="{htmlBrowser.location}"/>-->
 				<!--<s:Button label="Go" click="htmlBrowser.location = loc.text"/>-->
 				<s:Button label="Reload" height="18" click="htmlBrowser.reload()"/>
+				<s:Label id="remaining"  />
 				
 			</s:HGroup>
 			<mx:HTML id="htmlBrowser" width="815" height="520" location="{parentDocument.vpFullUrl}" complete="onHTMLComplete()" htmlText="&lt;H1 align='center'&gt;Use config tab&lt;/H1&gt;" />

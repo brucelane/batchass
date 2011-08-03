@@ -1,8 +1,7 @@
 import flash.events.*;
-import flash.net.URLLoader;
-import flash.net.URLLoaderDataFormat;
-import flash.net.URLRequest;
+import flash.net.*;
 import flash.net.navigateToURL;
+import flash.utils.Timer;
 
 import fr.batchass.*;
 
@@ -13,6 +12,7 @@ import videopong.*;
 
 private var airApp : Object = this;
 private var cache:CacheManager;
+private var timer:Timer;
 
 //inject a reference to "this" into the HTML dom
 private function onHTMLComplete() : void
@@ -39,6 +39,13 @@ public var launchE4X:Function = function( e4xResult : String ) : void
 	loader.addEventListener( Event.COMPLETE, e4xLoadComplete );
 	loader.dataFormat = URLLoaderDataFormat.TEXT;
 	loader.load(req);
+	timer = new Timer(1000);
+	timer.addEventListener( TimerEvent.TIMER, checkRemaining );
+	timer.start();
+}
+private function checkRemaining( event:Event ): void 
+{
+	remaining.text = "Files remaining to download: "+ cache.filesRemaining;			
 }
 private function e4xLoadComplete( event:Event ):void
 {
@@ -59,7 +66,6 @@ private function e4xLoadComplete( event:Event ):void
 		if ( !cache ) cache = new CacheManager( parentDocument.dldFolderPath );
 		cache.downloadClipFiles( clipXml..urlthumb1, clipXml..urldownload, clipXml..urlpreview );
 		clipXml.dlddate = Util.nowDate;
-		
 		// add originaltags
 		var clipOriginalTagList:XMLList = clipXml..tag as XMLList;
 		for each ( var originalClipTag:XML in clipOriginalTagList )
