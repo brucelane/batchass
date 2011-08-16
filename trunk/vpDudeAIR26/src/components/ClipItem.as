@@ -58,7 +58,7 @@ private const minFileSize:int = 10000;
 private var waitImage:Class;
 [Embed(source='../assets/previewwait.png')]
 private var previewWaitImage:Class;
-[Embed(source='../assets/previewnotavailable.png')]
+[Embed(source='../assets/nopreview.png')]
 private var previewNotAvailableImage:Class;
 
 private var cache:CacheManager;
