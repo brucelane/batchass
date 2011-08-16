@@ -345,6 +345,8 @@ protected function exploreBtn_clickHandler(event:MouseEvent):void
 }
 protected function resyncBtn_clickHandler(event:MouseEvent):void
 {
+	log.text = "";
+	ffout.text = "";
 	if ( parentDocument.ownFolderPath != ownTextInput.text ) 
 	{
 		parentDocument.ownFolderPath = ownTextInput.text;
@@ -442,8 +444,8 @@ public function processAllFiles( selectedDir:File ):void
 				if ( clips.newClip( clipRelativePath ) )
 				{
 					countNew++;
-					newFiles += clipGeneratedName + " ";
-					log.text += "New clip: " + clipGeneratedName + "\n";
+					newFiles += clipGeneratedTitle + " ";
+					log.text += "New clip: " + clipGeneratedTitle + "\n";
 					//var clipId:String = Util.nowDate;
 					var thumbsFolder:File = new File( thumbsPath );
 					// creates folder if it does not exists
@@ -495,7 +497,7 @@ public function processAllFiles( selectedDir:File ):void
 				}
 				else
 				{
-					log.text += "Clip already in db: " + clipGeneratedName + "\n";
+					log.text += "Clip already in db: " + clipGeneratedTitle + "\n";
 					// check if file changed
 					if ( clips.fileChanged( clipRelativePath, parentDocument.ownFolderPath ) )
 					{
@@ -519,13 +521,13 @@ public function processAllFiles( selectedDir:File ):void
 						newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
 						countChanged++;
 						countDone++;
-						chgFiles += clipGeneratedName + "";
+						chgFiles += clipGeneratedTitle + "";
 					}
 					else
 					{
 						countDone++;
 						countNoChange++;
-						nochgFiles += clipGeneratedName + " ";
+						nochgFiles += clipGeneratedTitle + " ";
 					}
 				}
 			}
@@ -534,7 +536,9 @@ public function processAllFiles( selectedDir:File ):void
 				countError++;
 				countDone++;
 				// errorFilenames += clipPath + "\n";
-				log.text += "File extension not in permitted list: " + clipGeneratedName + "\n";
+				log.text += "File extension not in permitted list: " + clipGeneratedTitle + "\n";
+				errFiles += clipGeneratedTitle + " ";
+
 			}
 		}
 	}	
@@ -604,7 +608,7 @@ private function processConvert(event:Event): void
 					// all is converted and finished
 					if (log && countTotal > 0)
 					{
-						ffout.text = "Completed:\n [" + allFiles + "]\n";
+						ffout.text = "Completed:\n"; // [" + allFiles + "]\n";
 						ffout.text += "- newly indexed: " + countNew + " clip(s) [" + newFiles + "]\n";
 						ffout.text += "- changed: " + countChanged + " clip(s) [" + chgFiles + "]\n";
 						ffout.text += "- deleted: " + countDeleted + " clip(s) [" + delFiles + "]\n";
