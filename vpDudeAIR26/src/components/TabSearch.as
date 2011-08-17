@@ -50,7 +50,7 @@ protected function search_creationCompleteHandler(event:FlexEvent):void
 	tagAutoComplete.dataProvider = tags.tagsXMLList;
 	
 	clipList.labelField = "@name";
-	timer = new Timer(10000);
+	timer = new Timer(2500);
 	timer.addEventListener(TimerEvent.TIMER, timerFct);
 
 }

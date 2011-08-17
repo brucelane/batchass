@@ -369,7 +369,7 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	ownFiles = new ArrayCollection( selectedDirectory.getDirectoryListing() );
 	countTotal = 0;
 	
-	parentDocument.statusText.text = "Processing " + ownFiles.length + " file(s)";
+	parentDocument.statusText.text = "Found " + ownFiles.length + " file(s)";
 	currentFilename = "";
 	//countTotal = ownFiles.length;
 	syncStatus.text = "(" + countDone + "/" + countTotal + ")";
@@ -426,21 +426,21 @@ public function processAllFiles( selectedDir:File ):void
 		else
 		{
 			Util.log('processAllFiles, not directory: ' + lstFile.name);
-			countTotal++;
-			allFiles += lstFile.name + " ";
-			var clipPath:String = lstFile.nativePath;
-			var clipModificationDate:String = lstFile.modificationDate.toUTCString();
-			var clipSize:String = lstFile.size.toString();			
-			var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
-			var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
-			var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
-			var clipGeneratedTitleWithoutExtension:String = Util.getFileNameWithoutExtension( clipRelativePath );
-			var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
-			var swfPath:String = parentDocument.dldFolderPath + "/preview/" + clipGeneratedName + "/";
 			
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
+				countTotal++;
+				allFiles += lstFile.name + " ";
+				var clipPath:String = lstFile.nativePath;
+				var clipModificationDate:String = lstFile.modificationDate.toUTCString();
+				var clipSize:String = lstFile.size.toString();			
+				var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
+				var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
+				var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
+				var clipGeneratedTitleWithoutExtension:String = Util.getFileNameWithoutExtension( clipRelativePath );
+				var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
+				var swfPath:String = parentDocument.dldFolderPath + "/preview/" + clipGeneratedName + "/";
 				if ( clips.newClip( clipRelativePath ) )
 				{
 					countNew++;
@@ -533,11 +533,11 @@ public function processAllFiles( selectedDir:File ):void
 			}
 			else
 			{
+				/* ignore other extensions in count
 				countError++;
 				countDone++;
-				// errorFilenames += clipPath + "\n";
-				log.text += "File extension not in permitted list: " + clipGeneratedTitle + "\n";
 				errFiles += clipGeneratedTitle + " ";
+				log.text += "File extension not in permitted list: " + clipGeneratedTitle + "\n";*/
 
 			}
 		}
@@ -762,7 +762,7 @@ private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:ui
 			thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg" 
 		}
 		else thumb1 = "";
-		ffout.text += "execute, Converting " + ownVideoPath + " to thumb " + thumb1 + "\n";
+		ffout.text += "execute, Converting " + ownVideoPath + " to thumb\n";
 		Util.ffMpegOutputLog( "NativeProcess execute: " + "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n" );
 		
 		var processArgs:Vector.<String> = new Vector.<String>();
