@@ -520,7 +520,7 @@ public function processAllFiles( selectedDir:File ):void
 						newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
 						countChanged++;
 						countDone++;
-						chgFiles += clipGeneratedTitle + "";
+						chgFiles += clipGeneratedTitle + " ";
 					}
 					else
 					{
@@ -608,14 +608,22 @@ private function processConvert(event:Event): void
 					if (log && countTotal > 0)
 					{
 						ffout.text = "Completed:\n"; // [" + allFiles + "]\n";
-						ffout.text += "- newly indexed: " + countNew + " clip(s) [" + newFiles + "]\n";
-						ffout.text += "- changed: " + countChanged + " clip(s) [" + chgFiles + "]\n";
-						ffout.text += "- deleted: " + countDeleted + " clip(s) [" + delFiles + "]\n";
-						ffout.text += "- no change: " + countNoChange + " clip(s) [" + nochgFiles + "]\n";
+						var availSwfs:String = newFiles + chgFiles + nochgFiles;
+						var countAvail:int = countNew + countChanged + countNoChange;
+						ffout.text += "- newly indexed: " + countNew + " clip(s)";
+						if ( countNew > 0 )	ffout.text += " [" + newFiles + "]\n" else ffout.text += "\n";
+						ffout.text += "- changed: " + countChanged + " clip(s)";
+						if ( countChanged > 0 )	ffout.text += " [" + chgFiles + "]\n" else ffout.text += "\n";
+						ffout.text += "- deleted: " + countDeleted + " clip(s)";
+						if ( countDeleted > 0 )	ffout.text += " [" + delFiles + "]\n" else ffout.text += "\n";
+						ffout.text += "- no change: " + countNoChange + " clip(s)";
+						if ( countNoChange > 0 ) ffout.text += " [" + nochgFiles + "]\n" else ffout.text += "\n";
 						if ( countError > 0 )
 						{
-							ffout.text += "- could not convert: " + countError + " clip(s) [" + errFiles + "]\n";
+							ffout.text += "- could not convert thumbs and preview: " + countError + " clip(s) [" + errFiles + "]\n";
 						}
+						ffout.text += "- available as swf: " + countAvail + " clip(s)";
+						if ( countAvail > 0 ) ffout.text += " [" + availSwfs + "]\n" else ffout.text += "\n";
 						
 					}
 				}
@@ -648,45 +656,53 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 	{
 		if ( ownVideoPath.indexOf(".swf") > -1 )
 		{
+			//error no conversion on swf files
+			countError++;
+			countDone++;
+			errFiles += clipFileName + " ";
 			copySwf( ownVideoPath, swfPath + clipGeneratedName + ".swf" );
-		}
-		var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
-		if ( !ffMpegExecutable.exists )
-		{
-			Util.log( "generatePreview, ffMpegExecutable does not exist: " + parentDocument.vpFFMpegExePath );
 		}
 		else
 		{
-			Util.log( "generatePreview, ffMpegExecutable exists: " + parentDocument.vpFFMpegExePath );
+			var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
+			if ( !ffMpegExecutable.exists )
+			{
+				Util.log( "generatePreview, ffMpegExecutable does not exist: " + parentDocument.vpFFMpegExePath );
+			}
+			else
+			{
+				Util.log( "generatePreview, ffMpegExecutable exists: " + parentDocument.vpFFMpegExePath );
+			}
+			ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";//: " + clipFileName + ".swf" + "
+			Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
+			
+			var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+			nativeProcessStartupInfo.executable = ffMpegExecutable;
+			Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
+			var processArgs:Vector.<String> = new Vector.<String>();
+			var i:int = 0;
+			processArgs[i++] = "-i";
+			processArgs[i++] = ownVideoPath;
+			processArgs[i++] = "-b";
+			processArgs[i++] = "400k";
+			processArgs[i++] = "-an";
+			processArgs[i++] = "-f";
+			processArgs[i++] = "avm2";
+			processArgs[i++] = "-s";
+			processArgs[i++] = reso;// default "320x240";
+			processArgs[i++] = swfPath + clipGeneratedName + ".swf";
+			processArgs[i++] = "-y";
+			nativeProcessStartupInfo.arguments = processArgs;
+			startFFMpegProcess = new NativeProcess();
+			startFFMpegProcess.start(nativeProcessStartupInfo);
+			startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
+				outputDataHandler);
+			startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
+				errorMovieDataHandler);
+			startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
+			startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);
+			
 		}
-		ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";//: " + clipFileName + ".swf" + "
-		Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
-		
-		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-		nativeProcessStartupInfo.executable = ffMpegExecutable;
-		Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
-		var processArgs:Vector.<String> = new Vector.<String>();
-		var i:int = 0;
-		processArgs[i++] = "-i";
-		processArgs[i++] = ownVideoPath;
-		processArgs[i++] = "-b";
-		processArgs[i++] = "400k";
-		processArgs[i++] = "-an";
-		processArgs[i++] = "-f";
-		processArgs[i++] = "avm2";
-		processArgs[i++] = "-s";
-		processArgs[i++] = reso;// "320x240";
-		processArgs[i++] = swfPath + clipGeneratedName + ".swf";
-		processArgs[i++] = "-y";
-		nativeProcessStartupInfo.arguments = processArgs;
-		startFFMpegProcess = new NativeProcess();
-		startFFMpegProcess.start(nativeProcessStartupInfo);
-		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
-			outputDataHandler);
-		startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
-			errorMovieDataHandler);
-		startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
-		startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);
 	}
 	catch (e:Error)
 	{
