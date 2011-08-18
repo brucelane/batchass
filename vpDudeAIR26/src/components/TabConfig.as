@@ -371,8 +371,7 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	
 	parentDocument.statusText.text = "Found " + ownFiles.length + " file(s)";
 	currentFilename = "";
-	//countTotal = ownFiles.length;
-	syncStatus.text = "(" + countDone + "/" + countTotal + ")";
+	syncStatus.text = "";
 	// delete inexistent files from db
 	var clips:Clips = Clips.getInstance();
 	var clipList:XMLList = clips.CLIPS_XML..video as XMLList;
@@ -466,7 +465,7 @@ public function processAllFiles( selectedDir:File ):void
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2});
 					thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3});
 					log.text += "\nGenerating preview with ffmpeg" + clipPath;
-					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, snd:false });
+					moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, clipFileName:clipGeneratedTitle });
 					// create XML
 					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipRelativePath} datemodified={clipModificationDate} size={clipSize}> 
 										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
@@ -600,7 +599,7 @@ private function processConvert(event:Event): void
 				if ( moviesToConvert.length > 0 )
 				{
 					busy = true;
-					generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].snd );
+					generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].clipFileName );
 					moviesToConvert.shift();
 				}
 				else
@@ -640,9 +639,9 @@ private function processConvert(event:Event): void
 		}
 	}
 }
-private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, sound:Boolean = false ):void
+private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, clipFileName:String ):void
 {
-	currentFilename = clipGeneratedName;
+	currentFilename = clipFileName;
 	parentDocument.statusText.text = "Converting to swf: " + ownVideoPath;
 	// Start the process
 	try
@@ -660,12 +659,11 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		{
 			Util.log( "generatePreview, ffMpegExecutable exists: " + parentDocument.vpFFMpegExePath );
 		}
-		ffout.text += "generatePreview, Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n";
+		ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";//: " + clipFileName + ".swf" + "
 		Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
 		
 		var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
 		nativeProcessStartupInfo.executable = ffMpegExecutable;
-		//nativeProcessStartupInfo.executable = File.applicationStorageDirectory.resolvePath( parentDocument.vpFFMpegExePath );
 		Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
 		var processArgs:Vector.<String> = new Vector.<String>();
 		var i:int = 0;
@@ -673,26 +671,7 @@ private function generatePreview( ownVideoPath:String, swfPath:String, clipGener
 		processArgs[i++] = ownVideoPath;
 		processArgs[i++] = "-b";
 		processArgs[i++] = "400k";
-		if ( sound )
-		{
-			processArgs[i++] = "-ar";
-			processArgs[i++] = "44100";
-			processArgs[i++] = "-ab";
-			processArgs[i++] = "128k";
-			//-ar 22050 -ab 56k
-			/*processArgs[i++] = "-acodec";
-			processArgs[i++] = "libfaac";
-			processArgs[i++] = "-ar";
-			processArgs[i++] = "44100";
-			processArgs[i++] = "-ab";
-			processArgs[i++] = "128k";
-			processArgs[i++] = "-ac";
-			processArgs[i++] = "2";*/
-		}
-		else
-		{
-			processArgs[i++] = "-an";
-		}
+		processArgs[i++] = "-an";
 		processArgs[i++] = "-f";
 		processArgs[i++] = "avm2";
 		processArgs[i++] = "-s";
@@ -883,6 +862,11 @@ private function errorMovieDataHandler(event:ProgressEvent):void
 private function resetConsole():void
 {
 	if ( log.text.length > 500 ) log.text = "";
+}
+protected function log_changeHandler(event:TextOperationEvent):void
+{
+	log.validateNow();
+	log.scroller.verticalScrollBar.value = log.scroller.verticalScrollBar.maximum;
 }
 private function ioErrorHandler( event:IOErrorEvent ):void
 {

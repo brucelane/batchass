@@ -7,31 +7,15 @@
 					label="config" 
 					>
 	
-	<fx:Script>
-		<![CDATA[
-			protected function log_changeHandler(event:TextOperationEvent):void
-			{
-				log.validateNow();
-				log.scroller.verticalScrollBar.value = log.scroller.verticalScrollBar.maximum;
-			}
-		]]>
-	</fx:Script>
-	
 	<fx:Script source="TabConfig.as" />
 	<s:states>
 		<s:State name="Normal"/>
 		<s:State name="Busy"/>
 	</s:states>
 		<s:VGroup width="100%" paddingLeft="8" paddingRight="8" paddingTop="8" paddingBottom="8">
-			<!--<s:HGroup>
-				<s:Label width="{lblWidth}" text="Database files path:" verticalAlign="middle"/>
-				<s:TextInput width="{tiWidth}" text="{vpDbPath}" id="dbTextInput"/>
-				<s:Button label="..." id="browseConfigPathBtn" width="30" click="browseConfigPathBtn_clickHandler(event)"/>			
-			</s:HGroup>-->
 			<s:HGroup>
 				<s:Label height="20" paddingTop="6"
 						 text="If you have already a videopong.net account please fill in, otherwise please create one first on"/>
-				<!--<s:Button click="navigateToURL(new URLRequest('http://videopong.net'))" label="videopong.net" />-->
 				<mx:LinkButton label="videopong.net"
 							   click="navigateToURL(new URLRequest('http://videopong.net'))"
 							   paddingLeft="0" verticalCenter="10"/>
