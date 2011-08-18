@@ -53,11 +53,12 @@ public var vpFullUrl:String = vpUrl;
 public var vpUploadUrl:String = vpUpUrl;
 [Bindable]
 protected var downloading:Boolean = false;
+[Bindable]
+public var currentVersion:String = "";
 
 public var dldFolderPath:String;
 public var dbFolderPath:String;
 public var os:String;
-public var currentVersion:String;
 public var search:Search;
 public var updateTab:UpdateTab;
 public var userName:String;
