@@ -18,25 +18,32 @@
 			protected function about_creationCompleteHandler(event:FlexEvent):void
 			{
 				// check parentDocument for null value, because 1st time not accessible
-				if ( parentDocument ) version = "<br />  <br /> vpDude version " + parentDocument.currentVersion;
-				htm = "vpDude is a free tool for <a href='http://www.videopong.net'>videopong.net</a> " +
-					"users to handle downloaded and own clips in a platform- and vj-tool- independent way. " +
-					"<br />  <br />  it allows tagging clips, search for tags and drag clips to vjtools. " +
-					"<br />  <br /> <a href='http://www.videopong.net/static/vpdudehelp'>" +
-					"get help by clicking here</a> <br />  <br /> " +
-					"vpDude is developed by Bruce Lane for Videopong.  <br /> <br />  " +
-					"visit Bruce Lane's page at <a href='http://www.batchass.fr'>batchass.fr</a> " +
-					"<br />  <br /> using autocomplete from <a href='http://hillelcoren.com'>Hillel Coren</a> " +
-					version +
-					"<br /> <br />  " +
-					"vpDude includes a compiled version of <a href='http://ffmpeg.org/'>ffmpeg</a> " +
-					"that is published under <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>GNU General Public License (GPL) version 2</a> " +
-					"or later <br /> <br />  " +
-					"vpDude is published under <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>GNU General Public License (GPL) version 2</a> or later ";
+				if ( parentDocument ) version = parentDocument.currentVersion;
+				htm = 
+					"<h2>vpDude</h2><br />" +
+					version + " <br />" +
+					"<br />" +
+					"<br />" +
+					"vpDude is a free tool for <a href='http://www.videopong.net'>videopong.net</a> -users to handle downloaded and own clips in a platform- and vj-tool- independent way. " +
+				"it allows tagging clips, search for tags and drag clips to vjtools. we hope it helps vjs work to find the clips on the harddrives during performance.<br />" +
+					"<br />" +
+						"<b>help:</b> <a href='http://www.videopong.net/static/vpdudehelp'>http://www.videopong.net/static/vpdudehelp</a> <br /><br />" +
+				"<br />" +
+				"<br />" +
+				"<br />" +
+				"vpDude is developed by <a href='http://www.batchass.fr'>Bruce Lane (batchass)</a> for Videopong. <br />" +
+				"vpDude is published under <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>GNU General Public License (GPL) version 2</a> or later " +
+				"<br />" +
+				"<br />" +
+				"vpDude includes or uses: <br />" +
+				" - <a href='http://ffmpeg.org/'>ffmpeg</a> that is published under <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'>GNU General Public License (GPL) version 2</a> or later<br />" +
+				" - autocomplete from <a href='http://hillelcoren.com'>Hillel Coren</a> <br />"
+				"<br />";
+
 			}
 			
 		]]>
 	</fx:Script>
-		<mx:HTML id="htmlBrowser" paddingLeft="10" paddingRight="10" paddingBottom="10" paddingTop="10" width="100%" height="100%"  
-				 htmlText="{htm}"  />
+	<mx:HTML id="htmlBrowser" paddingLeft="10" paddingRight="10" paddingBottom="10" paddingTop="10" width="100%" height="100%"  
+			 htmlText="{htm}"  />
 </s:NavigatorContent> 
