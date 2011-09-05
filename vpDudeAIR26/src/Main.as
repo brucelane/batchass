@@ -223,8 +223,7 @@ private function onMonitor(event:StatusEvent):void
 				tabNav.addChild( updateTab );
 				tabNav.addChild( new About() );	
 				tabNav.addChild( new Quit() );	
-			}
-			
+			}			
 		}	
 	}
 }
