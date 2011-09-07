@@ -12,6 +12,7 @@ package fr.batchass
 	
 	import mx.core.FlexGlobals;
 	
+	import videopong.Clip;
 	import videopong.Clips;
 	import videopong.Tags;
 	
@@ -20,11 +21,11 @@ package fr.batchass
 		private var dispatcher:EventDispatcher;
 		private static var instance:Conversion;
 		private var timer:Timer;
-		public var moviesToConvert:Array = new Array();
-		public var thumbsToConvert:Array = new Array();
+		public var fileToConvert:Array = new Array();
 		public var newClips:Array = new Array();
-		private var startFFMpegProcess:NativeProcess;		
-		private var currentFilename:String = "";
+		private var startFFMpegProcess:NativeProcess;
+		[Bindable]		
+		public var currentFilename:String = "";
 		private var currentThumb:int;
 		private var thumb1:String;
 		private var _status:String;
@@ -55,6 +56,7 @@ package fr.batchass
 		public var allFiles:String = "";
 		[Bindable]
 		public var reso:String = "320x240";
+		private var OWN_CLIPS_XML:XML;
 		
 		public function Conversion()
 		{
@@ -146,23 +148,27 @@ package fr.batchass
 			dispatchEvent( new Event(Event.CHANGE) );
 			status = "(" + countDone + "/" + countTotal + ")";
 			
-			var freeSpace:Number = File.applicationStorageDirectory.spaceAvailable / 1048576;
+			var freeSpace:Number = Math.round( File.applicationStorageDirectory.spaceAvailable / 1048576 );
 			if ( freeSpace < 10 )
 			{
-				Util.ffMpegOutputLog( "processConvert: disk has less than 10Mb free space(" + freeSpace + "), conversion cannot continue.\n" );
+				Util.ffMpegOutputLog( "processConvert: disk has less than 10Mb free space(" + freeSpace + "), convertion cannot continue.\n" );
 			}
 			else
 			{
 				if ( !busy )
 				{
-					if ( thumbsToConvert.length > 0 )
+					if ( fileToConvert.length > 0 )
 					{
 						busy = true;
-						currentThumb = thumbsToConvert[0].tNumber;
+						convert( fileToConvert[0] );
+							//.clipLocalPath, fileToConvert[0].clipGenName, fileToConvert[0].clipFileName, fileToConvert[0].isThumb );
+						fileToConvert.shift();
+
+						/*currentThumb = thumbsToConvert[0].tNumber;
 						//configComp.ffout.text += "Converting: " + thumbsToConvert[0].clipLocalPath + "\n";
 						Util.ffMpegOutputLog( "processConvert: Converting " + thumbsToConvert[0].clipLocalPath + "\n" );
 						execute( thumbsToConvert[0].clipLocalPath, thumbsToConvert[0].tPath, thumbsToConvert[0].tNumber );
-						thumbsToConvert.shift();
+						thumbsToConvert.shift();*/
 					}
 					else
 					{	
@@ -173,36 +179,27 @@ package fr.batchass
 							newClips.shift();
 						}
 						else
-						{	
-							if ( moviesToConvert.length > 0 )
+						{								
+							// all is converted and finished
+							summary = "Completed:\n"; // [" + allFiles + "]\n";
+							var availSwfs:String = newFiles + chgFiles + nochgFiles;
+							var countAvail:int = countNew + countChanged + countNoChange;
+							summary += "- newly indexed: " + countNew + " clip(s)";
+							if ( countNew > 0 )	summary += " [" + newFiles + "]\n" else summary += "\n";
+							summary += "- changed: " + countChanged + " clip(s)";
+							if ( countChanged > 0 )	summary += " [" + chgFiles + "]\n" else summary += "\n";
+							summary += "- deleted: " + countDeleted + " clip(s)";
+							if ( countDeleted > 0 )	summary += " [" + delFiles + "]\n" else summary += "\n";
+							summary += "- no change: " + countNoChange + " clip(s)";
+							if ( countNoChange > 0 ) summary += " [" + nochgFiles + "]\n" else summary += "\n";
+							if ( countError > 0 )
 							{
-								busy = true;
-								generatePreview( moviesToConvert[0].clipLocalPath, moviesToConvert[0].swfLocalPathswfPath, moviesToConvert[0].clipGenName, moviesToConvert[0].clipFileName );
-								moviesToConvert.shift();
+								summary += "- could not convert thumbs and preview: " + countError + " clip(s) [" + errFiles + "]\n";
 							}
-							else
-							{
-								// all is converted and finished
-								summary = "Completed:\n"; // [" + allFiles + "]\n";
-								var availSwfs:String = newFiles + chgFiles + nochgFiles;
-								var countAvail:int = countNew + countChanged + countNoChange;
-								summary += "- newly indexed: " + countNew + " clip(s)";
-								if ( countNew > 0 )	summary += " [" + newFiles + "]\n" else summary += "\n";
-								summary += "- changed: " + countChanged + " clip(s)";
-								if ( countChanged > 0 )	summary += " [" + chgFiles + "]\n" else summary += "\n";
-								summary += "- deleted: " + countDeleted + " clip(s)";
-								if ( countDeleted > 0 )	summary += " [" + delFiles + "]\n" else summary += "\n";
-								summary += "- no change: " + countNoChange + " clip(s)";
-								if ( countNoChange > 0 ) summary += " [" + nochgFiles + "]\n" else summary += "\n";
-								if ( countError > 0 )
-								{
-									summary += "- could not convert thumbs and preview: " + countError + " clip(s) [" + errFiles + "]\n";
-								}
-								summary += "- available as swf: " + countAvail + " clip(s)";
-								if ( countAvail > 0 ) summary += " [" + availSwfs + "]\n" else summary += "\n";
-	
-								dispatchEvent( new Event(Event.COMPLETE) );
-							}
+							summary += "- available as swf: " + countAvail + " clip(s)";
+							if ( countAvail > 0 ) summary += " [" + availSwfs + "]\n" else summary += "\n";
+
+							dispatchEvent( new Event(Event.COMPLETE) );							
 						}
 					}
 				}
@@ -212,7 +209,7 @@ package fr.batchass
 					if ( !startFFMpegProcess.running ) busy = false;
 				}
 				
-				if ( ( thumbsToConvert.length == 0 ) && ( moviesToConvert.length == 0 ) && ( newClips.length == 0 ) )
+				if ( ( fileToConvert.length == 0 ) && ( newClips.length == 0 ) )
 				{
 					busy = false;
 				}				
@@ -220,70 +217,89 @@ package fr.batchass
 			}
 			
 		}
-		private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, clipFileName:String ):void
+		public function addFileToConvert( lstFile:File ):void
 		{
-			currentFilename = clipFileName;
-
-			FlexGlobals.topLevelApplication.statusText.text = "Converting to swf: " + ownVideoPath;
-			// Start the process
-			try
+			countTotal++;
+			
+			var clip:Clip = new Clip( lstFile );
+			allFiles += clip.name + " ";
+			
+			var clips:Clips = Clips.getInstance();
+			if ( clips.newClip( clip.clipRelativePath ) )
 			{
-				if ( ownVideoPath.indexOf(".swf") > -1 )
+				countNew++;
+				newFiles += clip.clipGeneratedTitle + " ";
+				fileToConvert.push( clip );
+			}
+			else
+			{
+				//log.text += "Clip already in db: " + clipGeneratedTitle + "\n";
+				// check if file changed
+				if ( clips.fileChanged( clip.clipRelativePath, FlexGlobals.topLevelApplication.ownFolderPath ) )
 				{
-					//error no conversion on swf files
-					countError++;
+					// delete thumbs and preview swf
+					deleteThumbs( clip.thumbsPath );
+					deleteFile( clip.swfPath + clip.clipGeneratedName + ".swf" );
+					// modify xml
+					// read clip xml file
+					var localClipXMLFile:String = FlexGlobals.topLevelApplication.dbFolderPath + File.separator + clip.clipGeneratedName + ".xml" ;
+					var clipXmlFile:File = new File( localClipXMLFile );
+					var clipXml:XML = new XML( readTextFile( clipXmlFile ) );					
+					clipXml.@datemodified = clip.clipModificationDate;
+					clipXml.@size = clip.clipSize;
+					
+					// write the text file
+					clips.writeClipXmlFile( clip.clipGeneratedName, clipXml );					
+					
+					// modify clips.xml
+					clips.deleteClip( clip.clipGeneratedName, clip.clipRelativePath );
+					// generate new files
+					newClips.push({clipName:clip.clipGeneratedName,ownXml:clipXml,cPath:clip.clipPath});
+					countChanged++;
 					countDone++;
-					errFiles += clipFileName + " ";
-					copySwf( ownVideoPath, swfPath + clipGeneratedName + ".swf" );
+					chgFiles += clip.clipGeneratedTitle + " ";
 				}
 				else
 				{
-					var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( FlexGlobals.topLevelApplication.vpFFMpegExePath );
-					if ( !ffMpegExecutable.exists )
-					{
-						Util.log( "generatePreview, ffMpegExecutable does not exist: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
-					}
-					else
-					{
-						Util.log( "generatePreview, ffMpegExecutable exists: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
-					}
-					//configComp.ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";
-					Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
-					
-					var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-					nativeProcessStartupInfo.executable = ffMpegExecutable;
-					Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
-					var processArgs:Vector.<String> = new Vector.<String>();
-					var i:int = 0;
-					processArgs[i++] = "-i";
-					processArgs[i++] = ownVideoPath;
-					processArgs[i++] = "-b";
-					processArgs[i++] = "400k";
-					processArgs[i++] = "-an";
-					processArgs[i++] = "-f";
-					processArgs[i++] = "avm2";
-					processArgs[i++] = "-s";
-					processArgs[i++] = reso;// default "320x240";
-					processArgs[i++] = swfPath + clipGeneratedName + ".swf";
-					processArgs[i++] = "-y";
-					nativeProcessStartupInfo.arguments = processArgs;
-					startFFMpegProcess = new NativeProcess();
-					startFFMpegProcess.start(nativeProcessStartupInfo);
-					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
-						outputDataHandler);
-					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
-						errorMovieDataHandler);
-					startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
-					startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);
-					
+					countDone++;
+					countNoChange++;
+					nochgFiles += clip.clipGeneratedTitle + " ";
 				}
 			}
-			catch (e:Error)
-			{
-				Util.log( "generatePreview, NativeProcess Error: " + e.message );
-				busy = false;
-			}
 		}
+		private function onConvertComplete(clip:Clip):void
+		{
+			// create XML
+			OWN_CLIPS_XML = <video id={clip.clipGeneratedName} urllocal={clip.clipRelativePath} datemodified={clip.clipModificationDate} size={clip.clipSize}> 
+								<urlthumb1>{clip.thumbsPath + "thumb1.jpg"}</urlthumb1>
+								<urlthumb2>{clip.thumbsPath + "thumb2.jpg"}</urlthumb2>
+								<urlthumb3>{clip.thumbsPath + "thumb3.jpg"}</urlthumb3>
+								<urlpreview>{clip.swfPath + clip.clipGeneratedName + ".swf"}</urlpreview>
+								<clip name={clip.clipGeneratedTitle} />
+								<creator name={FlexGlobals.topLevelApplication.userName}/>
+								<tags>
+									<tag name="own"/>
+								</tags>
+							</video>;
+			var tags:Tags = Tags.getInstance();
+			tags.addTagIfNew( "own" );
+			if ( clip.clipRelativePath.length > 0 )
+			{
+				var folders:Array = clip.clipRelativePath.split( File.separator );
+				
+				for each (var folder:String in folders)
+				{
+					if ( clip.clipGeneratedTitle == folder) folder = clip.clipGeneratedTitleWithoutExtension;
+					tags.addTagIfNew( folder );
+					var folderXmlTag:XML = <tag name={folder} creationdate={Util.nowDate} />;
+					OWN_CLIPS_XML.tags.appendChild( folderXmlTag );
+				}
+			}
+			newClips.push({clipName:clip.clipGeneratedName,ownXml:OWN_CLIPS_XML,cPath:clip.clipPath});
+		}
+		
+		
+		
 		private function processClose(event:Event):void
 		{
 			var process:NativeProcess = event.target as NativeProcess;
@@ -297,6 +313,7 @@ package fr.batchass
 			//configComp.log.text += data;
 			if (data.indexOf("muxing overhead")>-1) 
 			{
+				thumb1 = fileToConvert[0].thumbsPath + "thumb1.jpg";
 				if ( thumb1.length > 0 )
 				{
 					//file: copy
@@ -392,10 +409,180 @@ package fr.batchass
 			if ( !busy ) countDone++;
 			Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 		}
-		//thumbs
-		private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
+		/*private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, clipFileName:String ):void
 		{
-			FlexGlobals.topLevelApplication.statusText.text = "Creating thumb: " + ownVideoPath;
+			currentFilename = clipFileName;
+			
+			FlexGlobals.topLevelApplication.statusText.text = "Converting to swf: " + ownVideoPath;
+			// Start the process
+			try
+			{
+				if ( ownVideoPath.indexOf(".swf") > -1 )
+				{
+					//error no conversion on swf files
+					countError++;
+					countDone++;
+					errFiles += clipFileName + " ";
+					copySwf( ownVideoPath, swfPath + clipGeneratedName + ".swf" );
+				}
+				else
+				{
+					var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( FlexGlobals.topLevelApplication.vpFFMpegExePath );
+					if ( !ffMpegExecutable.exists )
+					{
+						Util.log( "generatePreview, ffMpegExecutable does not exist: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
+					}
+					else
+					{
+						Util.log( "generatePreview, ffMpegExecutable exists: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
+					}
+					//configComp.ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";
+					Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
+					
+					var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+					nativeProcessStartupInfo.executable = ffMpegExecutable;
+					Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
+					var processArgs:Vector.<String> = new Vector.<String>();
+					var i:int = 0;
+					processArgs[i++] = "-i";
+					processArgs[i++] = ownVideoPath;
+					processArgs[i++] = "-b";
+					processArgs[i++] = "400k";
+					processArgs[i++] = "-an";
+					processArgs[i++] = "-f";
+					processArgs[i++] = "avm2";
+					processArgs[i++] = "-s";
+					processArgs[i++] = reso;// default "320x240";
+					processArgs[i++] = swfPath + clipGeneratedName + ".swf";
+					processArgs[i++] = "-y";
+					nativeProcessStartupInfo.arguments = processArgs;
+					startFFMpegProcess = new NativeProcess();
+					startFFMpegProcess.start(nativeProcessStartupInfo);
+					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
+						outputDataHandler);
+					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
+						errorMovieDataHandler);
+					startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
+					startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);				
+				}
+			}
+			catch (e:Error)
+			{
+				Util.log( "generatePreview, NativeProcess Error: " + e.message );
+				busy = false;
+			}
+		}*/
+		// convertion
+		//private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, clipFileName:String ):void
+		//private function convert( ownVideoPath:String, clipGeneratedName:String, clipFileName:String, thumb:Boolean ):void
+		private function convert( clip:Clip ):void
+		{
+			generate( clip, true );
+			generate( clip, false );
+		}
+		private function generate( clip:Clip, thumb:Boolean ):void
+		{
+			var outPath:String;
+			if ( thumb )
+			{
+				outPath = FlexGlobals.topLevelApplication.dldFolderPath + "/thumbs/" + clip.clipGeneratedName + "/";
+			}
+			else
+			{
+				outPath = FlexGlobals.topLevelApplication.dldFolderPath + "/preview/" + clip.clipGeneratedName + "/";				
+				
+			}
+			var outFolder:File = new File( outPath );
+			// creates folder if it does not exists
+			if ( !outFolder.exists ) 
+			{
+				// create the directory
+				outFolder.createDirectory();
+			}
+			currentFilename = clip.clipGeneratedTitle;
+			// Start the process
+			if ( clip.clipPath.indexOf(".swf") > -1 )
+			{
+				//error no conversion on swf files
+				if ( !thumb )
+				{
+					countError++;
+					countDone++;
+					errFiles += clip.clipGeneratedTitle + " ";
+					copySwf( clip.clipPath, outPath + clip.clipGeneratedName + ".swf" );
+				}
+			}
+			else
+			{
+				try
+				{
+					var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( FlexGlobals.topLevelApplication.vpFFMpegExePath );
+					if ( !ffMpegExecutable.exists )
+					{
+						Util.log( "convertion, ffMpegExecutable does not exist: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
+					}
+					else
+					{
+						Util.log( "convertion, ffMpegExecutable exists: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
+					}
+					//configComp.ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";
+					Util.ffMpegOutputLog( "NativeProcess convertion: Converting " + clip.clipGeneratedName + "\n" );
+					
+					var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
+					nativeProcessStartupInfo.executable = ffMpegExecutable;
+					Util.log("convertion,ff path:"+ ffMpegExecutable.nativePath );			
+					var processArgs:Vector.<String> = new Vector.<String>();
+					var i:int = 0;
+					processArgs[i++] = "-i";
+					processArgs[i++] = clip.clipPath;
+					processArgs[i++] = "-b";
+					processArgs[i++] = "400k";
+					processArgs[i++] = "-an";
+					if ( thumb ) 
+					{
+						processArgs[i++] = "-vframes";
+						processArgs[i++] = "1";
+						processArgs[i++] = "-f";
+						processArgs[i++] = "image2";
+						processArgs[i++] = "-vcodec";
+						processArgs[i++] = "mjpeg";
+						processArgs[i++] =  "-s";
+						processArgs[i++] = "100x74"; //Frame size must be a multiple of 2
+						processArgs[i++] =  "-ss";
+						processArgs[i++] = "1";//thumbNumber.toString();
+						processArgs[i++] = outPath + "thumb1.jpg";
+					} 
+					else 
+					{
+						processArgs[i++] = "-f";
+						processArgs[i++] = "avm2";
+						processArgs[i++] = "-s";
+						processArgs[i++] = reso;// default "320x240";
+						processArgs[i++] = outPath + clip.clipGeneratedName + ".swf";
+					}
+					processArgs[i++] = "-y";
+					nativeProcessStartupInfo.arguments = processArgs;
+					
+					startFFMpegProcess = new NativeProcess();
+					startFFMpegProcess.start(nativeProcessStartupInfo);
+					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
+						outputDataHandler);
+					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
+						errorOutputDataHandler);
+					startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
+					startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);				
+				}
+				catch (e:Error)
+				{
+					Util.log( "convertion, NativeProcess Error: " + e.message );
+					busy = false;
+				}	
+			}
+		}
+		//thumbs
+		/*private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
+		{
+			//FlexGlobals.topLevelApplication.statusText.text = "Creating thumb: " + ownVideoPath;
 			// Start the process
 			try
 			{
@@ -450,6 +637,24 @@ package fr.batchass
 			{
 				Util.log( "execute, NativeProcess Error: " + e.message );
 				busy = false;
+			}
+		}*/
+		private function deleteThumbs( thumbsPath:String ): void 
+		{
+			deleteFile( thumbsPath + "thumb1.jpg" );
+			deleteFile( thumbsPath + "thumb2.jpg" );
+			deleteFile( thumbsPath + "thumb3.jpg" );
+		}
+		public function deleteFile( path:String ): void 
+		{
+			var file:File = new File( path );
+			// delete file if it exists
+			if ( file.exists ) 
+			{
+				file.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+				file.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+				file.moveToTrash();
+				//TODO delete event listeners
 			}
 		}
 		private function outputDataHandler(event:ProgressEvent):void

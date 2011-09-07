@@ -289,7 +289,7 @@ private function urlMonitor(url:String):void
 	monitor.pollInterval = 10000;
 }
 
-public function errorEventErrorHandler(event:ErrorEvent):void
+/*public function errorEventErrorHandler(event:ErrorEvent):void
 {
 	Util.log( 'An ErrorEvent has occured: ' + event.text );
 }    
@@ -301,7 +301,7 @@ public function ioErrorHandler( event:IOErrorEvent ):void
 public function securityErrorHandler( event:SecurityErrorEvent ):void
 {
 	Util.log( "securityErrorHandler: " + event.text );
-}		
+}		*/
 //  after a file upload is complete or attemted the server will return an http status code, code 200 means all is good anything else is bad.
 public function httpStatusHandler( event:HTTPStatusEvent ):void 
 {  
