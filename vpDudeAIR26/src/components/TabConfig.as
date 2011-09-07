@@ -41,7 +41,6 @@ private var passwordChanged:Boolean = false;
 
 
 public static var CONFIG_XML:XML;
-private var OWN_CLIPS_XML:XML;
 private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "mpeg", "mpg", "h264"];
 
 
@@ -171,43 +170,6 @@ protected function applyBtn_clickHandler(event:MouseEvent):void
 	}
 }
 
-// Copy all files in a directory structure including subdirectories.
-/*public function copyFolders( sourceDir:File, destDir:String, destDirRoot:String="" ):Boolean
-{
-	var str:String = "";
-	var copySuccess:Boolean = true
-	for each( var lstFile:File in sourceDir.getDirectoryListing() )
-	{
-		if( lstFile.isDirectory )
-		{
-			var sourcePath:String = lstFile.nativePath;
-			var newSubdir:String = sourcePath.substr( parentDocument.vpFolderPath.length );
-			if ( destDirRoot == "") destDirRoot = destDir;
-			var newDestDir:String = destDirRoot + newSubdir;
-			//recursively call function
-			copyFolders( lstFile, newDestDir, destDirRoot );
-		}
-		else
-		{
-			//file: copy
-			var sourceFile:File = lstFile;
-			var destFile:File = new File( destDir + "/" + lstFile.name );
-			sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
-			sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
-			try 
-			{
-				sourceFile.copyTo( destFile );
-			}
-			catch (error:Error)
-			{
-				Util.errorLog( "CopyFolders Error:" + error.message );
-				copySuccess = false;
-			}
-		}
-	}	
-	return copySuccess;
-}*/
-
 private function writeFolderXmlFile():void
 {
 	CONFIG_XML = <config> 
@@ -305,11 +267,7 @@ protected function exploreBtn_clickHandler(event:MouseEvent):void
 		//file.browse();
 	}
 }
-private function statusChange(event:Event):void
-{
-	//syncStatus.text = cnv.status;
-	
-}
+
 private function busyChange(event:Event):void
 {
 	if ( cnv.busy )
@@ -343,7 +301,6 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 	showProgress = true;
 	cnv = Conversion.getInstance(); 
 	cnv.addEventListener( Event.COMPLETE, resyncComplete );
-	cnv.addEventListener( Event.CHANGE, statusChange );
 	cnv.addEventListener( Event.ADDED, busyChange );
 	log.text = "";
 	ffout.text = "";
@@ -372,20 +329,20 @@ protected function resyncBtn_clickHandler(event:MouseEvent):void
 			if ( !searchedFile.exists ) 
 			{
 				// delete xml file
-				deleteFile( parentDocument.dbFolderPath + File.separator + clip.@id + ".xml" );
+				cnv.deleteFile( parentDocument.dbFolderPath + File.separator + clip.@id + ".xml" );
 				// delete in clips.xml
 				clips.deleteClip( clip.@id, clip.@urllocal );
 				//TODO delete tag in tags.xml
 				//var tags:Tags = Tags.getInstance();
 				//tags.
 				// delete thumbs
-				deleteFile( clip.urlthumb1 );
-				deleteFile( clip.urlthumb2 );
-				deleteFile( clip.urlthumb3 );
+				cnv.deleteFile( clip.urlthumb1 );
+				cnv.deleteFile( clip.urlthumb2 );
+				cnv.deleteFile( clip.urlthumb3 );
 				// delete thumbs folder
 				deleteFolder( parentDocument.dldFolderPath+ File.separator + "thumbs" + File.separator + clip.@id );
 				// delete preview
-				deleteFile( clip.urlpreview );
+				cnv.deleteFile( clip.urlpreview );
 				// delete preview folder
 				deleteFolder( parentDocument.dldFolderPath+ File.separator + "preview" + File.separator + clip.@id );
 				cnv.countDeleted++;
@@ -411,142 +368,15 @@ public function processAllFiles( selectedDir:File ):void
 		}
 		else
 		{
-			Util.log('processAllFiles, not directory: ' + lstFile.name);
-			
 			//check if it is a video file
 			if ( validExtensions.indexOf( lstFile.extension.toLowerCase() ) > -1 )
 			{
-				cnv.countTotal++;
-				cnv.allFiles += lstFile.name + " ";
-				var clipPath:String = lstFile.nativePath;
-				var clipModificationDate:String = lstFile.modificationDate.toUTCString();
-				var clipSize:String = lstFile.size.toString();			
-				var clipRelativePath:String = clipPath.substr( parentDocument.ownFolderPath.length + 1 );
-				var clipGeneratedName:String = Util.getFileNameWithSafePath( clipRelativePath );
-				var clipGeneratedTitle:String = Util.getFileName( clipRelativePath );
-				var clipGeneratedTitleWithoutExtension:String = Util.getFileNameWithoutExtension( clipRelativePath );
-				var thumbsPath:String = parentDocument.dldFolderPath + "/thumbs/" + clipGeneratedName + "/";
-				var swfPath:String = parentDocument.dldFolderPath + "/preview/" + clipGeneratedName + "/";
-				if ( clips.newClip( clipRelativePath ) )
-				{
-					cnv.countNew++;
-					cnv.newFiles += clipGeneratedTitle + " ";
-					log.text += "New clip: " + clipGeneratedTitle + "\n";
-					//var clipId:String = Util.nowDate;
-					var thumbsFolder:File = new File( thumbsPath );
-					// creates folder if it does not exists
-					if ( !thumbsFolder.exists ) 
-					{
-						// create the directory
-						thumbsFolder.createDirectory();
-					}
-					var previewFolder:File = new File( swfPath );
-					// creates folder if it does not exists
-					if ( !previewFolder.exists ) 
-					{
-						// create the directory
-						previewFolder.createDirectory();
-					}
-					log.text += "\nGenerating thumbs with ffmpeg for " + clipPath;
-					cnv.thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:1});
-					cnv.thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:2});
-					cnv.thumbsToConvert.push({clipLocalPath:clipPath,tPath:thumbsPath,tNumber:3});
-					log.text += "\nGenerating preview with ffmpeg" + clipPath;
-					cnv.moviesToConvert.push({clipLocalPath:clipPath,swfLocalPathswfPath:swfPath, clipGenName:clipGeneratedName, clipFileName:clipGeneratedTitle });
-					// create XML
-					OWN_CLIPS_XML = <video id={clipGeneratedName} urllocal={clipRelativePath} datemodified={clipModificationDate} size={clipSize}> 
-										<urlthumb1>{thumbsPath + "thumb1.jpg"}</urlthumb1>
-										<urlthumb2>{thumbsPath + "thumb2.jpg"}</urlthumb2>
-										<urlthumb3>{thumbsPath + "thumb3.jpg"}</urlthumb3>
-										<urlpreview>{swfPath + clipGeneratedName + ".swf"}</urlpreview>
-										<clip name={clipGeneratedTitle} />
-										<creator name={userName}/>
-										<tags>
-											<tag name="own"/>
-										</tags>
-									</video>;
-					var tags:Tags = Tags.getInstance();
-					tags.addTagIfNew( "own" );
-					if ( clipRelativePath.length > 0 )
-					{
-						var folders:Array = clipRelativePath.split( File.separator );
-						
-						for each (var folder:String in folders)
-						{
-							if ( clipGeneratedTitle == folder) folder = clipGeneratedTitleWithoutExtension;
-							tags.addTagIfNew( folder );
-							var folderXmlTag:XML = <tag name={folder} creationdate={Util.nowDate} />;
-							OWN_CLIPS_XML.tags.appendChild( folderXmlTag );
-						}
-					}
-					cnv.newClips.push({clipName:clipGeneratedName,ownXml:OWN_CLIPS_XML,cPath:clipPath});
-				}
-				else
-				{
-					log.text += "Clip already in db: " + clipGeneratedTitle + "\n";
-					// check if file changed
-					if ( clips.fileChanged( clipRelativePath, parentDocument.ownFolderPath ) )
-					{
-						// delete thumbs and preview swf
-						deleteThumbs( thumbsPath );
-						deleteFile( swfPath + clipGeneratedName + ".swf" );
-						// modify xml
-						// read clip xml file
-						var localClipXMLFile:String = parentDocument.dbFolderPath + File.separator + clipGeneratedName + ".xml" ;
-						var clipXmlFile:File = new File( localClipXMLFile );
-						var clipXml:XML = new XML( readTextFile( clipXmlFile ) );					
-						clipXml.@datemodified = clipModificationDate;
-						clipXml.@size = clipSize;
-						
-						// write the text file
-						clips.writeClipXmlFile( clipGeneratedName, clipXml );					
-						
-						// modify clips.xml
-						clips.deleteClip( clipGeneratedName, clipRelativePath );
-						// generate new files
-						cnv.newClips.push({clipName:clipGeneratedName,ownXml:clipXml,cPath:clipPath});
-						cnv.countChanged++;
-						cnv.countDone++;
-						cnv.chgFiles += clipGeneratedTitle + " ";
-					}
-					else
-					{
-						cnv.countDone++;
-						cnv.countNoChange++;
-						cnv.nochgFiles += clipGeneratedTitle + " ";
-					}
-				}
-			}
-			else
-			{
-				/* ignore other extensions in count
-				countError++;
-				countDone++;
-				errFiles += clipGeneratedTitle + " ";
-				log.text += "File extension not in permitted list: " + clipGeneratedTitle + "\n";*/
-
+				cnv.addFileToConvert( lstFile );
 			}
 		}
 	}	
 }
-private function deleteThumbs( thumbsPath:String ): void 
-{
-	deleteFile( thumbsPath + "thumb1.jpg" );
-	deleteFile( thumbsPath + "thumb2.jpg" );
-	deleteFile( thumbsPath + "thumb3.jpg" );
-}
-private function deleteFile( path:String ): void 
-{
-	var file:File = new File( path );
-	// delete file if it exists
-	if ( file.exists ) 
-	{
-		file.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
-		file.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
-		file.moveToTrash();
-		//TODO delete event listeners
-	}
-}
+
 private function deleteFolder( path:String ): void 
 {
 	var folder:File = new File( path );
