@@ -313,23 +313,26 @@ package fr.batchass
 			//configComp.log.text += data;
 			if (data.indexOf("muxing overhead")>-1) 
 			{
-				thumb1 = fileToConvert[0].thumbsPath + "thumb1.jpg";
-				if ( thumb1.length > 0 )
-				{
-					//file: copy
-					var sourceFile:File = new File( thumb1 );
-					var destFile:File = new File( tPath + "thumb2.jpg" );
-					sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
-					sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
-					try 
+				if ( fileToConvert.length > 0 )
+				{					
+					thumb1 = fileToConvert[0].thumbsPath + "thumb1.jpg";
+					if ( thumb1.length > 0 )
 					{
-						sourceFile.copyTo( destFile );
-						var destFile2:File = new File( tPath + "thumb3.jpg" );
-						sourceFile.copyTo( destFile2 );
-					}
-					catch (error:Error)
-					{
-						Util.errorLog( "errorOutputDataHandler Error:" + error.message );
+						//file: copy
+						var sourceFile:File = new File( thumb1 );
+						var destFile:File = new File( tPath + "thumb2.jpg" );
+						sourceFile.addEventListener( IOErrorEvent.IO_ERROR, ioErrorHandler );
+						sourceFile.addEventListener( SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler );
+						try 
+						{
+							sourceFile.copyTo( destFile );
+							var destFile2:File = new File( tPath + "thumb3.jpg" );
+							sourceFile.copyTo( destFile2 );
+						}
+						catch (error:Error)
+						{
+							Util.errorLog( "errorOutputDataHandler Error:" + error.message );
+						}
 					}
 				}
 				busy = false;
@@ -409,69 +412,6 @@ package fr.batchass
 			if ( !busy ) countDone++;
 			Util.ffMpegMovieErrorLog( "NativeProcess errorOutputDataHandler: " + data );
 		}
-		/*private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, clipFileName:String ):void
-		{
-			currentFilename = clipFileName;
-			
-			FlexGlobals.topLevelApplication.statusText.text = "Converting to swf: " + ownVideoPath;
-			// Start the process
-			try
-			{
-				if ( ownVideoPath.indexOf(".swf") > -1 )
-				{
-					//error no conversion on swf files
-					countError++;
-					countDone++;
-					errFiles += clipFileName + " ";
-					copySwf( ownVideoPath, swfPath + clipGeneratedName + ".swf" );
-				}
-				else
-				{
-					var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath( FlexGlobals.topLevelApplication.vpFFMpegExePath );
-					if ( !ffMpegExecutable.exists )
-					{
-						Util.log( "generatePreview, ffMpegExecutable does not exist: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
-					}
-					else
-					{
-						Util.log( "generatePreview, ffMpegExecutable exists: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
-					}
-					//configComp.ffout.text += "generatePreview, converting " + clipFileName + " to swf.\n";
-					Util.ffMpegOutputLog( "NativeProcess generatePreview: " + "Converting " + clipGeneratedName + " to swf: " + swfPath + clipGeneratedName + ".swf" + "\n" );
-					
-					var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-					nativeProcessStartupInfo.executable = ffMpegExecutable;
-					Util.log("generatePreview,ff path:"+ ffMpegExecutable.nativePath );
-					var processArgs:Vector.<String> = new Vector.<String>();
-					var i:int = 0;
-					processArgs[i++] = "-i";
-					processArgs[i++] = ownVideoPath;
-					processArgs[i++] = "-b";
-					processArgs[i++] = "400k";
-					processArgs[i++] = "-an";
-					processArgs[i++] = "-f";
-					processArgs[i++] = "avm2";
-					processArgs[i++] = "-s";
-					processArgs[i++] = reso;// default "320x240";
-					processArgs[i++] = swfPath + clipGeneratedName + ".swf";
-					processArgs[i++] = "-y";
-					nativeProcessStartupInfo.arguments = processArgs;
-					startFFMpegProcess = new NativeProcess();
-					startFFMpegProcess.start(nativeProcessStartupInfo);
-					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
-						outputDataHandler);
-					startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
-						errorMovieDataHandler);
-					startFFMpegProcess.addEventListener(Event.STANDARD_OUTPUT_CLOSE, processClose );
-					startFFMpegProcess.addEventListener(NativeProcessExitEvent.EXIT, onExit);				
-				}
-			}
-			catch (e:Error)
-			{
-				Util.log( "generatePreview, NativeProcess Error: " + e.message );
-				busy = false;
-			}
-		}*/
 		// convertion
 		//private function generatePreview( ownVideoPath:String, swfPath:String, clipGeneratedName:String, clipFileName:String ):void
 		//private function convert( ownVideoPath:String, clipGeneratedName:String, clipFileName:String, thumb:Boolean ):void
@@ -579,66 +519,7 @@ package fr.batchass
 				}	
 			}
 		}
-		//thumbs
-		/*private function execute( ownVideoPath:String, thumbsPath:String, thumbNumber:uint ):void
-		{
-			//FlexGlobals.topLevelApplication.statusText.text = "Creating thumb: " + ownVideoPath;
-			// Start the process
-			try
-			{
-				tPath = thumbsPath;
-				var ffMpegExecutable:File = File.applicationStorageDirectory.resolvePath(  FlexGlobals.topLevelApplication.vpFFMpegExePath );
-				if ( !ffMpegExecutable.exists )
-				{
-					Util.log( "execute, ffMpegExecutable does not exist: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
-				}
-				else
-				{
-					Util.log( "execute, ffMpegExecutable exists: " + FlexGlobals.topLevelApplication.vpFFMpegExePath );
-				}
-				var nativeProcessStartupInfo:NativeProcessStartupInfo = new NativeProcessStartupInfo();
-				nativeProcessStartupInfo.executable = ffMpegExecutable;
-				
-				Util.log( "execute, ffMpegExecutable path: " + File.applicationStorageDirectory.resolvePath(  FlexGlobals.topLevelApplication.vpFFMpegExePath ).nativePath );
-				
-				if (thumbNumber == 1) 
-				{
-					thumb1 = thumbsPath + "thumb" + thumbNumber + ".jpg" 
-				}
-				else thumb1 = "";
-				//configComp.ffout.text += "execute, Converting " + ownVideoPath + " to thumb\n";
-				Util.ffMpegOutputLog( "NativeProcess execute: " + "Converting " + ownVideoPath + " to thumb " + thumb1 + "\n" );
-				
-				var processArgs:Vector.<String> = new Vector.<String>();
-				processArgs[0] = "-i";
-				processArgs[1] = ownVideoPath;
-				processArgs[2] = "-vframes";
-				processArgs[3] = "1";
-				processArgs[4] = "-f";
-				processArgs[5] = "image2";
-				processArgs[6] = "-vcodec";
-				processArgs[7] = "mjpeg";
-				processArgs[8] =  "-s";
-				processArgs[9] = "100x74"; //Frame size must be a multiple of 2
-				processArgs[10] =  "-ss";
-				processArgs[11] = thumbNumber.toString();
-				processArgs[12] = thumbsPath + "thumb" + thumbNumber + ".jpg";
-				processArgs[13] = "-y";
-				nativeProcessStartupInfo.arguments = processArgs;
-				
-				startFFMpegProcess = new NativeProcess();
-				startFFMpegProcess.start(nativeProcessStartupInfo);
-				startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_OUTPUT_DATA,
-					outputDataHandler);
-				startFFMpegProcess.addEventListener(ProgressEvent.STANDARD_ERROR_DATA,
-					errorOutputDataHandler);
-			}
-			catch (e:Error)
-			{
-				Util.log( "execute, NativeProcess Error: " + e.message );
-				busy = false;
-			}
-		}*/
+
 		private function deleteThumbs( thumbsPath:String ): void 
 		{
 			deleteFile( thumbsPath + "thumb1.jpg" );
