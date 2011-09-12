@@ -16,10 +16,10 @@ package fr.batchass
 	import videopong.Clips;
 	import videopong.Tags;
 	
-	public class Conversion implements IEventDispatcher
+	public class Convertion implements IEventDispatcher
 	{
 		private var dispatcher:EventDispatcher;
-		private static var instance:Conversion;
+		private static var instance:Convertion;
 		private var timer:Timer;
 		public var fileToConvert:Array = new Array();
 		public var newClips:Array = new Array();
@@ -58,7 +58,7 @@ package fr.batchass
 		public var reso:String = "320x240";
 		private var OWN_CLIPS_XML:XML;
 		
-		public function Conversion()
+		public function Convertion()
 		{
 			Util.log( "Conversion, constructor" );
 			//status = "(0/0)";
@@ -109,11 +109,11 @@ package fr.batchass
 			}
 		}
 
-		public static function getInstance():Conversion
+		public static function getInstance():Convertion
 		{
 			if (instance == null)
 			{
-				instance = new Conversion();
+				instance = new Convertion();
 			}
 			
 			return instance;
