@@ -45,7 +45,7 @@ private var validExtensions:Array = ["avi", "mov", "mp4", "flv", "qt", "swf", "m
 
 
 
-private var cnv:Conversion = Conversion.getInstance(); 
+private var cnv:Convertion = Convertion.getInstance(); 
 
 protected function config_preinitializeHandler(event:FlexEvent):void
 {
@@ -119,7 +119,7 @@ protected function config_creationCompleteHandler(event:FlexEvent):void
 		parentDocument.ownFolderPath = File.documentsDirectory.resolvePath( "vpdude/own/" ).nativePath;
 		vpDbPath = parentDocument.vpFolderPath;
 	}
-	cnv = Conversion.getInstance();
+	cnv = Convertion.getInstance();
 }
 protected function pwdTextInput_focusInHandler(event:FocusEvent):void
 {
@@ -282,7 +282,7 @@ private function busyChange(event:Event):void
 }
 private function resyncComplete(event:Event):void
 {
-	cnv = Conversion.getInstance(); 
+	cnv = Convertion.getInstance(); 
 	cnv.removeEventListener( Event.COMPLETE, resyncComplete );
 	
 	/*if ( log && cnv.countTotal > 0 )
@@ -299,7 +299,7 @@ private function resetConsole():void
 protected function resyncBtn_clickHandler(event:MouseEvent):void
 {
 	showProgress = true;
-	cnv = Conversion.getInstance(); 
+	cnv = Convertion.getInstance(); 
 	cnv.addEventListener( Event.COMPLETE, resyncComplete );
 	cnv.addEventListener( Event.ADDED, busyChange );
 	log.text = "";
