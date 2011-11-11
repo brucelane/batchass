@@ -125,6 +125,8 @@ protected function vpDude_creationCompleteHandler(event:FlexEvent):void
 private function checkFFMpeg():void
 {
 	// determine OS to download right ffmpeg
+	
+	
 	os = Capabilities.os.substr(0, 3);
 	if (os == "Win") 
 	{
